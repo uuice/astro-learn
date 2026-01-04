@@ -1,0 +1,40 @@
+
+---
+title: "我的第而篇博客文章"
+description: "这是一篇使用MDX的内容集合示例"
+pubDate: 2024-01-01
+updatedDate: 2024-01-02
+heroImage: "/assets/astro.svg"
+---
+
+export const title = 'My first MDX post'
+
+# {title}
+
+
+# {frontmatter.title}
+
+Written by: {frontmatter.author}
+
+# MDX 测试页面
+
+这是一个测试MDX文件，用于验证ESLint配置是否适用于MDX文件。
+
+```jsx
+// 这里测试JSX代码块中的无分号规则
+const greeting = "Hello, MDX!"
+console.log(greeting)
+```
+
+## 测试功能
+
+- 检查MDX文件是否被ESLint扫描
+- 验证无分号规则是否在代码块中生效
+- 确认Astro和MDX集成正常工作
+
+<details>
+<summary>交互式组件测试</summary>
+
+我们也可以在MDX中嵌入Astro组件。
+
+</details>
