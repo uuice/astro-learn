@@ -1,11 +1,10 @@
-// @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'astro/config'
 import mdx from '@astrojs/mdx'
-import remarkToc from 'remark-toc';
-import rehypePresetMinify from 'rehype-preset-minify';
-import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node';
-import react from '@astrojs/react';
+import remarkToc from 'remark-toc'
+import rehypePresetMinify from 'rehype-preset-minify'
+import tailwindcss from '@tailwindcss/vite'
+import node from '@astrojs/node'
+import react from '@astrojs/react'
 // https://astro.build/config
 export default defineConfig({
   markdown: {
@@ -32,4 +31,4 @@ export default defineConfig({
   adapter: node({
     mode: 'middleware',
   }),
-});
+}) 

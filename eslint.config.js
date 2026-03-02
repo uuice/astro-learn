@@ -14,12 +14,10 @@ export default [
       '**/*.astro',
     ],
     ignores: [
-      // 忽略Astro自动生成的类型文件
       '.astro/**',
     ],
     rules: {
-      // 启用一些基本规则来测试ESLint是否生效
-      'no-console': 'warn',
+      'no-console': 'off',
       'no-unused-vars': 'warn',
       // 禁用分号
       'semi': ['error', 'never'],
@@ -29,7 +27,10 @@ export default [
       // 可以添加更多规则
     }
   },
-  // 配置文件本身使用标准JavaScript规则（包含分号）
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: { 'no-undef': 'off' }
+  },
   {
     files: ['eslint.config.js'],
     rules: {
