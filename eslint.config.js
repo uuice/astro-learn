@@ -15,6 +15,8 @@ export default [
     ],
     ignores: [
       '.astro/**',
+      'dist/**',
+      'node_modules/**',
     ],
     rules: {
       'no-console': 'off',
