@@ -1,0 +1,73 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import { getCollection, render } from 'astro:content'
+import { getDerivedFromPosts } from '../../utils/derived-collections'
+
+export async function getStaticPaths() {
+  const posts = await getCollection('post', ({ data }) => data.published)
+  return posts.map((p) => ({ params: { slug: p.data.url.replace(/^\/blog\/?/, '') } }))
+}
+
+const slug = Astro.params.slug ?? ''
+const posts = await getCollection('post', ({ data }) => data.published)
+const post = posts.find((p) => p.data.url.replace(/^\/blog\/?/, '') === slug)
+if (!post) return Astro.redirect('/')
+const { Content, headings = [] } = await render(post)
+const { categories, tags, postCategories, postTags } = getDerivedFromPosts(posts)
+const categoryCounts = Object.fromEntries(categories.map((c) => [c.id, postCategories.filter((pc) => pc.categoryId === c.id).length]))
+const tagCounts = Object.fromEntries(tags.map((t) => [t.id, postTags.filter((pt) => pt.tagId === t.id).length]))
+const menu = (await getCollection('menu')).map((e) => ({ title: e.data.title, url: e.data.url, target: e.data.target }))
+const [setting] = await getCollection('setting')
+const authors = await getCollection('author')
+const defaultAuthor = authors.find((a) => a.data.isDefault) ?? authors[0]
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
+const tocList = headings.filter((h) => h.depth >= 2 && h.depth <= 3)
+---
+<BlogLayout
+  title={post.data.title}
+  siteName={siteName}
+  menu={menu}
+  categories={categories}
+  tags={tags}
+  categoryCounts={categoryCounts}
+  tagCounts={tagCounts}
+  author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
+  recordInfo={recordInfo}
+>
+  <article class="section-card rounded-2xl shadow-sm overflow-hidden">
+    <header class="px-6 md:px-10 pt-8 pb-6 border-b-2" style="border-color:var(--card-border)">
+      <h1 class="text-2xl md:text-3xl font-bold mb-3" style="color:var(--text)">{post.data.title}</h1>
+      <p class="text-sm" style="color:var(--text-muted)">
+        {new Date(post.data.created_timestamp).toLocaleDateString('zh-CN')}
+        {post.data.categories?.length ? ` · ${post.data.categories.join(', ')}` : ''}
+        {post.data.tags?.length ? ` · ${post.data.tags.join(', ')}` : ''}
+      </p>
+    </header>
+    <div class="p-6 md:p-10 flex flex-col lg:flex-row gap-8">
+      {tocList.length > 0 && (
+        <nav class="lg:w-52 shrink-0 order-2 lg:order-1" aria-label="目录">
+          <div class="section-card p-4 rounded-xl sticky top-24">
+            <h2 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:var(--accent)">目录</h2>
+            <ul class="space-y-1.5 text-sm">
+              {tocList.map((h) => (
+                <li>
+                  <a
+                    href={`#${h.slug}`}
+                    class="block py-0.5 transition-opacity hover:opacity-80"
+                    style={{ color: 'var(--text-muted)', paddingLeft: h.depth === 3 ? '1rem' : '0' }}
+                  >
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+      )}
+      <div class="flex-1 min-w-0 order-1 lg:order-2 prose prose-lg max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BlogLayout>

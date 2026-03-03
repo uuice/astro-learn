@@ -1,13 +1,11 @@
 ---
 import BlogLayout from '../layouts/BlogLayout.astro'
 import Banner from '../components/Banner.astro'
-import PostCard from '../components/PostCard.astro'
 import { getCollection } from 'astro:content'
 import { getDerivedFromPosts } from '../utils/derived-collections'
 
 const posts = await getCollection('post', ({ data }) => data.published)
-const sorted = [...posts].sort((a, b) => b.data.created_timestamp - a.data.created_timestamp)
-const { categories, tags, postCategories, postTags } = getDerivedFromPosts(sorted)
+const { categories, tags, postCategories, postTags } = getDerivedFromPosts(posts)
 const categoryCounts = Object.fromEntries(categories.map((c) => [c.id, postCategories.filter((pc) => pc.categoryId === c.id).length]))
 const tagCounts = Object.fromEntries(tags.map((t) => [t.id, postTags.filter((pt) => pt.tagId === t.id).length]))
 const menu = (await getCollection('menu')).map((e) => ({ title: e.data.title, url: e.data.url, target: e.data.target }))
@@ -16,9 +14,10 @@ const authors = await getCollection('author')
 const defaultAuthor = authors.find((a) => a.data.isDefault) ?? authors[0]
 const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
+const links = await getCollection('link')
 ---
 <BlogLayout
-  title={siteName}
+  title="友情链接"
   siteName={siteName}
   menu={menu}
   categories={categories}
@@ -28,29 +27,26 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
   author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
   recordInfo={recordInfo}
 >
-  <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} />
-  <p class="text-sm md:text-base mb-8 leading-relaxed" style="color:var(--text-muted)">
-    共 {sorted.length} 篇文章，欢迎阅读与交流。
-  </p>
-  <section class="space-y-5">
-    <h2 class="text-xl font-semibold pb-2 border-b-2" style="color:var(--text);border-color:var(--accent)">最新文章</h2>
-    {sorted.length === 0 ? (
-      <p class="py-8" style="color:var(--text-muted)">暂无文章</p>
-    ) : (
-      <ul class="space-y-4">
-        {sorted.map((entry) => (
-          <li>
-            <PostCard
-              title={entry.data.title}
-              url={entry.data.url}
-              excerpt={entry.data.excerpt}
-              pubDate={entry.data.created_timestamp}
-              categories={entry.data.categories}
-              tags={entry.data.tags}
-            />
-          </li>
-        ))}
-      </ul>
-    )}
+  <Banner title="友情链接" subtitle="交换链接、友链" />
+  <p class="text-sm mb-8" style="color:var(--text-muted)">共 {links.length} 个链接</p>
+  <section class="section-card rounded-2xl p-6 md:p-8 shadow-sm">
+    <ul class="grid gap-4 sm:grid-cols-2">
+      {links.map((entry) => (
+        <li>
+          <a
+            href={entry.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-3 p-4 rounded-xl border-2 hover:shadow-md transition-all section-card"
+          >
+            {entry.data.icon && <span class="text-2xl">{entry.data.icon}</span>}
+            <div>
+            <span class="font-medium" style="color:var(--text)">{entry.data.title}</span>
+            {entry.data.type && <span class="ml-2 text-xs" style="color:var(--text-muted)">{entry.data.type}</span>}
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
   </section>
 </BlogLayout>

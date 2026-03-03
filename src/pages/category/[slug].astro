@@ -1,0 +1,53 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import Banner from '../../components/Banner.astro'
+import PostCard from '../../components/PostCard.astro'
+import { getCollection } from 'astro:content'
+import { getDerivedFromPosts } from '../../utils/derived-collections'
+export async function getStaticPaths() {
+  const posts = await getCollection('post', ({ data }) => data.published)
+  const { categories } = getDerivedFromPosts(posts)
+  return categories.map((c) => ({ params: { slug: c.url.replace(/^\/category\//, '') } }))
+}
+
+const { slug } = Astro.params
+const posts = await getCollection('post', ({ data }) => data.published)
+const { categories, tags, postCategories, postTags } = getDerivedFromPosts(posts)
+const category = categories.find((c) => c.url.replace(/^\/category\//, '') === slug)
+if (!category) return Astro.redirect('/')
+const postIds = new Set(postCategories.filter((pc) => pc.categoryId === category.id).map((pc) => pc.postId))
+const list = posts.filter((p) => postIds.has(p.id)).sort((a, b) => b.data.created_timestamp - a.data.created_timestamp)
+const categoryCounts = Object.fromEntries(categories.map((c) => [c.id, postCategories.filter((pc) => pc.categoryId === c.id).length]))
+const tagCounts = Object.fromEntries(tags.map((t) => [t.id, postTags.filter((pt) => pt.tagId === t.id).length]))
+const menu = (await getCollection('menu')).map((e) => ({ title: e.data.title, url: e.data.url, target: e.data.target }))
+const [setting] = await getCollection('setting')
+const authors = await getCollection('author')
+const defaultAuthor = authors.find((a) => a.data.isDefault) ?? authors[0]
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
+---
+<BlogLayout
+  title={`分类: ${category.title}`}
+  siteName={siteName}
+  menu={menu}
+  categories={categories}
+  tags={tags}
+  categoryCounts={categoryCounts}
+  tagCounts={tagCounts}
+  author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
+  recordInfo={recordInfo}
+>
+  <Banner title={`分类: ${category.title}`} subtitle={category.description || `共 ${list.length} 篇`} />
+  <section class="space-y-4">
+    {list.length === 0 ? <p class="py-8" style="color:var(--text-muted)">该分类下暂无文章</p> : list.map((entry) => (
+      <PostCard
+        title={entry.data.title}
+        url={entry.data.url}
+        excerpt={entry.data.excerpt}
+        pubDate={entry.data.created_timestamp}
+        categories={entry.data.categories}
+        tags={entry.data.tags}
+      />
+    ))}
+  </section>
+</BlogLayout>

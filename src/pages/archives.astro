@@ -16,9 +16,18 @@ const authors = await getCollection('author')
 const defaultAuthor = authors.find((a) => a.data.isDefault) ?? authors[0]
 const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
+
+const byYearMonth = new Map<string, typeof sorted>()
+for (const p of sorted) {
+  const d = new Date(p.data.created_timestamp)
+  const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  if (!byYearMonth.has(key)) byYearMonth.set(key, [])
+  byYearMonth.get(key)!.push(p)
+}
+const groups = Array.from(byYearMonth.entries()).sort((a, b) => b[0].localeCompare(a[0]))
 ---
 <BlogLayout
-  title={siteName}
+  title="归档"
   siteName={siteName}
   menu={menu}
   categories={categories}
@@ -28,29 +37,27 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
   author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
   recordInfo={recordInfo}
 >
-  <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} />
-  <p class="text-sm md:text-base mb-8 leading-relaxed" style="color:var(--text-muted)">
-    共 {sorted.length} 篇文章，欢迎阅读与交流。
-  </p>
-  <section class="space-y-5">
-    <h2 class="text-xl font-semibold pb-2 border-b-2" style="color:var(--text);border-color:var(--accent)">最新文章</h2>
-    {sorted.length === 0 ? (
-      <p class="py-8" style="color:var(--text-muted)">暂无文章</p>
-    ) : (
-      <ul class="space-y-4">
-        {sorted.map((entry) => (
-          <li>
-            <PostCard
-              title={entry.data.title}
-              url={entry.data.url}
-              excerpt={entry.data.excerpt}
-              pubDate={entry.data.created_timestamp}
-              categories={entry.data.categories}
-              tags={entry.data.tags}
-            />
-          </li>
-        ))}
-      </ul>
-    )}
+  <Banner title="归档" subtitle="按时间查看文章" />
+  <p class="text-sm mb-8" style="color:var(--text-muted)">共 {sorted.length} 篇文章</p>
+  <section class="space-y-10">
+    {groups.map(([ym, list]) => (
+      <div class="section-card p-5 rounded-2xl shadow-sm">
+        <h2 class="text-xl font-semibold mb-4 pb-2 border-b-2" style="color:var(--text);border-color:var(--accent)">{ym}</h2>
+        <ul class="space-y-4">
+          {list.map((entry) => (
+            <li>
+              <PostCard
+                title={entry.data.title}
+                url={entry.data.url}
+                excerpt={entry.data.excerpt}
+                pubDate={entry.data.created_timestamp}
+                categories={entry.data.categories}
+                tags={entry.data.tags}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
   </section>
 </BlogLayout>

@@ -1,0 +1,13 @@
+<button id="dark-toggle" type="button" class="p-2.5 rounded-xl border-2 transition-all hover:scale-105" style="border-color:var(--card-border);background:var(--card-bg);color:var(--accent)" aria-label="切换暗色模式">
+  <span class="dark:hidden" aria-hidden="true">🌙</span>
+  <span class="hidden dark:inline" aria-hidden="true">☀️</span>
+</button>
+<script>
+  (function () {
+    var html = document.documentElement, key = 'theme', dark = 'dark';
+    document.getElementById('dark-toggle')?.addEventListener('click', function () {
+      html.classList.toggle(dark);
+      localStorage.setItem(key, html.classList.contains(dark) ? dark : 'light');
+    });
+  })();
+</script>
