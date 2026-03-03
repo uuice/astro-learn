@@ -1,0 +1,8 @@
+#!/usr/bin/env bun
+// 设置 Bun.argv 以便正确解析命令行参数
+Bun.argv = ['bun', 'cli', ...process.argv.slice(2)]
+// 导入并执行主程序
+const { main } = await import('./src/cli.ts')
+if (typeof main === 'function') {
+  await main()
+}

@@ -1,0 +1,37 @@
+{
+  "storageSetting": {
+    "storageType": "local",
+    "accessKey": "",
+    "secretKey": "",
+    "bucket": "",
+    "region": "",
+    "domain": "",
+    "uploadPath": "uploads"
+  },
+
+  "recordSettings": {
+    "icpNumber": "浙ICP备13002567号-4",
+    "icpLink": "https://beian.miit.gov.cn/",
+    "policeNumber": "",
+    "policeLink": "",
+    "recordText": "",
+    "showRecord": true
+  },
+
+  "siteSetting": {
+    "baseUrl": "https://uuice.com",
+    "siteName": "轻盈的鱼",
+    "siteDescription": "专注于前端开发的程序员，分享Vue、Angular、Node.js等技术栈的学习笔记和解决方案。记录工作中遇到的问题和解决方案，致力于构建现代化的响应式Web应用。",
+    "siteKeywords": "前端开发, Vue, Angular, Node.js, JavaScript, 学习笔记, 技术博客, 前端技术栈, 响应式设计, Web开发, 程序员, 前端工程师",
+    "siteLogo": "",
+    "siteFavicon": "",
+    "siteFooter": "",
+    "allowRegistration": true,
+    "allowComment": true,
+    "commentAudit": true,
+    "defaultLanguage": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "dateFormat": "YYYY-MM-DD",
+    "timeFormat": "HH:mm:ss"
+  }
+}

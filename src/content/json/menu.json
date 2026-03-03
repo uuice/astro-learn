@@ -1,0 +1,32 @@
+[
+  {
+    "title": "首页",
+    "icon": "",
+    "url": "/",
+    "target": "_self"
+  },
+  {
+    "title": "归档",
+    "icon": "",
+    "url": "/archives",
+    "target": "_self"
+  },
+  {
+    "title": "友情链接",
+    "icon": "",
+    "url": "/links",
+    "target": "_self"
+  },
+  {
+    "title": "关于博主",
+    "icon": "",
+    "url": "/about",
+    "target": "_self"
+  },
+  {
+    "title": "uuice doc",
+    "icon": "",
+    "url": "/uuice-doc",
+    "target": "_target"
+  }
+]
