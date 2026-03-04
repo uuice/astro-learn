@@ -38,9 +38,17 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
   author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
   recordInfo={recordInfo}
 >
-  <Banner title={`标签: ${tag.title}`} subtitle={tag.description || `共 ${list.length} 篇`} />
+  <Banner title={`标签: ${tag.title}`} subtitle={tag.description || `共 ${list.length} 篇`} icon="🏷️" />
+  <div class="intro-bubble">
+    <p class="m-0" style="color:var(--text-muted);font-size:var(--text-base)">共 <strong style="color:var(--accent)">{list.length}</strong> 篇</p>
+  </div>
   <section class="space-y-4">
-    {list.length === 0 ? <p class="py-8" style="color:var(--text-muted)">该标签下暂无文章</p> : list.map((entry) => (
+    {list.length === 0 ? (
+      <div class="section-card p-8 text-center rounded-2xl">
+        <p class="text-4xl mb-2" aria-hidden="true">📭</p>
+        <p class="m-0" style="color:var(--text-muted)">该标签下还没有文章哦 ~</p>
+      </div>
+    ) : list.map((entry) => (
       <PostCard
         title={entry.data.title}
         url={entry.data.url}

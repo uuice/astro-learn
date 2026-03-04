@@ -31,8 +31,8 @@ const { Content } = await render(aboutEntry)
   author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
   recordInfo={recordInfo}
 >
-  <Banner title="关于" subtitle={aboutEntry.data.excerpt || ''} />
-  <article class="section-card rounded-2xl shadow-sm p-6 md:p-10 prose prose-lg max-w-none prose-headings:font-semibold prose-img:rounded-xl">
+  <Banner title="关于" subtitle={aboutEntry.data.excerpt || ''} icon="💬" />
+  <article class="section-card p-6 md:p-10 prose prose-lg max-w-none prose-headings:font-semibold prose-img:rounded-xl">
     <Content />
   </article>
 </BlogLayout>

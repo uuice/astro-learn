@@ -5,6 +5,7 @@
 
 :root {
   font-size: 16px;
+  --hue: 330;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -13,45 +14,52 @@
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
-  --page-bg: #f0f4ff;
+  --radius: 1.25rem;
+  --radius-sm: 0.875rem;
+  --shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.08);
+  --page-bg: #fef7f7;
   --card-bg: #ffffff;
-  --card-border: #e0e7ff;
-  --text: #1e1b4b;
-  --text-muted: #4f46e5;
-  --accent: #6366f1;
-  --accent-2: #ec4899;
-  --accent-3: #14b8a6;
+  --card-border: oklch(0.92 0.04 var(--hue));
+  --text: #4a3c4a;
+  --text-muted: oklch(0.5 0.08 var(--hue));
+  --accent: oklch(0.6 0.22 var(--hue));
+  --accent-2: oklch(0.6 0.2 calc(var(--hue) + 60));
+  --accent-3: oklch(0.6 0.2 calc(var(--hue) + 120));
   --header-bg: #fff;
-  --footer-bg: #eef2ff;
-  --border: #c7d2fe;
-  --banner-from: #6366f1;
-  --banner-via: #8b5cf6;
-  --banner-to: #ec4899;
-  --card-accent: #6366f1;
+  --footer-bg: oklch(0.97 0.02 var(--hue));
+  --border: oklch(0.88 0.06 var(--hue));
+  --banner-from: oklch(0.94 0.06 var(--hue));
+  --banner-via: oklch(0.9 0.08 var(--hue));
+  --banner-to: oklch(0.85 0.12 var(--hue));
+  --card-accent: oklch(0.6 0.22 var(--hue));
 }
 
 .dark {
-  --page-bg: #0f0f23;
-  --card-bg: #1a1a2e;
-  --card-border: #2d2d44;
-  --text: #e2e8f0;
-  --text-muted: #94a3b8;
-  --accent: #818cf8;
-  --accent-2: #f472b6;
-  --accent-3: #2dd4bf;
-  --header-bg: #16162a;
-  --footer-bg: #16162a;
-  --border: #3f3f5c;
-  --banner-from: #4338ca;
-  --banner-via: #6d28d9;
-  --banner-to: #be185d;
-  --card-accent: #818cf8;
+  --page-bg: #1f1a1f;
+  --card-bg: #2d252d;
+  --card-border: oklch(0.35 0.04 var(--hue));
+  --text: #f5e6f0;
+  --text-muted: oklch(0.65 0.06 var(--hue));
+  --accent: oklch(0.75 0.18 var(--hue));
+  --accent-2: oklch(0.75 0.16 calc(var(--hue) + 60));
+  --accent-3: oklch(0.75 0.16 calc(var(--hue) + 120));
+  --header-bg: #251f25;
+  --footer-bg: #251f25;
+  --border: oklch(0.35 0.04 var(--hue));
+  --banner-from: oklch(0.28 0.04 var(--hue));
+  --banner-via: oklch(0.32 0.05 var(--hue));
+  --banner-to: oklch(0.36 0.06 var(--hue));
+  --card-accent: oklch(0.75 0.18 var(--hue));
+  --shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.25);
 }
 
 body {
   font-size: var(--text-base);
   background: var(--page-bg);
   color: var(--text);
+  font-family: 'Nunito', 'Hiragino Sans', 'PingFang SC', sans-serif;
 }
 
 .prose, .markdown-body {
@@ -89,11 +97,10 @@ body {
 .prose a, .markdown-body a { font-weight: 500; color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s, opacity 0.15s; }
 .prose a:hover, .markdown-body a:hover { border-bottom-color: var(--accent); opacity: 0.9; }
 .prose blockquote, .markdown-body blockquote {
-  border-left: 4px solid var(--accent);
-  padding: 0.75em 1em 0.75em 1.25em;
+  padding: 0.75em 1em 0.75em 1.5rem;
   margin: 1.25em 0;
   background: var(--card-bg);
-  border-radius: 0 0.5rem 0.5rem 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: var(--text-muted);
   font-style: italic;
 }
@@ -163,5 +170,85 @@ body {
 .section-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  border-radius: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  background: var(--card-border);
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.intro-bubble {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.cute-divider {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  margin: 1rem 0;
+  max-width: 4rem;
+}
+
+.prose ul:not(.footnotes *):not([class]),
+.markdown-body ul:not(.footnotes *):not([class]) {
+  list-style: none;
+  padding-left: 0;
+}
+.prose ul:not(.footnotes *):not([class]) > li,
+.markdown-body ul:not(.footnotes *):not([class]) > li {
+  padding-left: 1.5em;
+  position: relative;
+}
+.prose ul:not(.footnotes *):not([class]) > li::before,
+.markdown-body ul:not(.footnotes *):not([class]) > li::before {
+  content: "◆";
+  position: absolute;
+  left: 0;
+  font-size: 0.6em;
+  color: var(--accent);
+  top: 0.35em;
+}
+.prose .footnotes ul,
+.markdown-body .footnotes ul {
+  list-style: revert;
+  padding-left: 1.6em;
+}
+.prose .footnotes ul li::before,
+.markdown-body .footnotes ul li::before {
+  content: none;
+}
+.prose blockquote::before,
+.markdown-body blockquote::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+}
+.prose blockquote,
+.markdown-body blockquote {
+  position: relative;
+  padding-left: 1.5rem;
+}
+.prose blockquote,
+.markdown-body blockquote {
+  border-left: none;
 }

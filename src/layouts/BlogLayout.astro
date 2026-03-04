@@ -2,6 +2,7 @@
 import '../assets/styles/global.css'
 import DarkModeToggle from '../components/DarkModeToggle.astro'
 import Search from '../components/Search.astro'
+import ThemeColor from '../components/ThemeColor.astro'
 import Sidebar from '../components/Sidebar.astro'
 import type { CATEGORY, TAG } from '../types'
 interface RecordInfo {
@@ -32,16 +33,20 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>{title} - {siteName}</title>
     <script is:inline>
-      (function(){var d=document.documentElement,k='theme',v=localStorage.getItem(k);if(v==='dark'||(!v&&window.matchMedia('(prefers-color-scheme:dark)').matches))d.classList.add('dark');else d.classList.remove('dark');})();
+      (function(){var d=document.documentElement,k='theme',v=localStorage.getItem(k);if(v==='dark'||(!v&&window.matchMedia('(prefers-color-scheme:dark)').matches))d.classList.add('dark');else d.classList.remove('dark');var h=localStorage.getItem('themeHue');if(h!==null){var n=parseInt(h,10);if(!isNaN(n)&&n>=0&&n<=360)d.style.setProperty('--hue',String(n))}})()
+
     </script>
   </head>
   <body class="min-h-screen flex flex-col antialiased">
     <div class="min-h-screen flex flex-col">
-      <header class="sticky top-0 z-30 flex flex-col border-b-2 shadow-sm" style="background:var(--header-bg);border-color:var(--border)">
+      <header class="sticky top-0 z-30 flex flex-col border-b-2" style="background:var(--header-bg);border-color:var(--border);box-shadow:var(--shadow)">
         <div class="max-w-6xl mx-auto w-full px-4 py-3 flex items-center justify-between gap-4">
-          <a href="/" class="font-bold text-base" style="color:var(--text);font-size:var(--text-lg)">{siteName}</a>
+          <a href="/" class="font-bold text-base transition-opacity hover:opacity-80" style="color:var(--accent);font-size:var(--text-lg)">{siteName}</a>
           <div class="hidden lg:flex items-center gap-6">
             {menu.map((item) => (
               <a href={item.url} target={item.target || '_self'} class="font-medium transition-colors hover:opacity-80" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
@@ -49,6 +54,7 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
           </div>
           <div class="flex items-center gap-2 ml-auto">
             <Search />
+            <ThemeColor />
             <DarkModeToggle />
           </div>
         </div>
@@ -75,10 +81,10 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
         </div>
       </div>
 
-      <footer class="py-8 mt-auto border-t-2" style="background:var(--footer-bg);border-color:var(--border)">
+      <footer class="py-8 mt-auto border-t-2 rounded-t-3xl" style="background:var(--footer-bg);border-color:var(--border)">
         <div class="max-w-6xl mx-auto px-4 text-center space-y-1" style="color:var(--text-muted);font-size:var(--text-sm)">
           <p class="font-medium" style="color:var(--text)">© {new Date().getFullYear()} {siteName}</p>
-          <p>记录与分享</p>
+          <p>✨ 记录与分享 ✨</p>
           {showRecord && (
             <p class="pt-2" style="font-size:var(--text-xs)">
               {recordInfo?.icpNumber && (

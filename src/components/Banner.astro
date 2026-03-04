@@ -1,8 +1,12 @@
 ---
-interface Props { title?: string; subtitle?: string }
-const { title = '', subtitle = '' } = Astro.props
+interface Props { title?: string; subtitle?: string; icon?: string }
+const { title = '', subtitle = '', icon = '✨' } = Astro.props
 ---
-<header class="rounded-2xl mb-8 overflow-hidden shadow-lg border-2 text-white py-14 md:py-20 px-6" style="border-color:var(--accent);background:linear-gradient(to bottom right, var(--banner-from), var(--banner-via), var(--banner-to))">
-  <h1 class="font-bold text-center tracking-tight" style="font-size:var(--text-2xl)">{title}</h1>
-  {subtitle && <p class="text-center mt-3 text-white/90 max-w-2xl mx-auto leading-relaxed" style="font-size:var(--text-base)">{subtitle}</p>}
+<header class="mb-8 overflow-hidden border-2 py-14 md:py-20 px-6 rounded-3xl relative" style="border-color:var(--card-border);background:linear-gradient(135deg, var(--banner-from), var(--banner-via), var(--banner-to));box-shadow:var(--shadow);color:var(--text)">
+  <span class="absolute top-4 right-4 text-2xl opacity-50" aria-hidden="true">{icon}</span>
+  <h1 class="font-bold text-center tracking-tight flex items-center justify-center gap-2 flex-wrap" style="font-size:var(--text-2xl)">
+    <span aria-hidden="true">{icon}</span>
+    {title}
+  </h1>
+  {subtitle && <p class="text-center mt-3 max-w-2xl mx-auto leading-relaxed opacity-90" style="font-size:var(--text-base)">{subtitle}</p>}
 </header>
