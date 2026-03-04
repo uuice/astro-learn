@@ -22,7 +22,7 @@ export function getDerivedFromPosts(posts: PostEntry[]): DerivedFromPosts {
     for (const t of post.data.categories ?? []) {
       if (t && !categoryMap.has(t)) {
         const categoryId = generateCategoryId(t)
-        categoryMap.set(t, { id: categoryId, title: t, description: '', url: `/category/${titleToUrl(t)}` })
+        categoryMap.set(t, { id: categoryId, title: t, description: '', url: `/categories/${titleToUrl(t)}` })
       }
       if (t) {
         const categoryId = generateCategoryId(t)
@@ -36,7 +36,7 @@ export function getDerivedFromPosts(posts: PostEntry[]): DerivedFromPosts {
     for (const t of post.data.tags ?? []) {
       if (t && !tagMap.has(t)) {
         const tagId = generateTagId(t)
-        tagMap.set(t, { id: tagId, title: t, description: '', url: `/tag/${titleToUrl(t)}` })
+        tagMap.set(t, { id: tagId, title: t, description: '', url: `/tags/${titleToUrl(t)}` })
       }
       if (t) {
         const tagId = generateTagId(t)

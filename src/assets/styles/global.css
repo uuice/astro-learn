@@ -4,6 +4,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  font-size: 16px;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
   --page-bg: #f0f4ff;
   --card-bg: #ffffff;
   --card-border: #e0e7ff;
@@ -40,80 +49,116 @@
 }
 
 body {
+  font-size: var(--text-base);
   background: var(--page-bg);
   color: var(--text);
 }
 
 .prose, .markdown-body {
+  font-size: var(--text-base);
   color: var(--text);
   --tw-prose-body: var(--text-muted);
   --tw-prose-headings: var(--text);
   --tw-prose-links: var(--accent);
   --tw-prose-code: var(--text);
   --tw-prose-pre-bg: var(--card-bg);
+  line-height: 1.75;
 }
-.prose h2, .markdown-body h2 { margin-top: 1.75em; margin-bottom: 0.5em; padding-bottom: 0.25em; border-bottom: 1px solid var(--card-border); }
-.prose h3, .markdown-body h3 { margin-top: 1.25em; margin-bottom: 0.4em; }
-.prose h2:first-child, .prose h3:first-child, .markdown-body h2:first-child, .markdown-body h3:first-child { margin-top: 0; }
+.prose p, .markdown-body p {
+  font-size: var(--text-base);
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+.prose p:first-of-type, .markdown-body p:first-of-type { margin-top: 0; }
+.prose h1, .markdown-body h1 { font-size: var(--text-xl); margin-top: 0; margin-bottom: 0.5em; font-weight: 700; letter-spacing: -0.02em; }
+.prose h2, .markdown-body h2 { font-size: var(--text-lg); margin-top: 1.75em; margin-bottom: 0.5em; padding-bottom: 0.35em; border-bottom: 2px solid var(--card-border); font-weight: 600; }
+.prose h3, .markdown-body h3 { font-size: var(--text-base); margin-top: 1.35em; margin-bottom: 0.4em; font-weight: 600; }
+.prose h4, .markdown-body h4 { font-size: var(--text-base); margin-top: 1.15em; margin-bottom: 0.35em; font-weight: 600; color: var(--text-muted); }
+.prose h5, .markdown-body h5 { font-size: var(--text-sm); margin-top: 1em; margin-bottom: 0.3em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); }
+.prose h6, .markdown-body h6 { font-size: var(--text-sm); margin-top: 0.9em; margin-bottom: 0.25em; font-weight: 600; color: var(--text-muted); }
+.prose h2:first-child, .prose h3:first-child, .prose h4:first-child, .markdown-body h2:first-child, .markdown-body h3:first-child, .markdown-body h4:first-child { margin-top: 0; }
+.prose strong, .markdown-body strong { font-weight: 600; color: var(--text); }
+.prose em, .markdown-body em { font-style: italic; }
+.prose del, .markdown-body del { text-decoration: line-through; color: var(--text-muted); opacity: 0.9; }
+.prose mark, .markdown-body mark { background: var(--accent); color: var(--card-bg); padding: 0.1em 0.25em; border-radius: 0.2em; }
+.prose kbd, .markdown-body kbd { font-family: ui-monospace, monospace; font-size: var(--text-sm); padding: 0.2em 0.45em; border-radius: 0.35rem; border: 1px solid var(--card-border); background: var(--card-bg); box-shadow: 0 1px 0 var(--card-border); }
+.prose abbr[title], .markdown-body abbr[title] { text-decoration: underline dotted; cursor: help; }
+.prose sub, .markdown-body sub, .prose sup, .markdown-body sup { font-size: var(--text-xs); line-height: 0; position: relative; vertical-align: baseline; }
+.prose sup { top: -0.4em; }
+.prose sub { bottom: -0.2em; }
+.prose a, .markdown-body a { font-weight: 500; color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s, opacity 0.15s; }
+.prose a:hover, .markdown-body a:hover { border-bottom-color: var(--accent); opacity: 0.9; }
+.prose blockquote, .markdown-body blockquote {
+  border-left: 4px solid var(--accent);
+  padding: 0.75em 1em 0.75em 1.25em;
+  margin: 1.25em 0;
+  background: var(--card-bg);
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.prose blockquote p:last-child, .markdown-body blockquote p:last-child { margin-bottom: 0; }
+.prose blockquote cite, .markdown-body blockquote cite { display: block; margin-top: 0.5em; font-size: var(--text-sm); font-style: normal; color: var(--text-muted); opacity: 0.9; }
+.prose hr, .markdown-body hr { border: none; border-top: 2px solid var(--card-border); margin: 2em 0; }
+.prose ul, .prose ol, .markdown-body ul, .markdown-body ol { padding-left: 1.6em; margin: 0.75em 0; }
+.prose li, .markdown-body li { margin: 0.25em 0; }
+.prose ul ul, .prose ol ul, .prose ul ol, .prose ol ol, .markdown-body ul ul, .markdown-body ol ul, .markdown-body ul ol, .markdown-body ol ol { margin: 0.2em 0; padding-left: 1.4em; }
+.prose ul li::marker, .markdown-body ul li::marker { color: var(--accent); }
+.prose ol li::marker, .markdown-body ol li::marker { color: var(--accent); font-weight: 600; }
+.prose ul:has(input), .markdown-body ul:has(input) { list-style: none; padding-left: 0; }
+.prose li:has(> input[type="checkbox"]), .markdown-body li:has(> input[type="checkbox"]) { list-style: none; margin-left: 0; padding-left: 1.6em; }
+.prose input[type="checkbox"], .markdown-body input[type="checkbox"] { margin-right: 0.5em; accent-color: var(--accent); vertical-align: middle; }
+.prose input[type="checkbox"]:checked + *, .markdown-body input[type="checkbox"]:checked + * { text-decoration: line-through; color: var(--text-muted); }
+.prose dl, .markdown-body dl { margin: 1em 0; }
+.prose dt, .markdown-body dt { font-weight: 600; color: var(--text); margin-top: 0.75em; }
+.prose dt:first-child, .markdown-body dt:first-child { margin-top: 0; }
+.prose dd, .markdown-body dd { margin-left: 1.5em; margin-top: 0.25em; color: var(--text-muted); padding-left: 0.5em; border-left: 2px solid var(--card-border); }
+.prose details, .markdown-body details { margin: 1em 0; border: 1px solid var(--card-border); border-radius: 0.5rem; overflow: hidden; background: var(--card-bg); }
+.prose summary, .markdown-body summary { padding: 0.65em 1em; font-weight: 600; cursor: pointer; color: var(--text); user-select: none; }
+.prose summary:hover, .markdown-body summary:hover { color: var(--accent); }
+.prose details[open] summary, .markdown-body details[open] summary { border-bottom: 1px solid var(--card-border); }
+.prose details > *:not(summary), .markdown-body details > *:not(summary) { padding: 0 1em 0.75em; }
+.prose table, .markdown-body table { display: block; overflow-x: auto; margin: 1em 0; border-collapse: collapse; width: 100%; border-radius: 0.5rem; border: 1px solid var(--card-border); }
+.prose th, .prose td, .markdown-body th, .markdown-body td { border: 1px solid var(--card-border); padding: 0.55em 0.85em; text-align: left; }
+.prose th, .markdown-body th { background: var(--card-border); font-weight: 600; color: var(--text); }
+.prose tr:nth-child(even) td, .markdown-body tr:nth-child(even) td { background: var(--card-bg); }
 .prose pre, .markdown-body pre {
   border-radius: 0.5rem;
   padding: 1rem 1.25rem;
   border: 1px solid var(--card-border);
   overflow-x: auto;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.6;
-}
-.prose pre.astro-code, .markdown-body pre.astro-code {
-  padding: 1.25rem 1.5rem;
-  border: 1px solid var(--card-border);
-}
-.prose pre.astro-code code, .markdown-body pre.astro-code code {
-  padding: 0;
-  background: transparent;
-  font-size: inherit;
-}
-.prose :where(code):not(:where([class~="not-prose"] *)):not(pre code), .markdown-body :where(code):not(pre code) {
-  padding: 0.2em 0.4em;
-  border-radius: 0.25rem;
-  font-size: 0.875em;
-  background: var(--card-border);
-}
-.prose :where(pre):not(:where([class~="not-prose"] *)) code, .markdown-body pre code {
-  padding: 0;
-  background: transparent;
-}
-.prose img, .markdown-body img {
-  border-radius: 0.5rem;
-}
-.prose a, .markdown-body a {
-  font-weight: 500;
-}
-.prose blockquote, .markdown-body blockquote {
-  border-left: 4px solid var(--accent);
-  padding-left: 1em;
   margin: 1em 0;
-  color: var(--text-muted);
+  background: var(--card-bg);
 }
-.prose hr, .markdown-body hr {
-  border-color: var(--card-border);
-  margin: 1.5em 0;
-}
-.prose ul, .prose ol, .markdown-body ul, .markdown-body ol {
-  padding-left: 1.5em;
-}
-.prose table, .markdown-body table {
-  border-collapse: collapse;
-  width: 100%;
-}
-.prose th, .prose td, .markdown-body th, .markdown-body td {
-  border: 1px solid var(--card-border);
-  padding: 0.5em 0.75em;
-  text-align: left;
-}
-.prose th, .markdown-body th {
+.prose pre::-webkit-scrollbar, .markdown-body pre::-webkit-scrollbar { height: 6px; }
+.prose pre::-webkit-scrollbar-track, .markdown-body pre::-webkit-scrollbar-track { background: var(--card-border); border-radius: 3px; }
+.prose pre::-webkit-scrollbar-thumb, .markdown-body pre::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+.prose pre.astro-code, .markdown-body pre.astro-code { padding: 1.25rem 1.5rem; }
+.prose pre.astro-code code, .markdown-body pre.astro-code code { padding: 0; background: transparent; font-size: inherit; }
+.prose :where(code):not(:where([class~="not-prose"] *)):not(pre code), .markdown-body :where(code):not(pre code) {
+  padding: 0.22em 0.45em;
+  border-radius: 0.3rem;
+  font-size: var(--text-sm);
+  font-family: ui-monospace, monospace;
   background: var(--card-border);
-  font-weight: 600;
+  color: var(--text);
 }
+.prose :where(pre) code, .markdown-body pre code { padding: 0; background: transparent; }
+.prose img, .markdown-body img { border-radius: 0.5rem; max-width: 100%; height: auto; display: block; margin: 1em 0; border: 1px solid var(--card-border); }
+.prose figure, .markdown-body figure { margin: 1.25em 0; }
+.prose figure img, .markdown-body figure img { margin-bottom: 0.5em; }
+.prose figcaption, .markdown-body figcaption { font-size: var(--text-sm); color: var(--text-muted); text-align: center; margin-top: 0.35em; }
+.prose video, .markdown-body video { max-width: 100%; border-radius: 0.5rem; border: 1px solid var(--card-border); margin: 1em 0; }
+.prose iframe, .markdown-body iframe { max-width: 100%; border-radius: 0.5rem; border: 1px solid var(--card-border); margin: 1em 0; }
+.prose .footnotes, .markdown-body .footnotes { margin-top: 2em; padding-top: 1em; border-top: 1px solid var(--card-border); font-size: var(--text-sm); color: var(--text-muted); }
+.prose .footnotes ol, .markdown-body .footnotes ol { padding-left: 1.5em; }
+.prose .footnotes li, .markdown-body .footnotes li { margin: 0.35em 0; }
+.prose .footnote-ref, .markdown-body .footnote-ref { font-weight: 600; color: var(--accent); text-decoration: none; }
+.prose .footnote-backref, .markdown-body .footnote-backref { margin-left: 0.25em; color: var(--accent); }
+.prose [role="heading"]:focus-visible, .markdown-body [id]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.prose ::selection, .markdown-body ::selection { background: var(--accent); color: var(--card-bg); }
 
 .section-card {
   background: var(--card-bg);

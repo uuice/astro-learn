@@ -1,6 +1,7 @@
 ---
 import '../assets/styles/global.css'
 import DarkModeToggle from '../components/DarkModeToggle.astro'
+import Search from '../components/Search.astro'
 import Sidebar from '../components/Sidebar.astro'
 import type { CATEGORY, TAG } from '../types'
 interface RecordInfo {
@@ -40,20 +41,21 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
     <div class="min-h-screen flex flex-col">
       <header class="sticky top-0 z-30 flex flex-col border-b-2 shadow-sm" style="background:var(--header-bg);border-color:var(--border)">
         <div class="max-w-6xl mx-auto w-full px-4 py-3 flex items-center justify-between gap-4">
-          <a href="/" class="font-bold text-lg" style="color:var(--text)">{siteName}</a>
+          <a href="/" class="font-bold text-base" style="color:var(--text);font-size:var(--text-lg)">{siteName}</a>
           <div class="hidden lg:flex items-center gap-6">
             {menu.map((item) => (
-              <a href={item.url} target={item.target || '_self'} class="text-sm font-medium transition-colors hover:opacity-80" style="color:var(--accent)">{item.title}</a>
+              <a href={item.url} target={item.target || '_self'} class="font-medium transition-colors hover:opacity-80" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
             ))}
           </div>
           <div class="flex items-center gap-2 ml-auto">
+            <Search />
             <DarkModeToggle />
           </div>
         </div>
         <div class="lg:hidden border-t px-4 py-2.5 overflow-x-auto" style="border-color:var(--card-border)">
           <nav class="flex gap-4 min-w-max pb-1" aria-label="主导航">
             {menu.map((item) => (
-              <a href={item.url} target={item.target || '_self'} class="text-sm font-medium whitespace-nowrap transition-opacity hover:opacity-80" style="color:var(--accent)">{item.title}</a>
+              <a href={item.url} target={item.target || '_self'} class="font-medium whitespace-nowrap transition-opacity hover:opacity-80" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
             ))}
           </nav>
         </div>
@@ -74,11 +76,11 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
       </div>
 
       <footer class="py-8 mt-auto border-t-2" style="background:var(--footer-bg);border-color:var(--border)">
-        <div class="max-w-6xl mx-auto px-4 text-center text-sm space-y-1" style="color:var(--text-muted)">
+        <div class="max-w-6xl mx-auto px-4 text-center space-y-1" style="color:var(--text-muted);font-size:var(--text-sm)">
           <p class="font-medium" style="color:var(--text)">© {new Date().getFullYear()} {siteName}</p>
           <p>记录与分享</p>
           {showRecord && (
-            <p class="pt-2 text-xs">
+            <p class="pt-2" style="font-size:var(--text-xs)">
               {recordInfo?.icpNumber && (
                 <a href={recordInfo.icpLink || 'https://beian.miit.gov.cn/'} target="_blank" rel="noopener noreferrer" class="hover:opacity-80" style="color:var(--text-muted)">{recordInfo.icpNumber}</a>
               )}

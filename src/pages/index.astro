@@ -29,11 +29,11 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
   recordInfo={recordInfo}
 >
   <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} />
-  <p class="text-sm md:text-base mb-8 leading-relaxed" style="color:var(--text-muted)">
+  <p class="mb-8 leading-relaxed" style="color:var(--text-muted);font-size:var(--text-base)">
     共 {sorted.length} 篇文章，欢迎阅读与交流。
   </p>
   <section class="space-y-5">
-    <h2 class="text-xl font-semibold pb-2 border-b-2" style="color:var(--text);border-color:var(--accent)">最新文章</h2>
+    <h2 class="font-semibold pb-2 border-b-2" style="color:var(--text);border-color:var(--accent);font-size:var(--text-lg)">最新文章</h2>
     {sorted.length === 0 ? (
       <p class="py-8" style="color:var(--text-muted)">暂无文章</p>
     ) : (

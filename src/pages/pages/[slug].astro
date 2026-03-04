@@ -1,0 +1,44 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import Banner from '../../components/Banner.astro'
+import { getCollection, render } from 'astro:content'
+import { getDerivedFromPosts } from '../../utils/derived-collections'
+import { titleToUrl } from '../../utils/index.js'
+
+export async function getStaticPaths() {
+  const pages = await getCollection('page', ({ data }) => data.published)
+  return pages.map((p) => ({ params: { slug: titleToUrl(p.data.alias || p.data.title) } }))
+}
+
+const { slug } = Astro.params
+const pages = await getCollection('page', ({ data }) => data.published)
+const pageEntry = pages.find((p) => titleToUrl(p.data.alias || p.data.title) === slug)
+if (!pageEntry) return Astro.redirect('/')
+const { Content } = await render(pageEntry)
+const posts = await getCollection('post', ({ data }) => data.published)
+const { categories, tags, postCategories, postTags } = getDerivedFromPosts(posts)
+const categoryCounts = Object.fromEntries(categories.map((c) => [c.id, postCategories.filter((pc) => pc.categoryId === c.id).length]))
+const tagCounts = Object.fromEntries(tags.map((t) => [t.id, postTags.filter((pt) => pt.tagId === t.id).length]))
+const menu = (await getCollection('menu')).map((e) => ({ title: e.data.title, url: e.data.url, target: e.data.target }))
+const [setting] = await getCollection('setting')
+const authors = await getCollection('author')
+const defaultAuthor = authors.find((a) => a.data.isDefault) ?? authors[0]
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
+---
+<BlogLayout
+  title={pageEntry.data.title}
+  siteName={siteName}
+  menu={menu}
+  categories={categories}
+  tags={tags}
+  categoryCounts={categoryCounts}
+  tagCounts={tagCounts}
+  author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
+  recordInfo={recordInfo}
+>
+  <Banner title={pageEntry.data.title} subtitle={pageEntry.data.excerpt || ''} />
+  <article class="section-card rounded-2xl shadow-sm p-6 md:p-10 prose prose-lg max-w-none prose-headings:font-semibold prose-img:rounded-xl">
+    <Content />
+  </article>
+</BlogLayout>

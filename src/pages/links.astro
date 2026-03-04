@@ -28,7 +28,7 @@ const links = await getCollection('link')
   recordInfo={recordInfo}
 >
   <Banner title="友情链接" subtitle="交换链接、友链" />
-  <p class="text-sm mb-8" style="color:var(--text-muted)">共 {links.length} 个链接</p>
+  <p class="mb-8" style="color:var(--text-muted);font-size:var(--text-base)">共 {links.length} 个链接</p>
   <section class="section-card rounded-2xl p-6 md:p-8 shadow-sm">
     <ul class="grid gap-4 sm:grid-cols-2">
       {links.map((entry) => (
@@ -39,10 +39,10 @@ const links = await getCollection('link')
             rel="noopener noreferrer"
             class="flex items-center gap-3 p-4 rounded-xl border-2 hover:shadow-md transition-all section-card"
           >
-            {entry.data.icon && <span class="text-2xl">{entry.data.icon}</span>}
+            {entry.data.icon && <span style="font-size:var(--text-xl)">{entry.data.icon}</span>}
             <div>
-            <span class="font-medium" style="color:var(--text)">{entry.data.title}</span>
-            {entry.data.type && <span class="ml-2 text-xs" style="color:var(--text-muted)">{entry.data.type}</span>}
+            <span class="font-medium" style="color:var(--text);font-size:var(--text-base)">{entry.data.title}</span>
+            {entry.data.type && <span class="ml-2" style="color:var(--text-muted);font-size:var(--text-xs)">{entry.data.type}</span>}
             </div>
           </a>
         </li>

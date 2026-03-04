@@ -12,7 +12,7 @@ const { categories, tags, categoryCounts = {}, tagCounts = {}, author } = Astro.
 <aside class="space-y-6">
   {categories.length > 0 && (
     <div class="section-card p-4 rounded-xl overflow-hidden">
-      <h3 class="font-semibold mb-3 text-xs uppercase tracking-wider flex items-center gap-2" style="color:var(--accent)">
+      <h3 class="font-semibold mb-3 uppercase tracking-wider flex items-center gap-2" style="color:var(--accent);font-size:var(--text-xs)">
         <span class="w-1 h-4 rounded-full" style="background:var(--accent)"></span> 分类
       </h3>
       <ul class="space-y-1">
@@ -20,9 +20,9 @@ const { categories, tags, categoryCounts = {}, tagCounts = {}, author } = Astro.
           const count = categoryCounts[c.id] ?? 0
           return (
             <li>
-              <a href={c.url} class="flex items-center justify-between gap-2 py-2 px-3 rounded-lg text-sm transition-all hover:opacity-90 group" style="color:var(--text);background:transparent">
+              <a href={c.url} class="flex items-center justify-between gap-2 py-2 px-3 rounded-lg transition-all hover:opacity-90 group" style="color:var(--text);background:transparent;font-size:var(--text-sm)">
                 <span class="truncate group-hover:opacity-100" style="color:var(--accent)">{c.title}</span>
-                <span class="shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-md text-xs font-medium flex items-center justify-center" style="background:var(--card-border);color:var(--text-muted)">{count}</span>
+                <span class="shrink-0 min-w-[1.25rem] h-5 px-1.5 rounded-md font-medium flex items-center justify-center" style="background:var(--card-border);color:var(--text-muted);font-size:var(--text-xs)">{count}</span>
               </a>
             </li>
           )
@@ -32,7 +32,7 @@ const { categories, tags, categoryCounts = {}, tagCounts = {}, author } = Astro.
   )}
   {tags.length > 0 && (
     <div class="section-card p-4 rounded-xl overflow-hidden">
-      <h3 class="font-semibold mb-3 text-xs uppercase tracking-wider flex items-center gap-2" style="color:var(--accent-2)">
+      <h3 class="font-semibold mb-3 uppercase tracking-wider flex items-center gap-2" style="color:var(--accent-2);font-size:var(--text-xs)">
         <span class="w-1 h-4 rounded-full" style="background:var(--accent-2)"></span> 标签
       </h3>
       <ul class="flex flex-wrap gap-2">
@@ -40,9 +40,9 @@ const { categories, tags, categoryCounts = {}, tagCounts = {}, author } = Astro.
           const count = tagCounts[t.id] ?? 0
           return (
             <li>
-              <a href={t.url} class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all hover:opacity-90 font-medium" style="background:var(--card-border);color:var(--text)">
+              <a href={t.url} class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all hover:opacity-90 font-medium" style="background:var(--card-border);color:var(--text);font-size:var(--text-xs)">
                 {t.title}
-                <span class="opacity-70 text-[10px]">{count}</span>
+                <span class="opacity-70" style="font-size:var(--text-xs)">{count}</span>
               </a>
             </li>
           )
@@ -52,12 +52,12 @@ const { categories, tags, categoryCounts = {}, tagCounts = {}, author } = Astro.
   )}
   {author && (
     <div class="section-card p-4 rounded-xl overflow-hidden">
-      <h3 class="font-semibold mb-2 text-xs uppercase tracking-wider flex items-center gap-2" style="color:var(--accent-3)">
+      <h3 class="font-semibold mb-2 uppercase tracking-wider flex items-center gap-2" style="color:var(--accent-3);font-size:var(--text-xs)">
         <span class="w-1 h-4 rounded-full" style="background:var(--accent-3)"></span> 作者
       </h3>
-      <p class="font-medium text-sm" style="color:var(--text)">{author.title}</p>
-      {author.excerpt && <p class="text-xs mt-1 line-clamp-2" style="color:var(--text-muted)">{author.excerpt}</p>}
-      <a href={author.url} class="text-xs mt-2 inline-block font-medium transition-opacity hover:opacity-80" style="color:var(--accent)">关于作者</a>
+      <p class="font-medium mt-1" style="color:var(--text);font-size:var(--text-sm)">{author.title}</p>
+      {author.excerpt && <p class="mt-1 line-clamp-2" style="color:var(--text-muted);font-size:var(--text-xs)">{author.excerpt}</p>}
+      <a href={author.url} class="mt-2 inline-block font-medium transition-opacity hover:opacity-80" style="color:var(--accent);font-size:var(--text-xs)">关于作者</a>
     </div>
   )}
 </aside>

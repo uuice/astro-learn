@@ -38,11 +38,11 @@ const groups = Array.from(byYearMonth.entries()).sort((a, b) => b[0].localeCompa
   recordInfo={recordInfo}
 >
   <Banner title="归档" subtitle="按时间查看文章" />
-  <p class="text-sm mb-8" style="color:var(--text-muted)">共 {sorted.length} 篇文章</p>
+  <p class="mb-8" style="color:var(--text-muted);font-size:var(--text-base)">共 {sorted.length} 篇文章</p>
   <section class="space-y-10">
     {groups.map(([ym, list]) => (
       <div class="section-card p-5 rounded-2xl shadow-sm">
-        <h2 class="text-xl font-semibold mb-4 pb-2 border-b-2" style="color:var(--text);border-color:var(--accent)">{ym}</h2>
+        <h2 class="font-semibold mb-4 pb-2 border-b-2" style="color:var(--text);border-color:var(--accent);font-size:var(--text-lg)">{ym}</h2>
         <ul class="space-y-4">
           {list.map((entry) => (
             <li>

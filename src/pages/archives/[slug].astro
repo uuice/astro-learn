@@ -5,12 +5,12 @@ import { getDerivedFromPosts } from '../../utils/derived-collections'
 
 export async function getStaticPaths() {
   const posts = await getCollection('post', ({ data }) => data.published)
-  return posts.map((p) => ({ params: { slug: p.data.url.replace(/^\/blog\/?/, '') } }))
+  return posts.map((p) => ({ params: { slug: p.data.url.replace(/^\/archives\/?/, '') } }))
 }
 
 const slug = Astro.params.slug ?? ''
 const posts = await getCollection('post', ({ data }) => data.published)
-const post = posts.find((p) => p.data.url.replace(/^\/blog\/?/, '') === slug)
+const post = posts.find((p) => p.data.url.replace(/^\/archives\/?/, '') === slug)
 if (!post) return Astro.redirect('/')
 const { Content, headings = [] } = await render(post)
 const { categories, tags, postCategories, postTags } = getDerivedFromPosts(posts)
@@ -37,8 +37,8 @@ const tocList = headings.filter((h) => h.depth >= 2 && h.depth <= 3)
 >
   <article class="section-card rounded-2xl shadow-sm overflow-hidden">
     <header class="px-6 md:px-10 pt-8 pb-6 border-b-2" style="border-color:var(--card-border)">
-      <h1 class="text-2xl md:text-3xl font-bold mb-3" style="color:var(--text)">{post.data.title}</h1>
-      <p class="text-sm" style="color:var(--text-muted)">
+      <h1 class="font-bold mb-3" style="color:var(--text);font-size:var(--text-xl)">{post.data.title}</h1>
+      <p style="color:var(--text-muted);font-size:var(--text-sm)">
         {new Date(post.data.created_timestamp).toLocaleDateString('zh-CN')}
         {post.data.categories?.length ? ` · ${post.data.categories.join(', ')}` : ''}
         {post.data.tags?.length ? ` · ${post.data.tags.join(', ')}` : ''}
@@ -48,8 +48,8 @@ const tocList = headings.filter((h) => h.depth >= 2 && h.depth <= 3)
       {tocList.length > 0 && (
         <nav class="lg:w-52 shrink-0 order-2 lg:order-1" aria-label="目录">
           <div class="section-card p-4 rounded-xl sticky top-24">
-            <h2 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:var(--accent)">目录</h2>
-            <ul class="space-y-1.5 text-sm">
+            <h2 class="font-semibold uppercase tracking-wider mb-3" style="color:var(--accent);font-size:var(--text-xs)">目录</h2>
+            <ul class="space-y-1.5" style="font-size:var(--text-sm)">
               {tocList.map((h) => (
                 <li>
                   <a
@@ -65,7 +65,7 @@ const tocList = headings.filter((h) => h.depth >= 2 && h.depth <= 3)
           </div>
         </nav>
       )}
-      <div class="flex-1 min-w-0 order-1 lg:order-2 prose prose-lg max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body">
+      <div class="flex-1 min-w-0 order-1 lg:order-2 prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body" style="font-size:var(--text-base)">
         <Content />
       </div>
     </div>

@@ -37,7 +37,7 @@ const post = defineCollection({
     base: './src/content/blog',
     generateId: ({ data }) => { const d = data as FrontmatterBase; return generatePostId(d.title, d.alias ?? '') },
   }),
-  schema: withComputed(baseSchema, '/blog'),
+  schema: withComputed(baseSchema, '/archives'),
 })
 
 const page = defineCollection({
@@ -46,7 +46,7 @@ const page = defineCollection({
     base: './src/content/page',
     generateId: ({ data }) => { const d = data as FrontmatterBase; return generatePageId(d.title, d.alias ?? '') },
   }),
-  schema: withComputed(baseSchema, '/page'),
+  schema: withComputed(baseSchema, '/pages'),
 })
 
 const author = defineCollection({
@@ -64,7 +64,7 @@ const author = defineCollection({
     ...data,
     created_timestamp: new Date(data.created_time || Date.now()).getTime(),
     updated_timestamp: new Date(data.updated_time || Date.now()).getTime(),
-    url: data.url || `/author/${titleToUrl(data.alias || data.title)}`,
+    url: data.url || `/authors/${titleToUrl(data.alias || data.title)}`,
     symbolsCount: data.symbolsCount ?? 0,
   })),
 })
