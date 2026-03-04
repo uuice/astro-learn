@@ -29,22 +29,22 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
   recordInfo={recordInfo}
 >
   <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} icon="🌸" />
-  <div class="intro-bubble">
+  <div class="intro-bubble animate-in animate-in-delay-1">
     <p class="leading-relaxed m-0" style="color:var(--text-muted);font-size:var(--text-base)">
       共 <strong style="color:var(--accent)">{sorted.length}</strong> 篇文章，欢迎阅读与交流 ✨
     </p>
   </div>
-  <section class="space-y-5">
-    <h2 class="section-title">
+  <section class="space-y-6">
+    <h2 class="section-title animate-in animate-in-delay-2">
       <span aria-hidden="true">📝</span> 最新文章
     </h2>
     {sorted.length === 0 ? (
-      <div class="section-card p-8 text-center rounded-2xl">
+      <div class="section-card p-8 text-center rounded-2xl animate-in animate-in-delay-3">
         <p class="text-4xl mb-2" aria-hidden="true">📭</p>
         <p class="m-0" style="color:var(--text-muted)">还没有文章哦，稍后再来看看吧 ~</p>
       </div>
     ) : (
-      <ul class="space-y-4">
+      <ul class="post-list space-y-5">
         {sorted.map((entry) => (
           <li>
             <PostCard

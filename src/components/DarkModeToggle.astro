@@ -4,10 +4,10 @@
 </button>
 <script>
   (function () {
-    var html = document.documentElement, key = 'theme', dark = 'dark';
-    document.getElementById('dark-toggle')?.addEventListener('click', function () {
-      html.classList.toggle(dark);
-      localStorage.setItem(key, html.classList.contains(dark) ? dark : 'light');
-    });
-  })();
+    var html = document.documentElement, key = 'theme', dark = 'dark'
+  document.getElementById('dark-toggle')?.addEventListener('click', function () {
+      html.classList.toggle(dark)
+    localStorage.setItem(key, html.classList.contains(dark) ? dark : 'light')
+  })
+})()
 </script>

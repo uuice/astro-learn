@@ -44,12 +44,12 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
   </head>
   <body class="min-h-screen flex flex-col antialiased">
     <div class="min-h-screen flex flex-col">
-      <header class="sticky top-0 z-30 flex flex-col border-b-2" style="background:var(--header-bg);border-color:var(--border);box-shadow:var(--shadow)">
+      <header class="sticky top-0 z-30 flex flex-col border-b-2 transition-shadow duration-300" style="background:var(--header-bg);border-color:var(--border);box-shadow:var(--shadow)">
         <div class="max-w-6xl mx-auto w-full px-4 py-3 flex items-center justify-between gap-4">
           <a href="/" class="font-bold text-base transition-opacity hover:opacity-80" style="color:var(--accent);font-size:var(--text-lg)">{siteName}</a>
-          <div class="hidden lg:flex items-center gap-6">
+          <div class="hidden lg:flex items-center gap-8">
             {menu.map((item) => (
-              <a href={item.url} target={item.target || '_self'} class="font-medium transition-colors hover:opacity-80" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
+              <a href={item.url} target={item.target || '_self'} class="nav-link-cute font-medium py-1" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
             ))}
           </div>
           <div class="flex items-center gap-2 ml-auto">
@@ -59,16 +59,16 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
           </div>
         </div>
         <div class="lg:hidden border-t px-4 py-2.5 overflow-x-auto" style="border-color:var(--card-border)">
-          <nav class="flex gap-4 min-w-max pb-1" aria-label="主导航">
+          <nav class="flex gap-6 min-w-max pb-1" aria-label="主导航">
             {menu.map((item) => (
-              <a href={item.url} target={item.target || '_self'} class="font-medium whitespace-nowrap transition-opacity hover:opacity-80" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
+              <a href={item.url} target={item.target || '_self'} class="nav-link-cute font-medium whitespace-nowrap py-1" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
             ))}
           </nav>
         </div>
       </header>
 
-      <div class="max-w-6xl mx-auto w-full px-4 py-6 md:py-8 flex-1 flex flex-col lg:flex-row gap-8">
-        <main class="flex-1 min-w-0">
+      <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 md:py-10 flex-1 flex flex-col lg:flex-row gap-10">
+        <main class="flex-1 min-w-0 page-main">
           <slot />
         </main>
         <div class="w-64 shrink-0 hidden lg:block">
@@ -84,7 +84,7 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
       <footer class="py-8 mt-auto border-t-2 rounded-t-3xl" style="background:var(--footer-bg);border-color:var(--border)">
         <div class="max-w-6xl mx-auto px-4 text-center space-y-1" style="color:var(--text-muted);font-size:var(--text-sm)">
           <p class="font-medium" style="color:var(--text)">© {new Date().getFullYear()} {siteName}</p>
-          <p>✨ 记录与分享 ✨</p>
+          <p class="footer-emoji">✨ 记录与分享 ✨</p>
           {showRecord && (
             <p class="pt-2" style="font-size:var(--text-xs)">
               {recordInfo?.icpNumber && (

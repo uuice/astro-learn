@@ -38,16 +38,16 @@ const groups = Array.from(byYearMonth.entries()).sort((a, b) => b[0].localeCompa
   recordInfo={recordInfo}
 >
   <Banner title="归档" subtitle="按时间查看文章" icon="📚" />
-  <div class="intro-bubble">
+  <div class="intro-bubble animate-in animate-in-delay-1">
     <p class="m-0" style="color:var(--text-muted);font-size:var(--text-base)">共 <strong style="color:var(--accent)">{sorted.length}</strong> 篇文章</p>
   </div>
   <section class="space-y-10">
-    {groups.map(([ym, list]) => (
-      <div class="section-card p-5">
+    {groups.map(([ym, list], i) => (
+      <div class="section-card p-5 animate-in" style={`animation-delay: ${0.1 + i * 0.05}s`}>
         <h2 class="section-title">
           <span aria-hidden="true">📅</span> {ym}
         </h2>
-        <ul class="space-y-4">
+        <ul class="post-list space-y-4">
           {list.map((entry) => (
             <li>
               <PostCard

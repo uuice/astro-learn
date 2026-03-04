@@ -11,7 +11,7 @@ const { title, url, excerpt = '', pubDate, categories = [], tags = [] } = Astro.
 const date = typeof pubDate === 'number' ? new Date(pubDate) : pubDate
 const dateStr = date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
 ---
-<article class="post-card-cute section-card p-5 transition-all duration-200 hover:scale-[1.01] group" style="border-left:4px solid var(--card-accent);border-radius:var(--radius)">
+<article class="post-card-cute section-card p-5 group" style="border-left:4px solid var(--card-accent);border-radius:var(--radius)"
   <a href={url} class="block">
     <div class="flex items-start gap-3 mb-2">
       <span class="text-lg shrink-0 mt-0.5 opacity-80 group-hover:opacity-100" aria-hidden="true">📄</span>

@@ -28,13 +28,13 @@ const links = await getCollection('link')
   recordInfo={recordInfo}
 >
   <Banner title="友情链接" subtitle="交换链接、友链" icon="🔗" />
-  <div class="intro-bubble">
+  <div class="intro-bubble animate-in animate-in-delay-1">
     <p class="m-0" style="color:var(--text-muted);font-size:var(--text-base)">共 <strong style="color:var(--accent)">{links.length}</strong> 个链接</p>
   </div>
-  <section class="section-card p-6 md:p-8">
+  <section class="section-card p-6 md:p-8 animate-in animate-in-delay-2">
     <ul class="grid gap-4 sm:grid-cols-2">
-      {links.map((entry) => (
-        <li>
+      {links.map((entry, i) => (
+        <li class="animate-in" style={`animation-delay: ${0.15 + i * 0.04}s`}>
           <a
             href={entry.data.url}
             target="_blank"

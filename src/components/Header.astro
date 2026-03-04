@@ -1,8 +1,8 @@
 ---
-import { siteConfig } from "../config";
+import { siteConfig } from "../config"
 
-const hasProjects = siteConfig.projects && siteConfig.projects.length > 0;
-const hasExperience = siteConfig.experience && siteConfig.experience.length > 0;
+const hasProjects = siteConfig.projects && siteConfig.projects.length > 0
+const hasExperience = siteConfig.experience && siteConfig.experience.length > 0
 const hasEducation = siteConfig.education && siteConfig.education.length > 0;
 ---
 
@@ -62,13 +62,13 @@ const hasEducation = siteConfig.education && siteConfig.education.length > 0;
 
 <script>
   window.addEventListener("scroll", () => {
-    const header = document.getElementById("header");
-    if (window.scrollY > 100) {
-      header?.classList.add("bg-white/80", "backdrop-blur-sm");
-    } else {
-      header?.classList.remove("bg-white/80", "backdrop-blur-sm");
-    }
-  });
+    const header = document.getElementById("header")
+  if (window.scrollY > 100) {
+      header?.classList.add("bg-white/80", "backdrop-blur-sm")
+  } else {
+      header?.classList.remove("bg-white/80", "backdrop-blur-sm")
+  }
+  })
 </script>
 
 <style>
