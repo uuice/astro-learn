@@ -33,9 +33,6 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>{title} - {siteName}</title>
     <script is:inline>
       (function(){var d=document.documentElement,k='theme',v=localStorage.getItem(k);if(v==='dark'||(!v&&window.matchMedia('(prefers-color-scheme:dark)').matches))d.classList.add('dark');else d.classList.remove('dark');var h=localStorage.getItem('themeHue');if(h!==null){var n=parseInt(h,10);if(!isNaN(n)&&n>=0&&n<=360)d.style.setProperty('--hue',String(n))}})()
@@ -44,30 +41,38 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
   </head>
   <body class="min-h-screen flex flex-col antialiased">
     <div class="min-h-screen flex flex-col">
-      <header class="sticky top-0 z-30 flex flex-col border-b-2 transition-shadow duration-300" style="background:var(--header-bg);border-color:var(--border);box-shadow:var(--shadow)">
-        <div class="max-w-6xl mx-auto w-full px-4 py-3 flex items-center justify-between gap-4">
-          <a href="/" class="font-bold text-base transition-opacity hover:opacity-80" style="color:var(--accent);font-size:var(--text-lg)">{siteName}</a>
-          <div class="hidden lg:flex items-center gap-8">
+      <header class="sticky top-0 z-30 flex flex-col border-b" style="background:var(--header-bg);border-color:var(--border)">
+        <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+          <a href="/" class="font-semibold transition-opacity hover:opacity-80 flex items-center gap-1.5" style="color:var(--text);font-size:var(--text-sm);font-family:var(--font-mono)">
+            <span class="code-label">$</span> {siteName}
+          </a>
+          <nav class="hidden lg:flex items-center gap-5" aria-label="主导航">
             {menu.map((item) => (
-              <a href={item.url} target={item.target || '_self'} class="nav-link-cute font-medium py-1" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
+              <a href={item.url} target={item.target || '_self'} class="nav-link-cute py-1 flex items-center gap-1.5" style="color:var(--text-muted);font-size:var(--text-xs);font-family:var(--font-mono)">
+                <span class="nav-symbol" style="color:var(--accent)">›</span>
+                {item.title}
+              </a>
             ))}
-          </div>
+          </nav>
           <div class="flex items-center gap-2 ml-auto">
             <Search />
             <ThemeColor />
             <DarkModeToggle />
           </div>
         </div>
-        <div class="lg:hidden border-t px-4 py-2.5 overflow-x-auto" style="border-color:var(--card-border)">
-          <nav class="flex gap-6 min-w-max pb-1" aria-label="主导航">
+        <div class="lg:hidden border-t px-4 sm:px-6 py-2.5 overflow-x-auto" style="border-color:var(--border)">
+          <nav class="flex gap-5 min-w-max pb-1" aria-label="主导航">
             {menu.map((item) => (
-              <a href={item.url} target={item.target || '_self'} class="nav-link-cute font-medium whitespace-nowrap py-1" style="color:var(--accent);font-size:var(--text-sm)">{item.title}</a>
+              <a href={item.url} target={item.target || '_self'} class="nav-link-cute whitespace-nowrap py-1 flex items-center gap-1.5" style="color:var(--text-muted);font-size:var(--text-xs);font-family:var(--font-mono)">
+                <span class="nav-symbol" style="color:var(--accent)">›</span>
+                {item.title}
+              </a>
             ))}
           </nav>
         </div>
       </header>
 
-      <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 md:py-10 flex-1 flex flex-col lg:flex-row gap-10">
+      <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8 flex-1 flex flex-col lg:flex-row gap-8 lg:gap-10">
         <main class="flex-1 min-w-0 page-main">
           <slot />
         </main>
@@ -76,17 +81,20 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
             <Sidebar categories={categories} tags={tags} categoryCounts={categoryCounts} tagCounts={tagCounts} author={author} />
           </div>
         </div>
-        <div class="lg:hidden mt-4 pt-8 border-t-2" style="border-color:var(--card-border)">
+        <div class="lg:hidden mt-6 pt-6 border-t" style="border-color:var(--card-border)">
           <Sidebar categories={categories} tags={tags} categoryCounts={categoryCounts} tagCounts={tagCounts} author={author} />
         </div>
       </div>
 
-      <footer class="py-8 mt-auto border-t-2 rounded-t-3xl" style="background:var(--footer-bg);border-color:var(--border)">
-        <div class="max-w-6xl mx-auto px-4 text-center space-y-1" style="color:var(--text-muted);font-size:var(--text-sm)">
+      <footer class="py-8 mt-auto border-t" style="background:var(--footer-bg);border-color:var(--border)">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6" style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-muted)">
+          <p class="mb-2.5">
+            <span class="code-label">$ cd top</span>
+            <a href="#" id="footer-back-to-top" class="ml-2 transition-colors hover:opacity-80" style="color:var(--accent)">返回顶部</a>
+          </p>
           <p class="font-medium" style="color:var(--text)">© {new Date().getFullYear()} {siteName}</p>
-          <p class="footer-emoji">✨ 记录与分享 ✨</p>
           {showRecord && (
-            <p class="pt-2" style="font-size:var(--text-xs)">
+            <p class="pt-1.5" style="font-size:var(--text-xs)">
               {recordInfo?.icpNumber && (
                 <a href={recordInfo.icpLink || 'https://beian.miit.gov.cn/'} target="_blank" rel="noopener noreferrer" class="hover:opacity-80" style="color:var(--text-muted)">{recordInfo.icpNumber}</a>
               )}
@@ -100,6 +108,33 @@ const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber ||
           )}
         </div>
       </footer>
+
+      <a href="#" id="back-to-top" class="back-to-top fixed right-6 bottom-6 z-40 opacity-0 pointer-events-none transition-opacity duration-200" style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text);background:var(--card-bg);border:1px solid var(--card-border);padding:0.4rem 0.65rem;border-radius:var(--radius-sm);box-shadow:var(--shadow)" aria-label="返回顶部">$ cd top</a>
     </div>
+    <script is:inline>
+      (function(){
+        var topBtn = document.getElementById('back-to-top')
+        var footerLink = document.getElementById('footer-back-to-top')
+        function scrollToTop(e) {
+          if (e) e.preventDefault()
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+        function onScroll() {
+          if (!topBtn) return
+          if (window.scrollY > 300) {
+            topBtn.classList.remove('opacity-0', 'pointer-events-none')
+            topBtn.classList.add('opacity-100')
+          } else {
+            topBtn.classList.add('opacity-0', 'pointer-events-none')
+            topBtn.classList.remove('opacity-100')
+          }
+        }
+        if (topBtn) {
+          topBtn.addEventListener('click', scrollToTop)
+          window.addEventListener('scroll', onScroll, { passive: true })
+        }
+        if (footerLink) footerLink.addEventListener('click', scrollToTop)
+      })()
+    </script>
   </body>
 </html>

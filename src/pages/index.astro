@@ -28,23 +28,21 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
   author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
   recordInfo={recordInfo}
 >
-  <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} icon="🌸" />
+  <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} />
   <div class="intro-bubble animate-in animate-in-delay-1">
-    <p class="leading-relaxed m-0" style="color:var(--text-muted);font-size:var(--text-base)">
-      共 <strong style="color:var(--accent)">{sorted.length}</strong> 篇文章，欢迎阅读与交流 ✨
-    </p>
+    <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{sorted.length}</strong> posts --top={sorted.length}</p>
+    <p class="m-0 mt-1 code-label">[INFO] 共 {sorted.length} 篇，点击标题进入文章</p>
   </div>
-  <section class="space-y-6">
+  <section class="space-y-5">
     <h2 class="section-title animate-in animate-in-delay-2">
-      <span aria-hidden="true">📝</span> 最新文章
+      <span class="section-prompt">#</span> export 最新文章
     </h2>
     {sorted.length === 0 ? (
-      <div class="section-card p-8 text-center rounded-2xl animate-in animate-in-delay-3">
-        <p class="text-4xl mb-2" aria-hidden="true">📭</p>
-        <p class="m-0" style="color:var(--text-muted)">还没有文章哦，稍后再来看看吧 ~</p>
+      <div class="section-card p-8 text-center animate-in animate-in-delay-3">
+        <p class="m-0" style="color:var(--text-muted);font-family:var(--font-mono)">// no posts yet</p>
       </div>
     ) : (
-      <ul class="post-list space-y-5">
+      <ul class="post-list terminal-list">
         {sorted.map((entry) => (
           <li>
             <PostCard

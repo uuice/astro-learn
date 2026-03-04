@@ -1,12 +1,10 @@
 ---
 interface Props { title?: string; subtitle?: string; icon?: string }
-const { title = '', subtitle = '', icon = '✨' } = Astro.props
+const { title = '', subtitle = '', icon = '' } = Astro.props
 ---
-<header class="banner-cute mb-8 overflow-hidden border-2 py-14 md:py-20 px-6 rounded-3xl relative animate-in" style="border-color:var(--card-border);background:linear-gradient(135deg, var(--banner-from), var(--banner-via), var(--banner-to));box-shadow:var(--shadow);color:var(--text)">
-  <span class="absolute top-4 right-4 text-2xl opacity-50 animate-float" aria-hidden="true">{icon}</span>
-  <h1 class="font-bold text-center tracking-tight flex items-center justify-center gap-2 flex-wrap" style="font-size:var(--text-2xl)">
-    <span class="animate-wiggle inline-block" aria-hidden="true">{icon}</span>
-    {title}
+<header class="banner-hero mb-6 overflow-hidden border py-8 md:py-12 px-5 sm:px-6 rounded-lg animate-in" style="border-color:var(--card-border);background:linear-gradient(135deg, var(--banner-from), var(--banner-via));color:var(--text)">
+  <h1 class="font-bold tracking-tight" style="font-size:var(--text-2xl);font-family:var(--font-mono);margin:0">
+    # &gt; {title}
   </h1>
-  {subtitle && <p class="text-center mt-3 max-w-2xl mx-auto leading-relaxed opacity-90" style="font-size:var(--text-base)">{subtitle}</p>}
+  {subtitle && <p class="mt-1.5 max-w-2xl leading-relaxed code-label" style="font-size:var(--text-sm)">{subtitle}</p>}
 </header>

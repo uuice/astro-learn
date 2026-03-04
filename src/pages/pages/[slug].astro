@@ -37,8 +37,11 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
   author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
   recordInfo={recordInfo}
 >
-  <Banner title={pageEntry.data.title} subtitle={pageEntry.data.excerpt || ''} icon="📄" />
-  <article class="section-card p-6 md:p-10 prose prose-lg max-w-none prose-headings:font-semibold prose-img:rounded-xl">
+  <Banner title={pageEntry.data.title} subtitle={pageEntry.data.excerpt || ''} />
+  <div class="intro-bubble">
+    <p class="m-0 code-label">$ cat pages/{slug}.md</p>
+  </div>
+  <article class="section-card p-6 md:p-10 prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body">
     <Content />
   </article>
 </BlogLayout>

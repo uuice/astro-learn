@@ -1,35 +1,53 @@
 ---
 const baseUrl = import.meta.env.BASE_URL || '/'
 ---
-<button type="button" id="search-open" class="p-2.5 rounded-full border-2 transition-all hover:scale-110" style="border-color:var(--card-border);background:var(--card-bg);color:var(--accent);box-shadow:var(--shadow)" aria-label="搜索">
-  <span aria-hidden="true">🔍</span>
+<button type="button" id="search-open" class="search-trigger px-2.5 py-1.5 rounded border transition-colors hover:bg-(--card-border)" style="border-color:var(--card-border);background:var(--card-bg);color:var(--text-muted);font-family:var(--font-mono);font-size:var(--text-sm)" aria-label="搜索">
+  search --ai
 </button>
-<div id="search-overlay" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,0.35)" aria-hidden="true">
-  <div class="max-w-xl mx-auto mt-[15vh] mx-4 overflow-hidden section-card" style="border-radius:var(--radius)" role="dialog" aria-label="搜索文章">
-    <div class="p-3 border-b" style="border-color:var(--card-border)">
+<div id="search-overlay" class="fixed inset-0 z-50 search-overlay-terminal" aria-hidden="true">
+  <div class="search-panel-terminal" role="dialog" aria-label="搜索文章">
+    <div class="search-panel-header flex items-start justify-between gap-2">
+      <div>
+    <p class="code-label mb-0.5">$ pwd:</p>
+      <p class="code-label mb-0.5">search --list</p>
+      <p class="code-label mb-2">ready</p>
+      <h2 class="search-panel-title"># &gt; 搜索</h2>
+      <p class="code-label mt-1 mb-2">输入内容筛选，或按 ⏎ 打开。⇧ + ⏎ 换行</p>
+      </div>
+      <button type="button" id="search-close" class="search-trigger px-2 py-1 rounded border shrink-0" style="border-color:var(--card-border);background:var(--card-bg);color:var(--text-muted);font-family:var(--font-mono);font-size:var(--text-xs)" aria-label="关闭">close</button>
+    </div>
+    <div class="search-panel-input-wrap">
+      <span class="code-label mr-2">search --ai</span>
       <input
         type="search"
         id="search-input"
         autocomplete="off"
-        placeholder="全文搜索（支持中文）…"
-        class="w-full px-4 py-2.5 outline-none"
-        style="background:var(--page-bg);color:var(--text);font-size:var(--text-base);border:1px solid var(--card-border);border-radius:var(--radius-sm)"
+        placeholder=""
+        class="search-panel-input"
+        style="font-family:var(--font-mono);font-size:var(--text-sm);background:transparent;color:var(--text);border:none;outline:none;flex:1"
       />
     </div>
-    <div id="search-results" class="max-h-[50vh] overflow-y-auto p-2"></div>
-    <p id="search-empty" class="hidden p-4 text-center" style="color:var(--text-muted);font-size:var(--text-sm)">输入关键词搜索</p>
-    <p id="search-no-match" class="hidden p-4 text-center" style="color:var(--text-muted);font-size:var(--text-sm)">无匹配结果</p>
+    <p class="code-label mt-1 mb-2">$ find</p>
+    <div id="search-results" class="search-results-terminal"></div>
+    <p id="search-empty" class="hidden code-label py-4" style="color:var(--text-muted)">输入关键词筛选</p>
+    <p id="search-no-match" class="hidden code-label py-4" style="color:var(--text-muted)">无匹配结果</p>
   </div>
 </div>
 <script define:vars={{ baseUrl }}>
   function initSearch() {
     const overlay = document.getElementById('search-overlay')
     const openBtn = document.getElementById('search-open')
+    const closeBtn = document.getElementById('search-close')
     const input = document.getElementById('search-input')
     const resultsEl = document.getElementById('search-results')
     const emptyEl = document.getElementById('search-empty')
     const noMatchEl = document.getElementById('search-no-match')
     if (!overlay || !openBtn || !input || !resultsEl || !emptyEl || !noMatchEl) return
+
+    function close() {
+      overlay.classList.remove('open')
+      overlay.setAttribute('aria-hidden', 'true')
+    }
 
     let docs = null
     let flexIndex = null
@@ -41,6 +59,9 @@ const baseUrl = import.meta.env.BASE_URL || '/'
       return div.innerHTML
     }
 
+    function slugFromTitle(t) {
+      return (t || '').replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '').toLowerCase() || 'post'
+    }
     function render(items) {
       resultsEl.innerHTML = ''
       emptyEl.classList.add('hidden')
@@ -49,22 +70,27 @@ const baseUrl = import.meta.env.BASE_URL || '/'
         noMatchEl.classList.remove('hidden')
         return
       }
+      const ul = document.createElement('ul')
+      ul.className = 'post-list terminal-list'
       items.forEach((item) => {
         if (!item || !item.url) return
-        const a = document.createElement('a')
-        a.href = item.url
-        a.className = 'block p-3 rounded-xl hover:opacity-90 transition-opacity'
-        a.style.background = 'var(--card-bg)'
-        a.style.color = 'var(--text)'
-        a.style.fontSize = 'var(--text-sm)'
-        a.style.border = '1px solid var(--card-border)'
-        a.style.borderRadius = 'var(--radius-sm)'
-        a.style.marginBottom = '0.5rem'
-        const desc = item.excerpt || (item.body ? item.body.slice(0, 120) + (item.body.length > 120 ? '…' : '') : '')
-        a.innerHTML = '<span class="font-semibold" style="color:var(--text)">' + escapeHtml(item.title || '') + '</span>' +
-          (desc ? '<p class="mt-1 opacity-80" style="color:var(--text-muted);font-size:var(--text-xs)">' + escapeHtml(desc) + '</p>' : '')
-        resultsEl.appendChild(a)
+        const slug = slugFromTitle(item.title)
+        const fromStr = (item.categories && item.categories.length) ? ' from "' + item.categories.join(', ') + '"' : ''
+        const desc = (item.excerpt || (item.body ? item.body.slice(0, 100) + (item.body.length > 100 ? '…' : '') : '')).trim()
+        const li = document.createElement('li')
+        li.innerHTML =
+          '<article class="post-card-cute section-card group" style="border-left:none;border-radius:0;box-shadow:none;margin:0;border-bottom:1px solid var(--card-border);padding:0.5rem 0.75rem">' +
+          '<div class="terminal-export-line">### export <span class="export-name">' + escapeHtml(slug) + '</span></div>' +
+          '<a href="' + escapeHtml(item.url) + '" class="terminal-meta-line block transition-colors hover:text-(--accent)">' +
+          '<span class="font-medium">' + escapeHtml(item.title || '') + '</span>' +
+          '<span class="meta-from">' + escapeHtml(fromStr) + '</span>' +
+          (desc ? '<span class="meta-desc"> ' + escapeHtml(desc) + '</span>' : '') +
+          '</a></article>'
+        ul.appendChild(li)
       })
+      const last = ul.querySelector('li:last-child article')
+      if (last) last.style.borderBottom = 'none'
+      resultsEl.appendChild(ul)
     }
 
     function doSearch(q) {
@@ -86,7 +112,7 @@ const baseUrl = import.meta.env.BASE_URL || '/'
     }
 
     openBtn.addEventListener('click', async () => {
-      overlay.classList.remove('hidden')
+      overlay.classList.add('open')
       overlay.setAttribute('aria-hidden', 'false')
       input.value = ''
       emptyEl.classList.remove('hidden')
@@ -103,7 +129,7 @@ const baseUrl = import.meta.env.BASE_URL || '/'
           const { createSearchIndex, search } = await import('../scripts/search.js')
           flexIndex = createSearchIndex(docs)
           searchFn = (term, limit) => search(flexIndex, docs, term, limit)
-        } catch (e) {
+        } catch {
           const simpleSearch = (q, limit) => {
             const words = q.toLowerCase().split(/\s+/).filter(Boolean)
             return docs.filter((d) => {
@@ -120,11 +146,7 @@ const baseUrl = import.meta.env.BASE_URL || '/'
     input.addEventListener('input', () => doSearch(input.value))
     input.addEventListener('keydown', (e) => { if (e.key === 'Escape') close() })
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close() })
-
-    function close() {
-      overlay.classList.add('hidden')
-      overlay.setAttribute('aria-hidden', 'true')
-    }
+    if (closeBtn) closeBtn.addEventListener('click', close)
   }
 
   if (document.readyState === 'loading') {

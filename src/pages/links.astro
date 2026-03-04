@@ -27,27 +27,30 @@ const links = await getCollection('link')
   author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
   recordInfo={recordInfo}
 >
-  <Banner title="友情链接" subtitle="交换链接、友链" icon="🔗" />
+  <Banner title="友情链接" subtitle="交换链接、友链" />
   <div class="intro-bubble animate-in animate-in-delay-1">
-    <p class="m-0" style="color:var(--text-muted);font-size:var(--text-base)">共 <strong style="color:var(--accent)">{links.length}</strong> 个链接</p>
+    <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{links.length}</strong> links --top={links.length}</p>
+    <p class="m-0 mt-1 code-label">[INFO] 点击链接在新窗口打开</p>
   </div>
-  <section class="section-card p-6 md:p-8 animate-in animate-in-delay-2">
-    <ul class="grid gap-4 sm:grid-cols-2">
-      {links.map((entry, i) => (
-        <li class="animate-in" style={`animation-delay: ${0.15 + i * 0.04}s`}>
+  <section class="space-y-5 animate-in animate-in-delay-2">
+    <h2 class="section-title"><span class="section-prompt">##</span> export 友链</h2>
+    <p class="code-label mb-3">// {links.length} links</p>
+    <ul class="post-list terminal-list">
+      {links.map((entry) => (
+        <li>
           <a
             href={entry.data.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="link-card-cute flex items-center gap-4 p-4 border-2 transition-all hover:scale-[1.02] group"
-            style="border-radius:var(--radius);border-color:var(--card-border);background:var(--card-bg)"
+            class="terminal-item block py-2 px-3 transition-colors hover:bg-(--page-bg)"
+            style="font-family:var(--font-mono);font-size:var(--text-sm)"
           >
-            <span class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0" style="background:var(--card-border)">{entry.data.icon || '🔗'}</span>
-            <div class="min-w-0 flex-1">
-              <span class="font-medium block" style="color:var(--text);font-size:var(--text-base)">{entry.data.title}</span>
-              {entry.data.type && <span class="inline-block mt-1 px-2 py-0.5 rounded-full" style="background:var(--card-border);color:var(--text-muted);font-size:var(--text-xs)">{entry.data.type}</span>}
+            <div class="terminal-export-line">### link <span class="export-name">{entry.data.title.replace(/\s+/g, '-').toLowerCase()}</span></div>
+            <div class="terminal-meta-line">
+              <span class="font-medium">{entry.data.title}</span>
+              {entry.data.type && <span class="meta-from"> type="{entry.data.type}"</span>}
+              <span class="meta-desc"> → {entry.data.url}</span>
             </div>
-            <span class="opacity-0 group-hover:opacity-100 transition-opacity text-lg shrink-0" style="color:var(--accent)" aria-hidden="true">→</span>
           </a>
         </li>
       ))}
