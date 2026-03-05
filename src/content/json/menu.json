@@ -24,9 +24,9 @@
     "target": "_self"
   },
   {
-    "title": "uuice doc",
+    "title": "类库导航",
     "icon": "",
-    "url": "/uuice-doc",
-    "target": "_target"
+    "url": "/navigations",
+    "target": "_self"
   }
 ]

@@ -4,27 +4,24 @@ import DarkModeToggle from '../components/DarkModeToggle.astro'
 import Search from '../components/Search.astro'
 import ThemeColor from '../components/ThemeColor.astro'
 import Sidebar from '../components/Sidebar.astro'
-import type { CATEGORY, TAG } from '../types'
-interface RecordInfo {
-  icpNumber?: string
-  icpLink?: string
-  policeNumber?: string
-  policeLink?: string
-  showRecord?: boolean
-}
+import { getCollection } from 'astro:content'
+import { getDerivedFromPosts } from '../utils/derived-collections'
 interface Props {
   title: string
-  siteName: string
-  menu: { title: string; url: string; target?: string }[]
-  categories: CATEGORY[]
-  tags: TAG[]
-  categoryCounts?: Record<string, number>
-  tagCounts?: Record<string, number>
-  author?: { title: string; excerpt?: string; url: string }
-  recordInfo?: RecordInfo
 }
-const { title, siteName, menu, categories, tags, categoryCounts = {}, tagCounts = {}, author, recordInfo } = Astro.props
+const { title } = Astro.props
+const posts = await getCollection('post', ({ data }) => data.published)
+const { categories, tags, postCategories, postTags } = getDerivedFromPosts(posts)
+const categoryCounts = Object.fromEntries(categories.map((c) => [c.id, postCategories.filter((pc) => pc.categoryId === c.id).length]))
+const tagCounts = Object.fromEntries(tags.map((t) => [t.id, postTags.filter((pt) => pt.tagId === t.id).length]))
+const menu = (await getCollection('menu')).map((e) => ({ title: e.data.title, url: e.data.url, target: e.data.target }))
+const [setting] = await getCollection('setting')
+const authors = await getCollection('author')
+const defaultAuthor = authors.find((a) => a.data.isDefault) ?? authors[0]
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
 const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber || recordInfo?.policeNumber)
+const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined
 ---
 <!doctype html>
 <html lang="zh-CN">

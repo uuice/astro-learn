@@ -3,31 +3,13 @@ import BlogLayout from '../layouts/BlogLayout.astro'
 import Banner from '../components/Banner.astro'
 import PostCard from '../components/PostCard.astro'
 import { getCollection } from 'astro:content'
-import { getDerivedFromPosts } from '../utils/derived-collections'
 
 const posts = await getCollection('post', ({ data }) => data.published)
 const sorted = [...posts].sort((a, b) => b.data.created_timestamp - a.data.created_timestamp)
-const { categories, tags, postCategories, postTags } = getDerivedFromPosts(sorted)
-const categoryCounts = Object.fromEntries(categories.map((c) => [c.id, postCategories.filter((pc) => pc.categoryId === c.id).length]))
-const tagCounts = Object.fromEntries(tags.map((t) => [t.id, postTags.filter((pt) => pt.tagId === t.id).length]))
-const menu = (await getCollection('menu')).map((e) => ({ title: e.data.title, url: e.data.url, target: e.data.target }))
 const [setting] = await getCollection('setting')
-const authors = await getCollection('author')
-const defaultAuthor = authors.find((a) => a.data.isDefault) ?? authors[0]
 const siteName = setting?.data.siteSetting?.siteName ?? '博客'
-const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
 ---
-<BlogLayout
-  title={siteName}
-  siteName={siteName}
-  menu={menu}
-  categories={categories}
-  tags={tags}
-  categoryCounts={categoryCounts}
-  tagCounts={tagCounts}
-  author={defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined}
-  recordInfo={recordInfo}
->
+<BlogLayout title={siteName}>
   <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} />
   <div class="intro-bubble animate-in animate-in-delay-1">
     <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{sorted.length}</strong> posts --top={sorted.length}</p>
@@ -42,6 +24,7 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
         <p class="m-0" style="color:var(--text-muted);font-family:var(--font-mono)">// no posts yet</p>
       </div>
     ) : (
+      <div class="section-card overflow-hidden animate-in animate-in-delay-3">
       <ul class="post-list terminal-list">
         {sorted.map((entry) => (
           <li>
@@ -56,6 +39,7 @@ const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettin
           </li>
         ))}
       </ul>
+      </div>
     )}
   </section>
 </BlogLayout>

@@ -13,7 +13,7 @@ const dateStr = date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-di
 const slug = title.replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '').toLowerCase() || 'post'
 const fromStr = categories.length ? ` from "${categories.join(', ')}"` : ''
 ---
-<article class="post-card-cute section-card group" style="border-left:3px solid var(--card-accent);border-radius:var(--radius)">
+<article class="post-card-cute section-card group" style="border-radius:var(--radius)">
   <div class="terminal-export-line">### export <span class="export-name">{slug}</span></div>
   <a href={url} class="post-card-link block transition-colors hover:text-(--accent)">
     <span class="post-card-link-prefix">{slug}.md</span> import <span class="post-card-link-title">{title}</span> // <span class="meta-from">{dateStr}{fromStr}</span>{excerpt && <><span class="meta-desc"> {excerpt}</span></>}

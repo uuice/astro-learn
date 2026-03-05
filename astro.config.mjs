@@ -12,7 +12,10 @@ const rehypePluginsBase = [rehypeSlug]
 export default defineConfig({
   markdown: {
     syntaxHighlight: 'shiki',
-    shikiConfig: { theme: 'github-dark', wrap: true },
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark' },
+      wrap: true,
+    },
     remarkPlugins: [[remarkToc, { heading: '目录', maxDepth: 3 }]],
     rehypePlugins: [...rehypePluginsBase],
     gfm: true,
@@ -20,7 +23,10 @@ export default defineConfig({
 
   integrations: [mdx({
     syntaxHighlight: 'shiki',
-    shikiConfig: { theme: 'github-dark', wrap: true },
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark' },
+      wrap: true,
+    },
     remarkPlugins: [[remarkToc, { heading: '目录', maxDepth: 3 }]],
     rehypePlugins: [...rehypePluginsBase, rehypePresetMinify],
     remarkRehype: { footnoteLabel: 'Footnotes' },

@@ -1,0 +1,49 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro'
+import Banner from '../components/Banner.astro'
+import navData from '../content/json/navigationWebsiteData.json'
+
+const navCategories = (navData as { categories: Array<{ id: string; name: string; description?: string; websites: Array<{ id: string; title: string; description?: string; url: string; icon?: string; tags?: string[] }> }> }).categories
+const totalSites = navCategories.reduce((sum, c) => sum + c.websites.length, 0)
+---
+<BlogLayout title="类库导航">
+  <Banner title="类库导航" subtitle="按分类浏览前端文档与资源" />
+  <div class="intro-bubble animate-in animate-in-delay-1">
+    <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{totalSites}</strong> sites --top={totalSites}</p>
+    <p class="m-0 mt-1 code-label">[INFO] 按分类浏览，点击在新窗口打开</p>
+  </div>
+  <section class="space-y-8">
+    <h2 class="section-title animate-in animate-in-delay-2">
+      <span class="section-prompt">#</span> export Browse by Category
+    </h2>
+    <p class="code-label mb-6">Explore 前端文档与资源 organized by category</p>
+    {navCategories.map((cat, i) => (
+      <div class="section-card p-5 sm:p-6 animate-in nav-category-group" id={`nav-${cat.id}`} style={`animation-delay: ${0.1 + i * 0.05}s`}>
+        <p class="code-label mb-1" style="font-size:var(--text-xs)">{cat.id}/index</p>
+        <p class="code-label mb-1">$ cd {cat.id}</p>
+        <h2 class="section-title">
+          <span class="section-prompt">##</span> export {cat.name}
+        </h2>
+        <p class="code-label mb-3">// {cat.websites.length} sites</p>
+        <ul class="post-list terminal-list">
+          {cat.websites.map((site) => (
+            <li>
+              <a
+                href={site.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="terminal-item block transition-colors hover:text-(--accent)"
+              >
+                <div class="terminal-export-line">### <span class="export-name">{site.id}.ts</span></div>
+                <div class="post-card-link">
+                  <span class="post-card-link-prefix">{site.id}</span> import <span class="post-card-link-title">{site.title}</span>
+                  {site.description && <span class="meta-desc"> // {site.description}</span>}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </section>
+</BlogLayout>
