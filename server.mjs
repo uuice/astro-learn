@@ -8,4 +8,7 @@ const base = '/'
 app.use(base, express.static('dist/client/'))
 app.use(ssrHandler)
 
-app.listen(8080) 
+const port = Number(process.env.PORT) || 8080
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`)
+}) 
