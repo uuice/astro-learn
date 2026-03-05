@@ -211,19 +211,60 @@ body {
   border: 1px solid var(--card-border);
   overflow-x: auto;
   font-size: var(--text-sm);
-  line-height: 1.6;
+  line-height: 1.1;
   margin: 1em 0;
   background: var(--card-bg);
 }
 .prose pre::-webkit-scrollbar, .markdown-body pre::-webkit-scrollbar { height: 6px; }
 .prose pre::-webkit-scrollbar-track, .markdown-body pre::-webkit-scrollbar-track { background: var(--card-border); border-radius: 3px; }
 .prose pre::-webkit-scrollbar-thumb, .markdown-body pre::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
-.prose pre.astro-code, .markdown-body pre.astro-code { padding: 1.25rem 1.5rem; }
-.prose pre.astro-code code, .markdown-body pre.astro-code code { padding: 0; background: transparent; font-size: inherit; }
+.prose pre.astro-code, .markdown-body pre.astro-code {
+  padding: 1.25rem 1.5rem 1.25rem 0;
+  overflow-x: auto;
+  counter-reset: code-line;
+}
+.prose pre.astro-code code, .markdown-body pre.astro-code code {
+  padding: 0;
+  background: transparent;
+  font-size: inherit;
+  white-space: pre;
+}
+.prose pre.astro-code .line, .markdown-body pre.astro-code .line {
+  display: block;
+  white-space: pre;
+  min-height: 1.5em;
+  padding-left: 3.5rem;
+}
+.prose pre.astro-code .line::before, .markdown-body pre.astro-code .line::before {
+  counter-increment: code-line;
+  content: counter(code-line);
+  position: sticky;
+  left: 0;
+  display: inline-block;
+  width: 2.5em;
+  margin-left: -3.5rem;
+  padding-right: 1rem;
+  margin-right: 0.5rem;
+  text-align: right;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  z-index: 1;
+  background: var(--card-bg);
+  box-shadow: 6px 0 6px -2px var(--card-bg);
+  border-right: 1px solid var(--card-border);
+}
+.dark .astro-code .line::before,
+.dark .astro-code span.line::before {
+  background: var(--card-bg) !important;
+  box-shadow: 4px 0 4px -2px var(--card-bg);
+  border-right-color: var(--card-border);
+  color: var(--text-muted);
+}
 .dark .astro-code,
 .dark .astro-code span {
   color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
+  background-color: var(--card-bg) !important;
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
