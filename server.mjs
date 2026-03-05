@@ -9,6 +9,18 @@ app.use(base, express.static('dist/client/'))
 app.use(ssrHandler)
 
 const port = Number(process.env.PORT) || 8080
-app.listen(port, () => {
+
+const server = app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`)
+})
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use`)
+  } else if (err.code === 'EACCES') {
+    console.error(`Permission denied to bind port ${port}`)
+  } else {
+    console.error('Server error:', err.message)
+  }
+  process.exit(1)
 }) 
