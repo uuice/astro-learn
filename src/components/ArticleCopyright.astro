@@ -1,0 +1,30 @@
+---
+interface Props {
+  articleUrl: string
+  publishDate: string
+}
+const { articleUrl, publishDate } = Astro.props
+const licenseUrl = 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+---
+<div class="article-copyright mt-8 pt-6">
+  <div
+    class="border px-3 py-2.5 code-label"
+    style="border-color:var(--card-border);background:var(--card-bg);border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.7rem;line-height:1.5;color:var(--text-muted)"
+  >
+    <p class="m-0 mb-2" style="color:var(--accent);font-size:0.7rem">$ license</p>
+    <div class="grid gap-1" style="grid-template-columns:4.5em 1fr">
+      <span style="color:var(--accent);flex-shrink:0">link</span>
+      <a href={articleUrl} class="hover:opacity-80 break-all" style="color:var(--text)">{articleUrl}</a>
+    </div>
+    <div class="grid gap-1 mt-1" style="grid-template-columns:4.5em 1fr">
+      <span style="color:var(--accent);flex-shrink:0">date</span>
+      <span>{publishDate}</span>
+    </div>
+    <div class="grid gap-1 mt-1" style="grid-template-columns:4.5em 1fr">
+      <span style="color:var(--accent);flex-shrink:0">license</span>
+      <span>
+        <a href={licenseUrl} target="_blank" rel="license noopener noreferrer" class="hover:opacity-80" style="color:var(--accent)">CC BY-NC-SA 4.0</a> 转载请注明出处
+      </span>
+    </div>
+  </div>
+</div>

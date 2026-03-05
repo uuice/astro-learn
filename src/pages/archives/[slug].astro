@@ -1,5 +1,6 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro'
+import ArticleCopyright from '../../components/ArticleCopyright.astro'
 import { getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
@@ -30,12 +31,12 @@ const dateStr = new Date(post.data.created_timestamp).toLocaleDateString('zh-CN'
     </header>
     <div class="p-6 md:p-10 flex flex-col lg:flex-row gap-8">
       {tocList.length > 0 && (
-        <nav class="lg:w-48 shrink-0 order-2 lg:order-1" aria-label="目录">
-          <div class="doc-detail-toc sticky top-24">
+        <nav class="lg:w-48 shrink-0 order-2 lg:order-1 animate-in animate-in-delay-2" aria-label="目录">
+          <div class="doc-detail-toc doc-detail-toc-animated sticky top-24">
             <div class="doc-detail-toc-title"># &gt; 目录</div>
             <ul>
-              {tocList.map((h) => (
-                <li>
+              {tocList.map((h, i) => (
+                <li class="doc-detail-toc-item" style={`animation-delay: ${0.08 + i * 0.04}s`}>
                   <a href={`#${h.slug}`} class={h.depth === 3 ? 'toc-depth-3' : ''}>
                     {h.text}
                   </a>
@@ -45,8 +46,9 @@ const dateStr = new Date(post.data.created_timestamp).toLocaleDateString('zh-CN'
           </div>
         </nav>
       )}
-      <div class="flex-1 min-w-0 order-1 lg:order-2 doc-detail-body prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body" style="font-size:var(--text-base)">
+      <div class="flex-1 min-w-0 order-1 lg:order-2 doc-detail-body prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body" style="font-size:var(--text-sm)">
         <Content />
+        <ArticleCopyright articleUrl={post.data.url} publishDate={dateStr} />
       </div>
     </div>
   </article>
