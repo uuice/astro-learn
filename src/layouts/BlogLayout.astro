@@ -90,6 +90,7 @@ const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defau
             <a href="#" id="footer-back-to-top" class="ml-2 transition-colors hover:opacity-80" style="color:var(--accent)">返回顶部</a>
           </p>
           <p class="font-medium" style="color:var(--text)">© {new Date().getFullYear()} {siteName}</p>
+          <p class="pt-1" style="font-size:var(--text-xs);color:var(--text-muted)">网站基于 <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="hover:opacity-80" style="color:var(--accent)">Astro</a> 构建</p>
           {showRecord && (
             <p class="pt-1.5" style="font-size:var(--text-xs)">
               {recordInfo?.icpNumber && (

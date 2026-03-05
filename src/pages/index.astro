@@ -11,6 +11,7 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 ---
 <BlogLayout title={siteName}>
   <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} />
+  <!-- 技术栈说明: 使用 Astro 构建，使用 Tailwind CSS 进行样式，使用 Shiki 进行代码高亮，使用 Remark 进行 Markdown 解析，使用 Rehype 进行 HTML 转换 -->
   <div class="intro-bubble animate-in animate-in-delay-1">
     <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{sorted.length}</strong> posts --top={sorted.length}</p>
     <p class="m-0 mt-1 code-label">[INFO] 共 {sorted.length} 篇，点击标题进入文章</p>

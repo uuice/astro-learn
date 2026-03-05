@@ -18,15 +18,15 @@
     "target": "_self"
   },
   {
-    "title": "关于博主",
-    "icon": "",
-    "url": "/about",
-    "target": "_self"
-  },
-  {
     "title": "类库导航",
     "icon": "",
     "url": "/navigations",
+    "target": "_self"
+  },
+  {
+    "title": "关于",
+    "icon": "",
+    "url": "/about",
     "target": "_self"
   }
 ]

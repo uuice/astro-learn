@@ -11,9 +11,10 @@ const links = await getCollection('link')
     <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{links.length}</strong> links --top={links.length}</p>
     <p class="m-0 mt-1 code-label">[INFO] 点击链接在新窗口打开</p>
   </div>
-  <section class="space-y-5 animate-in animate-in-delay-2">
-    <h2 class="section-title"><span class="section-prompt">##</span> export 友链</h2>
+  <section class="space-y-5">
+    <h2 class="section-title animate-in animate-in-delay-2"><span class="section-prompt">##</span> export 友链</h2>
     <p class="code-label mb-3">// {links.length} links</p>
+    <div class="section-card overflow-hidden animate-in animate-in-delay-3">
     <ul class="post-list terminal-list">
       {links.map((entry) => (
         <li>
@@ -34,5 +35,6 @@ const links = await getCollection('link')
         </li>
       ))}
     </ul>
+    </div>
   </section>
 </BlogLayout>

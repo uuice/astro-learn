@@ -21,18 +21,19 @@ const list = posts.filter((p) => postIds.has(p.id)).sort((a, b) => b.data.create
 ---
 <BlogLayout title={`分类: ${category.title}`}>
   <Banner title={`分类: ${category.title}`} subtitle={category.description || `共 ${list.length} 篇`} />
-  <div class="intro-bubble">
+  <div class="intro-bubble animate-in animate-in-delay-1">
     <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{list.length}</strong> --top={list.length}</p>
     <p class="m-0 mt-1 code-label">[INFO] 该分类下共 {list.length} 篇文章</p>
   </div>
   <section class="space-y-5">
-    <h2 class="section-title"><span class="section-prompt">##</span> export {category.title}</h2>
+    <h2 class="section-title animate-in animate-in-delay-2"><span class="section-prompt">##</span> export {category.title}</h2>
     <p class="code-label mb-3">// {list.length} posts</p>
     {list.length === 0 ? (
-      <div class="section-card p-8 text-center">
+      <div class="section-card p-8 text-center animate-in animate-in-delay-3">
         <p class="m-0" style="color:var(--text-muted);font-family:var(--font-mono)">// no posts in this category</p>
       </div>
     ) : (
+      <div class="section-card overflow-hidden animate-in animate-in-delay-3">
       <ul class="post-list terminal-list">
         {list.map((entry) => (
           <li>
@@ -47,6 +48,7 @@ const list = posts.filter((p) => postIds.has(p.id)).sort((a, b) => b.data.create
           </li>
         ))}
       </ul>
+      </div>
     )}
   </section>
 </BlogLayout>
