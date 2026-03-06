@@ -459,6 +459,83 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.error-page {
+  margin-left: auto;
+  margin-right: auto;
+}
+.error-page-intro {
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  margin-bottom: 1.5rem;
+}
+.error-page-intro .code-label { margin-bottom: 0.35rem; }
+.error-page-intro p:last-child {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+}
+.error-page-title {
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 0 0.35rem 0;
+  letter-spacing: 0.02em;
+}
+.error-page-desc {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0 0 1.25rem 0;
+  line-height: 1.5;
+}
+.error-page-desc + .error-page-desc { margin-top: -0.75rem; }
+.error-page-nav {
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  margin-bottom: 1.5rem;
+}
+.error-page-nav .code-label { margin-bottom: 0.5rem; }
+.error-page-nav-caption {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0 0 0.6rem 0;
+}
+.error-page-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.error-page-nav-list li {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--card-border);
+}
+.error-page-nav-list li:last-child { border-bottom: none; }
+.error-page-nav-list a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.error-page-nav-list a:hover { opacity: 0.85; }
+.error-page-back {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+.error-page-back a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.error-page-back a:hover { opacity: 0.85; }
+
 .comment-block {
   margin-top: 2rem;
   padding: 1rem 1.25rem;
@@ -1096,6 +1173,16 @@ body {
   }
   .section-title {
     margin-bottom: 0.5rem;
+  }
+  .error-page {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  .error-page-intro,
+  .error-page-nav {
+    padding: 0.65rem 0.85rem;
   }
 }
 .terminal-meta-line .meta-from,

@@ -1,0 +1,30 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro'
+import { getCollection } from 'astro:content'
+
+const menu = (await getCollection('menu')).map((e) => ({ title: e.data.title, url: e.data.url, target: e.data.target }))
+---
+<BlogLayout title="404">
+  <article class="section-card error-page px-4 sm:px-6 py-6 sm:py-8">
+    <div class="error-page-intro">
+      <p class="code-label">$ cat 404</p>
+      <p>cat: 404: No such file or directory</p>
+    </div>
+    <h1 class="error-page-title">404 Not Found</h1>
+    <p class="error-page-desc">当前路径不存在，可能已被移除或输入有误。</p>
+    <div class="error-page-nav">
+      <p class="code-label">$ ls /</p>
+      <p class="error-page-nav-caption">可去的目录：</p>
+      <ul class="error-page-nav-list">
+        {menu.map((item) => (
+          <li>
+            <a href={item.url} target={item.target || '_self'}>{item.title}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <p class="error-page-back">
+      <a href="/">$ cd / ← 返回首页</a>
+    </p>
+  </article>
+</BlogLayout>
