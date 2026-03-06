@@ -1,16 +1,17 @@
 import type { APIRoute } from 'astro'
 import { deleteComment, approveComment } from '../../../lib/comments-db'
+import { getAdminToken } from '../../../lib/config-db'
 
 export const prerender = false
 
-function checkAuth(url: URL): boolean {
+async function checkAuth(url: URL): Promise<boolean> {
   const token = url.searchParams.get('token')
-  const adminToken = import.meta.env.ADMIN_TOKEN || ''
+  const adminToken = await getAdminToken()
   return !!(token && adminToken && token === adminToken)
 }
 
 export const DELETE: APIRoute = async ({ params, url }) => {
-  if (!checkAuth(url)) {
+  if (!(await checkAuth(url))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
   }
   const id = params.id
@@ -27,7 +28,7 @@ export const DELETE: APIRoute = async ({ params, url }) => {
 }
 
 export const PATCH: APIRoute = async ({ params, url }) => {
-  if (!checkAuth(url)) {
+  if (!(await checkAuth(url))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
   }
   const id = params.id

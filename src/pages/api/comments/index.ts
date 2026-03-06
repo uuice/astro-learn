@@ -1,12 +1,13 @@
 import type { APIRoute } from 'astro'
 import { getCommentsByPostId, addComment, getAllComments } from '../../../lib/comments-db'
+import { getAdminToken } from '../../../lib/config-db'
 
 export const prerender = false
 
 export const GET: APIRoute = async ({ url }) => {
   const postId = url.searchParams.get('postId')
   const token = url.searchParams.get('token')
-  const adminToken = import.meta.env.ADMIN_TOKEN || ''
+  const adminToken = await getAdminToken()
   if (postId) {
     const comments = await getCommentsByPostId(postId)
     return new Response(JSON.stringify({ data: comments }), {

@@ -24,6 +24,17 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
   const [hue, setHue] = useState(DEFAULT_HUE)
   const [themeOpen, setThemeOpen] = useState(false)
   const themeRef = useRef<HTMLDivElement>(null)
+  const [hasToken, setHasToken] = useState<boolean | null>(null)
+  const [setupToken, setSetupToken] = useState('')
+  const [setupError, setSetupError] = useState('')
+  const [setupLoading, setSetupLoading] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/config')
+      .then((r) => r.json())
+      .then((d: { hasToken?: boolean }) => setHasToken(!!d.hasToken))
+      .catch(() => setHasToken(true))
+  }, [])
 
   useEffect(() => {
     setPathname(window.location.pathname)
@@ -61,6 +72,38 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
     setTokenHint(v ? '已保存' : '已清除')
     setTimeout(() => setTokenHint(''), 1500)
     window.dispatchEvent(new CustomEvent('admin-token-saved'))
+  }
+
+  const doSetup = () => {
+    const v = setupToken.trim()
+    if (!v) {
+      setSetupError('请输入 Token')
+      return
+    }
+    setSetupError('')
+    setSetupLoading(true)
+    fetch('/api/admin/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: v }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.error) {
+          setSetupError(d.error)
+          return
+        }
+        try {
+          sessionStorage.setItem(TOKEN_KEY, v)
+        } catch {}
+        setToken(v)
+        setHasToken(true)
+        setTokenHint('已设置')
+        window.dispatchEvent(new CustomEvent('admin-token-saved'))
+        setTimeout(() => setTokenHint(''), 1500)
+      })
+      .catch(() => setSetupError('设置失败'))
+      .finally(() => setSetupLoading(false))
   }
 
   const toggleDark = () => {
@@ -165,27 +208,58 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
           className="admin-token-bar border-t px-4 sm:px-6 py-2.5 flex items-center justify-center gap-3 flex-wrap"
           style={{ borderColor: 'var(--border)', background: 'var(--page-bg)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
         >
-          <label htmlFor="admin-token-input" style={{ color: 'var(--text-muted)' }}>
-            Token
-          </label>
-          <input
-            id="admin-token-input"
-            type="password"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            placeholder="ADMIN_TOKEN"
-            className="admin-token-input"
-            style={{ flex: 1, minWidth: '12rem', maxWidth: '20rem', padding: '0.35rem 0.6rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--text)' }}
-          />
-          <button
-            type="button"
-            onClick={saveToken}
-            className="admin-token-save"
-            style={{ padding: '0.35rem 0.65rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--accent)', cursor: 'pointer' }}
-          >
-            保存
-          </button>
-          {tokenHint ? <span style={{ color: 'var(--text-muted)' }}>{tokenHint}</span> : null}
+          {hasToken === null ? (
+            <span style={{ color: 'var(--text-muted)' }}>加载中...</span>
+          ) : !hasToken ? (
+            <>
+              <label htmlFor="admin-setup-input" style={{ color: 'var(--text-muted)' }}>
+                首次设置 Token
+              </label>
+              <input
+                id="admin-setup-input"
+                type="password"
+                value={setupToken}
+                onChange={(e) => { setSetupToken(e.target.value); setSetupError('') }}
+                placeholder="设置管理 Token"
+                className="admin-token-input"
+                style={{ flex: 1, minWidth: '12rem', maxWidth: '20rem', padding: '0.35rem 0.6rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--text)' }}
+              />
+              <button
+                type="button"
+                onClick={doSetup}
+                disabled={setupLoading}
+                className="admin-token-save"
+                style={{ padding: '0.35rem 0.65rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--accent)', cursor: 'pointer' }}
+              >
+                {setupLoading ? '设置中...' : '设置'}
+              </button>
+              {setupError ? <span style={{ color: 'var(--accent)' }}>{setupError}</span> : null}
+            </>
+          ) : (
+            <>
+              <label htmlFor="admin-token-input" style={{ color: 'var(--text-muted)' }}>
+                Token
+              </label>
+              <input
+                id="admin-token-input"
+                type="password"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="ADMIN_TOKEN"
+                className="admin-token-input"
+                style={{ flex: 1, minWidth: '12rem', maxWidth: '20rem', padding: '0.35rem 0.6rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--text)' }}
+              />
+              <button
+                type="button"
+                onClick={saveToken}
+                className="admin-token-save"
+                style={{ padding: '0.35rem 0.65rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--accent)', cursor: 'pointer' }}
+              >
+                保存
+              </button>
+              {tokenHint ? <span style={{ color: 'var(--text-muted)' }}>{tokenHint}</span> : null}
+            </>
+          )}
         </div>
       </header>
 

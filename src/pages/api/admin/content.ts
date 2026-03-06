@@ -1,11 +1,12 @@
 import type { APIRoute } from 'astro'
 import { getCollection } from 'astro:content'
+import { getAdminToken } from '../../../lib/config-db'
 
 export const prerender = false
 
 export const GET: APIRoute = async ({ url }) => {
   const token = url.searchParams.get('token')
-  const adminToken = import.meta.env.ADMIN_TOKEN || ''
+  const adminToken = await getAdminToken()
   if (!token || !adminToken || token !== adminToken) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
   }
