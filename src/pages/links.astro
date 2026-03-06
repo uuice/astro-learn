@@ -1,6 +1,7 @@
 ---
 import BlogLayout from '../layouts/BlogLayout.astro'
 import Banner from '../components/Banner.astro'
+import Comment from '../components/client/Comment.tsx'
 import { getCollection } from 'astro:content'
 
 const links = await getCollection('link')
@@ -36,5 +37,8 @@ const links = await getCollection('link')
       ))}
     </ul>
     </div>
+  </section>
+  <section class="mt-6">
+    <Comment client:load postId="/links" />
   </section>
 </BlogLayout>

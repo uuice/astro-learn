@@ -1,6 +1,7 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro'
 import Banner from '../../components/Banner.astro'
+import Comment from '../../components/client/Comment.tsx'
 import { getCollection, render } from 'astro:content'
 import { titleToUrl } from '../../utils/index.js'
 
@@ -37,5 +38,6 @@ const dateStr = new Date(pageEntry.data.created_timestamp).toLocaleDateString('z
   </div>
   <article class="section-card p-6 md:p-10 prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body">
     <Content />
+    <Comment client:load postId={pageEntry.data.url} />
   </article>
 </BlogLayout>

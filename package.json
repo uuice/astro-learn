@@ -33,6 +33,7 @@
     "express": "^5.2.1",
     "flexsearch": "^0.8.212",
     "lodash": "^4.17.23",
+    "lowdb": "^7.0.1",
     "pinyin": "^4.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

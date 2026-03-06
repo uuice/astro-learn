@@ -1,6 +1,7 @@
 ---
 import BlogLayout from '../layouts/BlogLayout.astro'
 import Banner from '../components/Banner.astro'
+import Comment from '../components/client/Comment.tsx'
 import { getCollection, render } from 'astro:content'
 
 const pages = await getCollection('page', ({ data }) => data.published)
@@ -15,5 +16,6 @@ const { Content } = await render(aboutEntry)
   </div>
   <article class="section-card p-6 md:p-10 prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body animate-in animate-in-delay-2">
     <Content />
+    <Comment client:load postId="/about" />
   </article>
 </BlogLayout>

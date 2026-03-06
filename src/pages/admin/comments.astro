@@ -1,0 +1,12 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro'
+import CommentAdmin from '../../components/admin/CommentAdmin.tsx'
+---
+<AdminLayout title="评论">
+  <div class="intro-bubble">
+    <p class="m-0 code-label">$ cat admin/comments</p>
+  </div>
+  <section class="section-card p-6 md:p-10">
+    <CommentAdmin client:load />
+  </section>
+</AdminLayout>

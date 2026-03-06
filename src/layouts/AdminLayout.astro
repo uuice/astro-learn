@@ -1,0 +1,36 @@
+---
+import '../assets/styles/global.css'
+import AdminLayoutReact from './AdminLayout.tsx'
+import { getCollection } from 'astro:content'
+
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+const [setting] = await getCollection('setting')
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+
+const adminNav = [
+  { title: '评论', url: '/admin/comments' },
+  { title: '数据', url: '/admin/content' },
+]
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} · 管理</title>
+    <script is:inline>
+      (function(){var d=document.documentElement,k='theme',v=localStorage.getItem(k);if(v==='dark'||(!v&&window.matchMedia('(prefers-color-scheme:dark)').matches))d.classList.add('dark');else d.classList.remove('dark');var h=localStorage.getItem('themeHue');if(h!==null){var n=parseInt(h,10);if(!isNaN(n)&&n>=0&&n<=360)d.style.setProperty('--hue',String(n))}})();
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col antialiased">
+    <AdminLayoutReact client:load title={title} siteName={siteName} navItems={adminNav}>
+      <slot />
+    </AdminLayoutReact>
+  </body>
+</html>

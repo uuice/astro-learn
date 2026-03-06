@@ -1,6 +1,7 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro'
 import ArticleCopyright from '../../components/ArticleCopyright.astro'
+import Comment from '../../components/client/Comment.tsx'
 import { getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
@@ -62,6 +63,7 @@ const dateStr = new Date(post.data.created_timestamp).toLocaleDateString('zh-CN'
       <div class="flex-1 min-w-0 order-1 lg:order-2 doc-detail-body prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body" style="font-size:var(--text-sm)">
         <Content />
         <ArticleCopyright articleUrl={post.data.url} publishDate={dateStr} />
+        <Comment client:load postId={post.data.url} />
       </div>
     </div>
   </article>

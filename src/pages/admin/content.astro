@@ -1,0 +1,13 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro'
+import ContentDataAdmin from '../../components/admin/ContentDataAdmin.tsx'
+---
+<AdminLayout title="数据">
+  <div class="intro-bubble">
+    <p class="m-0 code-label">$ cat admin/content</p>
+  </div>
+  <section class="section-card p-6 md:p-10">
+    <div class="comment-block-title"># 内容数据</div>
+    <ContentDataAdmin client:load />
+  </section>
+</AdminLayout>
