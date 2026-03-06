@@ -77,7 +77,7 @@ export default function CommentAdmin() {
     const t = getStoredToken().trim()
     if (!t) return
     try {
-      const res = await fetch(`/api/comments/${id}?token=${encodeURIComponent(t)}`, { method: 'POST' })
+      const res = await fetch(`/api/comments/${id}?token=${encodeURIComponent(t)}`, { method: 'PATCH' })
       if (res.ok) setList((prev) => prev.map((c) => (c.id === id ? { ...c, status: 'approved' as const } : c)))
     } catch {}
   }
