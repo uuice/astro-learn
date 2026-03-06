@@ -14,11 +14,26 @@ const pages = await getCollection('page', ({ data }) => data.published)
 const pageEntry = pages.find((p) => titleToUrl(p.data.alias || p.data.title) === slug)
 if (!pageEntry) return Astro.redirect('/')
 const { Content } = await render(pageEntry)
+const dateStr = new Date(pageEntry.data.created_timestamp).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
 ---
 <BlogLayout title={pageEntry.data.title}>
   <Banner title={pageEntry.data.title} subtitle={pageEntry.data.excerpt || ''} />
   <div class="intro-bubble">
     <p class="m-0 code-label">$ cat pages/{slug}.md</p>
+    <p class="doc-detail-meta flex flex-wrap items-center gap-x-4 gap-y-1">
+      <span><span class="doc-detail-meta-label" aria-label="日期">@</span> {dateStr}</span>
+      {pageEntry.data.categories?.length ? (
+        <span><span class="doc-detail-meta-label" aria-label="分类">▸</span> {pageEntry.data.categories.join(', ')}</span>
+      ) : null}
+      {pageEntry.data.tags?.length ? (
+        <span class="flex items-center gap-1.5 flex-wrap">
+          <span class="doc-detail-meta-label" aria-label="标签">#</span>
+          {pageEntry.data.tags.map((t) => (
+            <span class="doc-detail-meta-tag">{t}</span>
+          ))}
+        </span>
+      ) : null}
+    </p>
   </div>
   <article class="section-card p-6 md:p-10 prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body">
     <Content />

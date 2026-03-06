@@ -11,11 +11,27 @@ const { title, url, excerpt = '', pubDate, categories = [], tags = [] } = Astro.
 const date = typeof pubDate === 'number' ? new Date(pubDate) : pubDate
 const dateStr = date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
 const slug = title.replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '').toLowerCase() || 'post'
-const fromStr = categories.length ? ` from "${categories.join(', ')}"` : ''
 ---
 <article class="post-card-cute section-card group" style="border-radius:var(--radius)">
-  <div class="terminal-export-line">### export <span class="export-name">{slug}</span></div>
-  <a href={url} class="post-card-link block transition-colors hover:text-(--accent)">
-    <span class="post-card-link-prefix">{slug}.md</span> import <span class="post-card-link-title">{title}</span> // <span class="meta-from">{dateStr}{fromStr}</span>{excerpt && <><span class="meta-desc"> {excerpt}</span></>}
+  <a href={url} class="post-card-link block px-4 py-3 transition-colors hover:text-(--accent)">
+    <div class="terminal-export-line">### export <span class="export-name">{slug}</span></div>
+    <p class="post-card-meta m-0 mt-1.5 font-mono text-xs opacity-80">
+      <span class="post-card-symbol">▸</span> {title}
+      <span class="post-card-sep">·</span>
+      <span class="post-card-symbol" aria-label="日期">@</span> {dateStr}
+      {categories.length ? (
+        <>
+          <span class="post-card-sep">·</span>
+          <span class="post-card-symbol" aria-label="分类">▸</span> {categories.join(', ')}
+        </>
+      ) : null}
+      {tags.length ? (
+        <>
+          <span class="post-card-sep">·</span>
+          <span class="post-card-symbol" aria-label="标签">#</span> {tags.join(' ')}
+        </>
+      ) : null}
+      {excerpt ? <><span class="post-card-sep">//</span> {excerpt}</> : null}
+    </p>
   </a>
 </article>
