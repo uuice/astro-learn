@@ -27,7 +27,7 @@ export const DELETE: APIRoute = async ({ params, url }) => {
   })
 }
 
-export const PATCH: APIRoute = async ({ params, url }) => {
+export const POST: APIRoute = async ({ params, url }) => {
   if (!(await checkAuth(url))) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
   }
