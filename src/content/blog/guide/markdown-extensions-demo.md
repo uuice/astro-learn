@@ -20,31 +20,31 @@ published: true
 
 支持 `:::type` 或 GitHub 风格 `> [!TYPE]`。
 
-### :::note
+### note
 
 :::note
 这是一段普通说明。
 :::
 
-### :::tip
+### tip
 
 :::tip
 实用建议或小技巧。
 :::
 
-### :::important
+### important
 
 :::important
 重要信息强调。
 :::
 
-### :::caution
+### caution
 
 :::caution
 需要留意的内容。
 :::
 
-### :::warning
+### warning
 
 :::warning
 警示性内容。
@@ -69,17 +69,24 @@ github{repo="uuice/astro-learn"}
 ## Tabs 分页
 
 :::tabs
-:::tab{name="JavaScript"}
+
+:::tab JavaScript
+
 ```js
 console.log('Hello')
 ```
-:::
-:::tab{name="TypeScript"}
+
+:::endtab
+
+:::tab TypeScript
+
 ```ts
 const x: string = 'Hello'
 ```
-:::
-:::
+
+:::endtab
+
+:::endtabs
 
 ## Steps 步骤
 
