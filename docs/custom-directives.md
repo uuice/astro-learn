@@ -1,11 +1,19 @@
 # Custom Markdown Directives
 
-本项目的 Markdown / MDX 使用两个自定义插件，在书写时支持 **Admonitions（提示框）** 和 **GitHub 仓库卡片**，无需额外依赖。
+本项目的 Markdown / MDX 通过 **rehype-custom-directives** 一个插件，在 HTML 阶段统一处理 **Admonitions（提示框）** 和 **GitHub 仓库卡片**。
 
-- **remark-custom-directives.mjs**：在 Markdown AST（mdast）阶段识别指令并输出 HTML 或占位结构。
-- **rehype-custom-directives.mjs**：在 HTML AST（hast）阶段再次处理（含未在 remark 中替换的段落），并负责拉取 GitHub API、渲染完整的 `card-github` 卡片。
+---
 
-配置见 `astro.config.mjs`：`rehype-raw` 用于解析 remark 输出的原始 HTML，两个 custom-directives 插件在 markdown 与 MDX 的 pipeline 中均已启用。
+## Remark 和 Rehype 的区别
+
+| 阶段 | 插件类型 | 处理的树 | 说明 |
+|------|----------|----------|------|
+| **Remark** | 工作在 **mdast**（Markdown AST） | 节点是 `paragraph`、`heading`、`text`、`emphasis` 等 Markdown 结构 | 在「Markdown 解析后、转成 HTML 前」运行，适合做基于段落/标题的替换、注入等。 |
+| **Rehype** | 工作在 **hast**（HTML AST） | 节点是 `element`（如 `<p>`、`<div>`、`<blockquote>`）和 `text` | 在「已转成 HTML 树」后运行，适合基于标签和 DOM 结构的替换、增强。 |
+
+**本项目的选择**：只使用 **rehype-custom-directives**，在 hast 上统一识别「看起来像指令的段落/块」（如 `<p>:::note</p>`、`<p>github{repo="..."}</p>`、`<blockquote>` 等），并替换为 Admonition 或 GitHub 卡片。这样逻辑集中在一个插件里，避免与 remark 重复，也便于维护；`rehype-raw` 仍保留，用于解析 Markdown 里可能存在的原始 HTML。
+
+**流程简述**：Markdown 字符串 → 解析为 mdast → 转为 hast → **rehype-raw**（解析 raw HTML）→ **rehype-custom-directives**（识别指令并替换）→ 其他 rehype 插件 → 输出 HTML。
 
 ---
 
@@ -111,25 +119,12 @@ github{repo="uuice/astro-learn"}
 
 ---
 
-## 3. 处理流程简述
-
-1. **Markdown → mdast**：remark 解析；`remark-custom-directives` 识别上述指令，将 Admonitions 与 GitHub 块替换为对应 HTML（或占位）。
-2. **mdast → hast**：Astro 默认的 remark-rehype 转换；remark 输出的原始 HTML 通过 **rehype-raw** 被解析为真正的节点。
-3. **hast 处理**：`rehype-custom-directives` 再次扫描段落：
-   - 若仍存在 “`:::` + `github{repo="..."}` + `:::`” 的段落（例如来自缓存或未在 remark 中替换），会请求 GitHub API 并生成完整的 `card-github` HAST；
-   - 单段内的 GitHub 指令也会被识别并替换为同一卡片结构。
-
-因此无论先经 remark 还是仅经 rehype，最终都能得到正确的 Admonitions 和 GitHub 卡片。
-
----
-
-## 4. 文件位置与配置
+## 3. 文件位置与配置
 
 | 文件 | 说明 |
 |------|------|
-| `src/plugins/remark-custom-directives.mjs` | Admonitions + GitHub 指令的 remark 实现 |
-| `src/plugins/rehype-custom-directives.mjs` | Admonitions + GitHub 卡片的 rehype 实现（含 GitHub API 与 HAST 构建） |
-| `astro.config.mjs` | `rehypeRaw`、`remarkCustomDirectives`、`rehypeCustomDirectives` 的注册 |
+| `src/plugins/rehype-custom-directives.mjs` | 唯一自定义指令实现：Admonitions + GitHub 卡片（含 GitHub API 与 HAST 构建） |
+| `astro.config.mjs` | `rehypeRaw`、`rehypeCustomDirectives` 的注册（markdown 与 MDX 共用） |
 | `src/assets/styles/global.css` | `.admonition`、`.card-github`、`.gc-*` 等样式 |
 
 更多示例可参考：`src/content/blog/guide/markdown-extensions-demo.md`。

@@ -13,6 +13,7 @@ function getTextContent(node) {
   return ''
 }
 
+/** Build admonition HAST from type and string content (paragraphs split by \n\n). */
 function admonitionToHtml(type, content) {
   const title = TITLE_MAP[type] || type
   const variant = type === 'note' ? '' : ` bdm-${type}`
@@ -20,6 +21,17 @@ function admonitionToHtml(type, content) {
   const children = [
     { type: 'element', tagName: 'span', properties: { className: ['bdm-title'] }, children: [{ type: 'text', value: title }] },
     ...paragraphs.map((p) => ({ type: 'element', tagName: 'p', properties: {}, children: [{ type: 'text', value: p.trim() }] }))
+  ]
+  return { type: 'element', tagName: 'div', properties: { className: ['admonition', `admonition-${type}${variant}`.trim()] }, children }
+}
+
+/** Build admonition from type and list of content nodes (clone and use as body). */
+function admonitionFromNodes(type, contentNodes) {
+  const title = TITLE_MAP[type] || type
+  const variant = type === 'note' ? '' : ` bdm-${type}`
+  const children = [
+    { type: 'element', tagName: 'span', properties: { className: ['bdm-title'] }, children: [{ type: 'text', value: title }] },
+    ...(contentNodes || [])
   ]
   return { type: 'element', tagName: 'div', properties: { className: ['admonition', `admonition-${type}${variant}`.trim()] }, children }
 }
@@ -118,9 +130,44 @@ export default function rehypeCustomDirectives() {
     const newChildren = []
     for (let i = 0; i < tree.children.length; i++) {
       const node = tree.children[i]
+
+      // 1. Blockquote > [!TYPE] (GitHub-style admonition)
+      if (node.type === 'element' && node.tagName === 'blockquote' && node.children?.length) {
+        const firstText = getTextContent(node.children[0]).trim()
+        const blockquoteMatch = firstText.match(/^\[!(NOTE|TIP|IMPORTANT|CAUTION|WARNING)\]$/i)
+        if (blockquoteMatch) {
+          const type = blockquoteMatch[1].toLowerCase()
+          const contentNodes = node.children.slice(1)
+          newChildren.push(admonitionFromNodes(type, contentNodes))
+          continue
+        }
+      }
+
+      // 2. Paragraph: single or start of block directive
       if (node.type === 'element' && node.tagName === 'p' && node.children) {
         const text = getTextContent(node).trim()
-        // Block form: ::: then (optional empty <p>) github{repo="..."} then (optional empty <p>) :::
+
+        // 2a. Multi-paragraph admonition opener: <p>:::note</p> ... <p>:::</p>
+        const directiveMatch = text.match(new RegExp(`^:::(${ADMONITION_TYPES.join('|')})$`))
+        if (directiveMatch) {
+          const type = directiveMatch[1]
+          const contentNodes = []
+          let j = i + 1
+          while (j < tree.children.length) {
+            const n = tree.children[j]
+            if (n.type === 'element' && n.tagName === 'p' && getTextContent(n).trim() === ':::') {
+              j++
+              break
+            }
+            contentNodes.push(n)
+            j++
+          }
+          newChildren.push(admonitionFromNodes(type, contentNodes))
+          i = j - 1
+          continue
+        }
+
+        // 2b. Block form GitHub: ::: then github{repo="..."} then :::
         if (text === ':::') {
           let j = i + 1
           let parsed = null
@@ -149,6 +196,8 @@ export default function rehypeCustomDirectives() {
             continue
           }
         }
+
+        // 2c. Single-paragraph directive (admonition or github)
         const parsed = parseDirective(text)
         if (parsed) {
           if (parsed.kind === 'admonition') {
@@ -160,6 +209,7 @@ export default function rehypeCustomDirectives() {
           continue
         }
       }
+
       newChildren.push(node)
     }
     tree.children = newChildren
