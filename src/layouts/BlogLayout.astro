@@ -4,6 +4,7 @@ import DarkModeToggle from '../components/DarkModeToggle.astro'
 import Search from '../components/Search.astro'
 import ThemeColor from '../components/ThemeColor.astro'
 import Sidebar from '../components/Sidebar.astro'
+import BackgroundGradient from '../components/BackgroundGradient'
 import { getCollection } from 'astro:content'
 import { getDerivedFromPosts } from '../utils/derived-collections'
 interface Props {
@@ -37,6 +38,7 @@ const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defau
     </script>
   </head>
   <body class="min-h-screen flex flex-col antialiased">
+    <BackgroundGradient client:load />
     <div class="min-h-screen flex flex-col">
       <header class="sticky top-0 z-30 flex flex-col border-b" style="background:var(--header-bg);border-color:var(--border)">
         <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">

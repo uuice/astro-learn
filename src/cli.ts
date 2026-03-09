@@ -2,7 +2,7 @@
 
 import { newCommand } from './commands/new.ts'
 import { helpCommand } from './commands/help.ts'
-import { versionCommand } from './commands/version.ts'
+import { versionCommand, versionUpdateCommand, type VersionBump } from './commands/version.ts'
 
 interface CLIOptions {
   [key: string]: string | boolean | number | undefined
@@ -47,7 +47,6 @@ async function parseArgs(args: string[]): Promise<{ command: string; subcommand?
 
 async function main() {
   const args = process.argv.slice(2)
-  console.log(args)
 
   if (args.length === 0) {
     helpCommand()
@@ -89,6 +88,16 @@ async function main() {
       case 'help':
         helpCommand()
         break
+
+      case 'version': {
+        const updateType = restArgs[0] as VersionBump | undefined
+        if (updateType === 'patch' || updateType === 'minor' || updateType === 'major') {
+          await versionUpdateCommand(updateType)
+        } else {
+          versionCommand()
+        }
+        break
+      }
 
       default:
         console.error(`❌ 未知命令: ${command}`)
