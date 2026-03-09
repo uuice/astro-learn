@@ -1058,6 +1058,129 @@ body {
 .prose .card-github.fetch-waiting .gc-description, .markdown-body .card-github.fetch-waiting .gc-description { opacity: 0.8; }
 .prose .card-github.fetch-error .gc-description, .markdown-body .card-github.fetch-error .gc-description { color: var(--accent); }
 
+/* Details (折叠块) */
+.prose .directive-details, .markdown-body .directive-details {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  margin: 1em 0;
+  overflow: hidden;
+}
+.prose .directive-details summary, .markdown-body .directive-details summary {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--accent);
+  user-select: none;
+}
+.prose .directive-details summary:hover, .markdown-body .directive-details summary:hover { background: var(--card-border); }
+.prose .directive-details-content, .markdown-body .directive-details-content {
+  padding: 0 1rem 1rem;
+  border-top: 1px solid var(--card-border);
+}
+.prose .directive-details-content > :first-child, .markdown-body .directive-details-content > :first-child { margin-top: 0.75rem; }
+
+/* Steps (步骤) */
+.prose .directive-steps, .markdown-body .directive-steps {
+  list-style: none;
+  counter-reset: step;
+  padding-left: 0;
+  margin: 1em 0;
+}
+.prose .directive-steps li, .markdown-body .directive-steps li {
+  counter-increment: step;
+  padding-left: 2.5em;
+  position: relative;
+  margin-bottom: 0.5em;
+}
+.prose .directive-steps li::before, .markdown-body .directive-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  width: 1.5em;
+  height: 1.5em;
+  line-height: 1.5em;
+  text-align: center;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+/* Quote with attribution */
+.prose .directive-quote, .markdown-body .directive-quote {
+  border-left: 4px solid var(--accent);
+  padding-left: 1rem;
+  margin: 1em 0;
+  color: var(--text-muted);
+}
+.prose .directive-quote-footer, .markdown-body .directive-quote-footer {
+  margin-top: 0.5em;
+  font-size: var(--text-xs);
+  color: var(--accent);
+}
+
+/* Tabs */
+.prose .directive-tabs, .markdown-body .directive-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 1em 0;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--card-bg);
+}
+.prose .directive-tabs .directive-tabs-input, .markdown-body .directive-tabs .directive-tabs-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  order: -1;
+}
+.prose .directive-tabs .directive-tabs-label, .markdown-body .directive-tabs .directive-tabs-label {
+  order: 0;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+}
+.prose .directive-tabs .directive-tabs-label:hover, .markdown-body .directive-tabs .directive-tabs-label:hover { color: var(--accent); }
+.prose .directive-tabs .directive-tabs-panel, .markdown-body .directive-tabs .directive-tabs-panel {
+  order: 1;
+  display: none;
+  width: 100%;
+  padding: 1rem;
+  border-top: 1px solid var(--card-border);
+}
+.prose .directive-tabs .directive-tabs-input:nth-of-type(1):checked ~ .directive-tabs-panel:nth-of-type(1),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(2):checked ~ .directive-tabs-panel:nth-of-type(2),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(3):checked ~ .directive-tabs-panel:nth-of-type(3),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(4):checked ~ .directive-tabs-panel:nth-of-type(4),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(5):checked ~ .directive-tabs-panel:nth-of-type(5),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(1):checked ~ .directive-tabs-panel:nth-of-type(1),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(2):checked ~ .directive-tabs-panel:nth-of-type(2),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(3):checked ~ .directive-tabs-panel:nth-of-type(3),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(4):checked ~ .directive-tabs-panel:nth-of-type(4),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(5):checked ~ .directive-tabs-panel:nth-of-type(5) {
+  display: block;
+}
+.prose .directive-tabs .directive-tabs-input:nth-of-type(1):checked ~ .directive-tabs-label:nth-of-type(1),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(2):checked ~ .directive-tabs-label:nth-of-type(2),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(3):checked ~ .directive-tabs-label:nth-of-type(3),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(4):checked ~ .directive-tabs-label:nth-of-type(4),
+.prose .directive-tabs .directive-tabs-input:nth-of-type(5):checked ~ .directive-tabs-label:nth-of-type(5),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(1):checked ~ .directive-tabs-label:nth-of-type(1),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(2):checked ~ .directive-tabs-label:nth-of-type(2),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(3):checked ~ .directive-tabs-label:nth-of-type(3),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(4):checked ~ .directive-tabs-label:nth-of-type(4),
+.markdown-body .directive-tabs .directive-tabs-input:nth-of-type(5):checked ~ .directive-tabs-label:nth-of-type(5) {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
 .prose blockquote::before,
 .markdown-body blockquote::before {
   content: "";

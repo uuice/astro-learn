@@ -8,13 +8,13 @@ tags:
   - Markdown
   - 扩展
   - directive
-excerpt: 展示 Admonitions 提示框与 GitHub 仓库卡片的用法。
+excerpt: 展示 Admonitions、GitHub 卡片、Details、Tabs、Steps、Quote 等 Markdown 扩展的用法。
 created_time: 2026-03-04
 updated_time: 2026-03-04
 published: true
 ---
 
-本文展示新增的 Markdown 扩展：Admonitions 提示框 与 GitHub 仓库卡片。
+本文展示新增的 Markdown 扩展：Admonitions、GitHub 卡片、Details 折叠块、Tabs 分页、Steps 步骤、Quote 引用。
 
 ## Admonitions 提示框
 
@@ -52,8 +52,51 @@ published: true
 
 ## GitHub 仓库卡片
 
-与 Admonitions 相同的块形式（三行之间可加空行，与 Admonitions 一致）：
-
 :::
 github{repo="uuice/astro-learn"}
+:::
+
+## Details 折叠块
+
+:::details 点击展开
+
+这里是被折叠的内容。支持多段文字、列表等。
+
+:::
+
+或使用属性：`:::details{summary="自定义标题"}`
+
+## Tabs 分页
+
+:::tabs
+:::tab{name="JavaScript"}
+```js
+console.log('Hello')
+```
+:::
+:::tab{name="TypeScript"}
+```ts
+const x: string = 'Hello'
+```
+:::
+:::
+
+## Steps 步骤
+
+:::steps
+
+安装依赖 `pnpm install`
+
+配置环境变量
+
+启动项目 `pnpm dev`
+
+:::
+
+## Quote 带来源引用
+
+:::quote{author="某某" source="《书名》"}
+
+这是一段引用内容，下方会显示作者与出处。
+
 :::

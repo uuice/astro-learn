@@ -1,6 +1,6 @@
 # Custom Markdown Directives
 
-本项目的 Markdown / MDX 通过 **rehype-custom-directives** 一个插件，在 HTML 阶段统一处理 **Admonitions（提示框）** 和 **GitHub 仓库卡片**。
+本项目的 Markdown / MDX 通过 **rehype-custom-directives** 一个插件，在 HTML 阶段统一处理 **Admonitions（提示框）**、**GitHub 仓库卡片**、**Details 折叠块**、**Tabs 分页**、**Steps 步骤**、**Quote 引用**。
 
 ---
 
@@ -27,7 +27,6 @@
 
 **多行块（推荐）**：首行 `:::type`，中间内容，末行 `:::`。
 
-```markdown
 :::note
 这是一段普通说明。
 :::
@@ -39,13 +38,10 @@
 :::warning
 警示性内容。
 :::
-```
 
 **单段落**：同一段内写 `:::type 内容 :::` 也可识别。
 
-```markdown
 :::important 重要信息强调。 :::
-```
 
 中间可包含多段、列表、代码等；空行会拆成多个段落，均会保留在提示框内。
 
@@ -53,13 +49,11 @@
 
 与 GitHub Flavored Markdown 的 alert 语法一致：
 
-```markdown
 > [!NOTE]
 > 这是一段普通说明。
 
 > [!WARNING]
 > 警示性内容。
-```
 
 `TYPE` 不区分大小写，支持：`NOTE`、`TIP`、`IMPORTANT`、`CAUTION`、`WARNING`。
 
@@ -79,29 +73,23 @@
 
 三行块：首行 `:::`，第二行 `github{repo="owner/repo"}`，第三行 `:::`。
 
-```markdown
 :::
 github{repo="uuice/astro-learn"}
 :::
-```
 
 **空行**：三行之间可以有空行，插件会跳过空段落再匹配，例如：
 
-```markdown
 :::
 
 github{repo="uuice/astro-learn"}
 
 :::
-```
 
 **单段落**：若三行被解析成一段（无空行时某些解析器会这样），也会识别为同一指令并渲染卡片。
 
 ### 2.2 单行形式（可选）
 
-```markdown
 ::github{repo="owner/repo"}
-```
 
 仅当该行单独成段且未被当作代码（例如不在反引号内）时生效。
 
@@ -119,11 +107,87 @@ github{repo="uuice/astro-learn"}
 
 ---
 
-## 3. 文件位置与配置
+## 3. Details（折叠块）
+
+类似 HTML `<details>`，可折叠内容。
+
+**用法**：
+
+:::details 点击展开
+被折叠的内容，支持多段、列表等。
+:::
+
+:::details{summary="自定义标题"}
+内容...
+:::
+
+- 首行 `:::details` 后可跟默认标题（如「点击展开」）。
+- 或使用 `{summary="自定义标题"}` 指定标题。
+
+---
+
+## 4. Tabs（分页）
+
+多标签页，用于同一主题的多种展示（如多语言代码示例）。
+
+**用法**：
+
+:::tabs
+:::tab{name="JavaScript"}
+```js
+console.log('Hello')
+```
+:::
+:::tab{name="TypeScript"}
+```ts
+const x: string = 'Hello'
+```
+:::
+:::
+
+**注意**：
+- 首行 `:::tabs`，末行单独 `:::` 结束整个 Tabs 块。
+- 每个标签为 `:::tab{name="标签名"}` 开始，其后内容（段落、代码块等），再以 `:::` 结束该标签。
+- `:::tabs` 与 `:::tab` 之间、各 `:::tab` 之间不要插入其他非指令段落。
+- 最多支持 5 个标签（受 CSS 限制）。
+
+---
+
+## 5. Steps（步骤）
+
+有序步骤列表，适合教程、安装说明。
+
+**用法**：
+
+:::steps
+第一步说明
+第二步说明
+第三步说明
+:::
+
+- 每个段落对应一个步骤，自动编号。
+
+---
+
+## 6. Quote（带来源引用）
+
+块引用，可带作者与出处。
+
+**用法**：
+
+:::quote{author="作者" source="《书名》"}
+引用内容...
+:::
+
+- `author`、`source` 可选；都会显示在底部，格式为 `— 作者, 《书名》`。
+
+---
+
+## 7. 文件位置与配置
 
 | 文件 | 说明 |
 |------|------|
-| `src/plugins/rehype-custom-directives.mjs` | 唯一自定义指令实现：Admonitions + GitHub 卡片（含 GitHub API 与 HAST 构建） |
+| `src/plugins/rehype-custom-directives.mjs` | 唯一自定义指令实现：Admonitions、GitHub 卡片、Details、Tabs、Steps、Quote |
 | `astro.config.mjs` | `rehypeRaw`、`rehypeCustomDirectives` 的注册（markdown 与 MDX 共用） |
 | `src/assets/styles/global.css` | `.admonition`、`.card-github`、`.gc-*` 等样式 |
 
