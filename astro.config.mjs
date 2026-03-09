@@ -1,6 +1,9 @@
 import { defineConfig } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import remarkToc from 'remark-toc'
+import remarkCustomDirectives from './src/plugins/remark-custom-directives.mjs'
+import rehypeRaw from 'rehype-raw'
+import rehypeCustomDirectives from './src/plugins/rehype-custom-directives.mjs'
 import rehypeSlug from 'rehype-slug'
 import rehypePresetMinify from 'rehype-preset-minify'
 import tailwindcss from '@tailwindcss/vite'
@@ -16,8 +19,8 @@ export default defineConfig({
       themes: { light: 'github-light', dark: 'github-dark' },
       wrap: true,
     },
-    remarkPlugins: [[remarkToc, { heading: '目录', maxDepth: 3 }]],
-    rehypePlugins: [...rehypePluginsBase],
+    remarkPlugins: [remarkCustomDirectives, [remarkToc, { heading: '目录', maxDepth: 3 }]],
+    rehypePlugins: [rehypeRaw, rehypeCustomDirectives, ...rehypePluginsBase],
     gfm: true,
   },
 
@@ -27,8 +30,8 @@ export default defineConfig({
       themes: { light: 'github-light', dark: 'github-dark' },
       wrap: true,
     },
-    remarkPlugins: [[remarkToc, { heading: '目录', maxDepth: 3 }]],
-    rehypePlugins: [...rehypePluginsBase, rehypePresetMinify],
+    remarkPlugins: [remarkCustomDirectives, [remarkToc, { heading: '目录', maxDepth: 3 }]],
+    rehypePlugins: [rehypeRaw, rehypeCustomDirectives, ...rehypePluginsBase, rehypePresetMinify],
     remarkRehype: { footnoteLabel: 'Footnotes' },
     gfm: true,
     extendMarkdownConfig: true,

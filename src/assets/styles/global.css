@@ -203,6 +203,8 @@ body {
 .prose details > *:not(summary), .markdown-body details > *:not(summary) { padding: 0 1em 0.75em; }
 .prose table, .markdown-body table { display: block; overflow-x: auto; margin: 1em 0; border-collapse: collapse; width: 100%; border-radius: 0.5rem; border: 1px solid var(--card-border); }
 .prose th, .prose td, .markdown-body th, .markdown-body td { border: 1px solid var(--card-border); padding: 0.55em 0.85em; text-align: left; }
+.prose th[align="center"], .prose td[align="center"], .markdown-body th[align="center"], .markdown-body td[align="center"] { text-align: center; }
+.prose th[align="right"], .prose td[align="right"], .markdown-body th[align="right"], .markdown-body td[align="right"] { text-align: right; }
 .prose th, .markdown-body th { background: var(--card-border); font-weight: 600; color: var(--text); }
 .prose tr:nth-child(even) td, .markdown-body tr:nth-child(even) td { background: var(--card-bg); }
 .prose pre, .markdown-body pre {
@@ -964,6 +966,98 @@ body {
 .markdown-body .footnotes ul li::before {
   content: none;
 }
+.prose .admonition, .markdown-body .admonition {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 0.75em 1em;
+  margin: 1.25em 0;
+  position: relative;
+  padding-left: 1.5rem;
+  font-style: normal;
+  color: var(--text);
+}
+.prose .admonition::before, .markdown-body .admonition::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 2px 0 0 2px;
+  background: var(--accent);
+}
+.prose .admonition.bdm-tip::before, .markdown-body .admonition.bdm-tip::before { background: var(--accent-2); }
+.prose .admonition.bdm-important::before, .markdown-body .admonition.bdm-important::before { background: var(--accent); }
+.prose .admonition.bdm-caution::before, .markdown-body .admonition.bdm-caution::before { background: var(--accent-3); }
+.prose .admonition.bdm-warning::before, .markdown-body .admonition.bdm-warning::before { background: oklch(0.55 0.2 calc(var(--hue) - 60)); }
+.prose .admonition .bdm-title, .markdown-body .admonition .bdm-title {
+  display: block;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--accent);
+  margin-bottom: 0.5em;
+}
+.prose .admonition p:last-child, .markdown-body .admonition p:last-child { margin-bottom: 0; }
+
+.prose .card-github.no-styling, .markdown-body .card-github.no-styling {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin: 1em 0;
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+.prose .card-github.no-styling:hover, .markdown-body .card-github.no-styling:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-hover);
+}
+.prose .card-github .gc-titlebar, .markdown-body .card-github .gc-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.prose .card-github .gc-titlebar-left, .markdown-body .card-github .gc-titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.prose .card-github .gc-owner, .markdown-body .card-github .gc-owner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.prose .card-github .gc-avatar, .markdown-body .card-github .gc-avatar {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--card-border);
+  flex-shrink: 0;
+}
+.prose .card-github .gc-divider, .markdown-body .card-github .gc-divider { color: var(--text-muted); }
+.prose .card-github .gc-repo, .markdown-body .card-github .gc-repo { color: var(--accent); }
+.prose .card-github .gc-description, .markdown-body .card-github .gc-description {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+.prose .card-github .gc-infobar, .markdown-body .card-github .gc-infobar {
+  display: flex;
+  gap: 1rem;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.prose .card-github.fetch-waiting .gc-description, .markdown-body .card-github.fetch-waiting .gc-description { opacity: 0.8; }
+.prose .card-github.fetch-error .gc-description, .markdown-body .card-github.fetch-error .gc-description { color: var(--accent); }
+
 .prose blockquote::before,
 .markdown-body blockquote::before {
   content: "";
