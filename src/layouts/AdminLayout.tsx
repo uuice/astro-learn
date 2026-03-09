@@ -138,7 +138,7 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
               管理
             </a>
           </div>
-          <nav className="flex items-center gap-4" aria-label="管理导航">
+          <nav className="hidden lg:flex items-center gap-4" aria-label="管理导航">
             {navItems.map((item) => (
               <a
                 key={item.url}
@@ -203,6 +203,20 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
               <span className="hidden dark:inline" aria-hidden>light</span>
             </button>
           </div>
+        </div>
+        <div className="lg:hidden border-t px-4 sm:px-6 py-2.5 overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
+          <nav className="flex gap-4 min-w-max pb-1" aria-label="管理导航">
+            {navItems.map((item) => (
+              <a
+                key={item.url}
+                href={item.url}
+                className={`admin-nav-link whitespace-nowrap py-1${pathname.startsWith(item.url) ? ' admin-nav-active' : ''}`}
+                style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)' }}
+              >
+                {item.title}
+              </a>
+            ))}
+          </nav>
         </div>
         <div
           className="admin-token-bar border-t px-4 sm:px-6 py-2.5 flex items-center justify-center gap-3 flex-wrap"

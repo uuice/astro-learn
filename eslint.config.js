@@ -26,6 +26,7 @@ export default [
     ],
     rules: {
       'no-console': 'off',
+      'no-empty': 'off',
       'no-unused-vars': 'warn',
       // 禁用分号
       'semi': ['error', 'never'],

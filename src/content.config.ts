@@ -177,4 +177,22 @@ const setting = defineCollection({
   }),
 })
 
-export const collections = { post, page, author, link, menu, navigationWebsiteData, setting }
+const holidayItem = z.object({
+  name: z.string(),
+  start: z.string(),
+  end: z.string(),
+  days: z.number(),
+  workDays: z.array(z.string()).optional(),
+})
+
+const holiday = defineCollection({
+  loader: file('src/content/json/holiday.json', {
+    parser: (text) => ({ default: JSON.parse(text) }),
+  }),
+  schema: z.object({
+    year: z.number(),
+    holidays: z.array(holidayItem),
+  }),
+})
+
+export const collections = { post, page, author, link, menu, navigationWebsiteData, setting, holiday }
