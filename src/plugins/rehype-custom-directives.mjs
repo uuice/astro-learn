@@ -1,5 +1,5 @@
 /**
- * Rehype plugin: custom directives - Admonitions, GitHub cards, Details, Tabs, Steps, Quote.
+ * Rehype plugin: custom directives - Admonitions, GitHub cards, Details, Steps, Quote.
  */
 
 const ADMONITION_TYPES = ['note', 'tip', 'important', 'caution', 'warning']
@@ -136,7 +136,7 @@ function parseAttrs(str) {
   return attrs
 }
 
-/** Parse block opener line: :::details, :::details{summary="x"}, :::steps, :::quote{author="x"}, :::tabs, :::tab{name="x"} */
+/** Parse block opener line: :::details, :::details{summary="x"}, :::steps, :::quote{author="x"} */
 function parseBlockOpener(text) {
   const t = (text || '').trim()
   const m = t.match(/^:::(\w+)(?:\{([^}]*)\})?(?:\s+(.+))?$/)
@@ -146,8 +146,6 @@ function parseBlockOpener(text) {
   if (name === 'details') return { kind: 'details', summary: attrs.summary || rest?.trim() || '点击展开' }
   if (name === 'steps') return { kind: 'steps' }
   if (name === 'quote') return { kind: 'quote', author: attrs.author, source: attrs.source }
-  if (name === 'tabs') return { kind: 'tabs' }
-  if (name === 'tab') return { kind: 'tab', name: attrs.name || rest?.trim() || 'Tab' }
   return null
 }
 
@@ -246,38 +244,6 @@ function createQuoteElement(contentNodes, author, source) {
   }
 }
 
-/** Build tabs: flat [input, label, panel, input, label, panel, ...] for pure-CSS switching */
-function createTabsElement(tabItems) {
-  const name = `tabs-${Math.random().toString(36).slice(2, 10)}`
-  const flat = []
-  tabItems.forEach((tab, idx) => {
-    flat.push({
-      type: 'element',
-      tagName: 'input',
-      properties: { type: 'radio', name, id: `${name}-${idx}`, className: ['directive-tabs-input'], checked: idx === 0 },
-      children: [],
-    })
-    flat.push({
-      type: 'element',
-      tagName: 'label',
-      properties: { className: ['directive-tabs-label'], htmlFor: `${name}-${idx}` },
-      children: [{ type: 'text', value: tab.name }],
-    })
-    flat.push({
-      type: 'element',
-      tagName: 'div',
-      properties: { className: ['directive-tabs-panel'] },
-      children: tab.contentNodes || [],
-    })
-  })
-  return {
-    type: 'element',
-    tagName: 'div',
-    properties: { className: ['directive-tabs'] },
-    children: flat,
-  }
-}
-
 /** Process a children array (mutates in place via collectUntilClosing using same ref) */
 async function processChildren(children) {
   if (!children || !Array.isArray(children)) return
@@ -324,39 +290,6 @@ async function processChildren(children) {
           }
           i = endIndex - 1
           continue
-        }
-
-        // 2a3. Tabs: :::tabs then :::tab{name="X"} content (p or pre etc) ::: ... until :::
-        if (/^:::tabs\s*$/.test(text)) {
-          const tabItems = []
-          let j = i + 1
-          while (j < children.length) {
-            const n = children[j]
-            // Only :::tab{name="X"} and ::: are <p>; content (pre, etc.) is collected by collectUntilClosing
-            if (n.type !== 'element' || n.tagName !== 'p') break
-            const line = getTextContent(n).trim()
-            if (/^:::\s*$/.test(line)) {
-              j++
-              break
-            }
-            if (!line) {
-              j++
-              continue
-            }
-            const tabOpener = parseBlockOpener(line)
-            if (tabOpener?.kind === 'tab') {
-              const { nodes, endIndex } = collectUntilClosing(children, j + 1)
-              tabItems.push({ name: tabOpener.name, contentNodes: nodes })
-              j = endIndex
-            } else {
-              break
-            }
-          }
-          if (tabItems.length) {
-            newChildren.push(createTabsElement(tabItems))
-            i = j - 1
-            continue
-          }
         }
 
         // 2b. Block form GitHub: ::: then github{repo="..."} then :::
@@ -419,7 +352,7 @@ async function processChildren(children) {
 export default function rehypeCustomDirectives() {
   return async (tree) => {
     if (!tree.children) return
-    // Astro content often wraps body in a single div; process that layer first so tabs are found
+    // Astro content often wraps body in a single div
     if (tree.children.length === 1) {
       const wrap = tree.children[0]
       if (wrap.type === 'element' && wrap.children?.length && ['div', 'section', 'article'].includes(wrap.tagName)) {
