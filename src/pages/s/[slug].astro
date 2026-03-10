@@ -1,0 +1,14 @@
+---
+export const prerender = false
+import { getShortlinkBySlug } from '../../lib/shortlinks-db'
+
+const { slug } = Astro.params
+if (!slug) {
+  return Astro.redirect('/')
+}
+const shortlink = await getShortlinkBySlug(slug)
+if (!shortlink) {
+  return Astro.redirect('/404')
+}
+return Astro.redirect(shortlink.url)
+---
