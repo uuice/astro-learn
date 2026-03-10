@@ -20,7 +20,7 @@ interface AdminLayoutProps {
 export default function AdminLayout({ title, siteName, navItems, children }: AdminLayoutProps) {
   const [token, setToken] = useState('')
   const [tokenHint, setTokenHint] = useState('')
-  const [pathname, setPathname] = useState(typeof window !== 'undefined' ? window.location.pathname : '')
+  const [pathname, setPathname] = useState('')
   const [hue, setHue] = useState(DEFAULT_HUE)
   const [themeOpen, setThemeOpen] = useState(false)
   const themeRef = useRef<HTMLDivElement>(null)
