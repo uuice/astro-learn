@@ -3,7 +3,7 @@ id: b2c3d4e5-f6a7-8901-bcde-f12345678901
 title: Markdown 扩展展示
 alias: markdown-extensions-demo
 categories:
-  - 指南
+  - guide
 tags:
   - Markdown
   - 扩展

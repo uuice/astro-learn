@@ -3,7 +3,7 @@ id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
 title: Markdown 语法与样式展示
 alias: markdown-demo
 categories:
-  - 指南
+  - guide
 tags:
   - Markdown
   - 语法
