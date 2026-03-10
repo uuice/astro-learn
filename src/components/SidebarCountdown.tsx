@@ -29,12 +29,29 @@ function parseDateOnly(s: string): Date {
 }
 
 export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
-  const [now, setNow] = useState(() => new Date())
+  const [now, setNow] = useState<Date | null>(null)
 
   useEffect(() => {
+    setNow(new Date())
     const t = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(t)
   }, [])
+
+  if (!now) {
+    return (
+      <div
+        className="section-card p-4 overflow-hidden"
+        style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
+      >
+        <h3 className="section-title">
+          <span className="section-prompt">$</span> countdown
+        </h3>
+        <div className="mt-2" style={{ color: 'var(--text-muted)' }}>
+          <p className="m-0">加载中...</p>
+        </div>
+      </div>
+    )
+  }
 
   const todayStr = toDateOnly(now)
   const workEndToday = new Date(now)
