@@ -5,11 +5,6 @@ import Comment from '../../components/client/Comment.tsx'
 import { getCollection, render } from 'astro:content'
 import { titleToUrl } from '../../utils/index.js'
 
-export async function getStaticPaths() {
-  const pages = await getCollection('page', ({ data }) => data.published)
-  return pages.map((p) => ({ params: { slug: titleToUrl(p.data.alias || p.data.title) } }))
-}
-
 const { slug } = Astro.params
 const pages = await getCollection('page', ({ data }) => data.published)
 const pageEntry = pages.find((p) => titleToUrl(p.data.alias || p.data.title) === slug)

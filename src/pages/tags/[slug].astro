@@ -5,12 +5,6 @@ import PostCard from '../../components/PostCard.astro'
 import { getCollection } from 'astro:content'
 import { getDerivedFromPosts } from '../../utils/derived-collections'
 
-export async function getStaticPaths() {
-  const posts = await getCollection('post', ({ data }) => data.published)
-  const { tags } = getDerivedFromPosts(posts)
-  return tags.map((t) => ({ params: { slug: t.url.replace(/^\/tags\//, '') } }))
-}
-
 const { slug } = Astro.params
 const posts = await getCollection('post', ({ data }) => data.published)
 const { tags, postTags } = getDerivedFromPosts(posts)

@@ -4,11 +4,6 @@ import ArticleCopyright from '../../components/ArticleCopyright.astro'
 import Comment from '../../components/client/Comment.tsx'
 import { getCollection, render } from 'astro:content'
 
-export async function getStaticPaths() {
-  const posts = await getCollection('post', ({ data }) => data.published)
-  return posts.map((p) => ({ params: { slug: p.data.url.replace(/^\/archives\/?/, '') } }))
-}
-
 const slug = Astro.params.slug ?? ''
 const posts = await getCollection('post', ({ data }) => data.published)
 const post = posts.find((p) => p.data.url.replace(/^\/archives\/?/, '') === slug)

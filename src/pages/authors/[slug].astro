@@ -4,11 +4,6 @@ import Banner from '../../components/Banner.astro'
 import { getCollection, render } from 'astro:content'
 import { titleToUrl } from '../../utils/index.js'
 
-export async function getStaticPaths() {
-  const authors = await getCollection('author')
-  return authors.map((a) => ({ params: { slug: titleToUrl(a.data.alias || a.data.title) } }))
-}
-
 const { slug } = Astro.params
 const authors = await getCollection('author')
 const authorEntry = authors.find((a) => titleToUrl(a.data.alias || a.data.title) === slug)
