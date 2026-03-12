@@ -1,26 +1,17 @@
 import type { APIRoute } from 'astro'
-import { getCommentsByPostId, addComment, getAllComments } from '../../../lib/comments-db'
-import { getAdminToken } from '../../../lib/config-db'
+import { getCommentsByPostId, addComment } from '../../../lib/comments-db'
 
 export const prerender = false
 
 export const GET: APIRoute = async ({ url }) => {
   const postId = url.searchParams.get('postId')
-  const token = url.searchParams.get('token')
-  const adminToken = await getAdminToken()
-  if (postId) {
-    const comments = await getCommentsByPostId(postId)
-    return new Response(JSON.stringify({ data: comments }), {
-      headers: { 'Content-Type': 'application/json' },
-    })
+  if (!postId) {
+    return new Response(JSON.stringify({ error: 'Missing postId' }), { status: 400 })
   }
-  if (token && adminToken && token === adminToken) {
-    const comments = await getAllComments()
-    return new Response(JSON.stringify({ data: comments }), {
-      headers: { 'Content-Type': 'application/json' },
-    })
-  }
-  return new Response(JSON.stringify({ error: 'Missing postId or invalid token' }), { status: 400 })
+  const comments = await getCommentsByPostId(postId)
+  return new Response(JSON.stringify({ data: comments }), {
+    headers: { 'Content-Type': 'application/json' },
+  })
 }
 
 export const POST: APIRoute = async ({ request }) => {

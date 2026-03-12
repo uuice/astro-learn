@@ -1,16 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const TOKEN_KEY = 'comment_admin_token'
-
-function getStoredToken(): string {
-  if (typeof sessionStorage === 'undefined') return ''
-  try {
-    return sessionStorage.getItem(TOKEN_KEY) || ''
-  } catch {
-    return ''
-  }
-}
-
 interface ShortLinkItem {
   id: string
   slug: string
@@ -19,7 +8,6 @@ interface ShortLinkItem {
 }
 
 export default function ShortlinksAdmin() {
-  const [token, setToken] = useState('')
   const [list, setList] = useState<ShortLinkItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -27,23 +15,11 @@ export default function ShortlinksAdmin() {
   const [slug, setSlug] = useState('')
   const [addLoading, setAddLoading] = useState(false)
 
-  useEffect(() => {
-    setToken(getStoredToken())
-    const onSaved = () => setToken(getStoredToken())
-    window.addEventListener('admin-token-saved', onSaved)
-    return () => window.removeEventListener('admin-token-saved', onSaved)
-  }, [])
-
   const load = useCallback(async () => {
-    const t = getStoredToken().trim()
-    if (!t) {
-      setError('请先在顶部输入 Token 并保存')
-      return
-    }
     setError('')
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin/shortlinks?token=${encodeURIComponent(t)}`)
+      const res = await fetch('/api/admin/shortlinks')
       const json = await res.json()
       if (!res.ok) {
         setError(json.error || '加载失败')
@@ -60,12 +36,10 @@ export default function ShortlinksAdmin() {
   }, [])
 
   useEffect(() => {
-    if (getStoredToken().trim()) load()
+    load()
   }, [load])
 
   const addLink = async (useCustomSlug: boolean) => {
-    const t = getStoredToken().trim()
-    if (!t) return
     const targetUrl = url.trim()
     if (!targetUrl) {
       setError('请输入目标 URL')
@@ -77,7 +51,7 @@ export default function ShortlinksAdmin() {
       const body = useCustomSlug && slug.trim()
         ? { url: targetUrl, slug: slug.trim() }
         : { url: targetUrl }
-      const res = await fetch(`/api/admin/shortlinks?token=${encodeURIComponent(t)}`, {
+      const res = await fetch('/api/admin/shortlinks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -98,10 +72,8 @@ export default function ShortlinksAdmin() {
   }
 
   const remove = async (id: string) => {
-    const t = getStoredToken().trim()
-    if (!t) return
     try {
-      const res = await fetch(`/api/admin/shortlinks/${id}?token=${encodeURIComponent(t)}`, {
+      const res = await fetch(`/api/admin/shortlinks/${id}`, {
         method: 'DELETE',
       })
       if (res.ok) setList((prev) => prev.filter((s) => s.id !== id))
@@ -162,11 +134,8 @@ export default function ShortlinksAdmin() {
       </div>
 
       {error ? <p className="comment-error">{error}</p> : null}
-      {!token.trim() ? (
-        <p className="comment-muted">请先在顶部输入 Token 并保存</p>
-      ) : null}
 
-      {list.length === 0 && !loading && token.trim() ? (
+      {list.length === 0 && !loading ? (
         <p className="comment-muted">暂无短链接</p>
       ) : list.length > 0 ? (
         <ul className="comment-admin-list">

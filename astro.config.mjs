@@ -13,6 +13,10 @@ import react from '@astrojs/react'
 const rehypePluginsBase = [rehypeSlug]
 
 export default defineConfig({
+  output: 'server',
+  session: {
+    driver: 'fs',
+  },
   markdown: {
     syntaxHighlight: 'shiki',
     shikiConfig: {

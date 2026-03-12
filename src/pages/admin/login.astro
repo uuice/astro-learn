@@ -1,0 +1,130 @@
+---
+import '../../assets/styles/global.css'
+import { getCollection } from 'astro:content'
+import { getAdminToken } from '../../lib/config-db'
+
+export const prerender = false
+
+const adminToken = await getAdminToken()
+const hasToken = !!(adminToken && adminToken.length > 0)
+
+const [setting] = await getCollection('setting')
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{hasToken ? '登录' : '初始设置'} · 管理</title>
+    <script is:inline>
+      (function(){var d=document.documentElement,k='theme',v=localStorage.getItem(k);if(v==='dark'||(!v&&window.matchMedia('(prefers-color-scheme:dark)').matches))d.classList.add('dark');else d.classList.remove('dark');var h=localStorage.getItem('themeHue');if(h!==null){var n=parseInt(h,10);if(!isNaN(n)&&n>=0&&n<=360)d.style.setProperty('--hue',String(n))}})()
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col antialiased">
+    <div class="min-h-screen flex flex-col">
+      <header class="sticky top-0 z-30 flex flex-col border-b" style="background: var(--header-bg); border-color: var(--border)">
+        <div class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-6">
+            <a href="/" class="font-semibold transition-opacity hover:opacity-80 flex items-center gap-1.5" style="color: var(--text); font-size: var(--text-sm); font-family: var(--font-mono)">
+              <span class="code-label">$</span> {siteName}
+            </a>
+            <span style="color: var(--text-muted); font-size: var(--text-xs)">/</span>
+            <span class="font-medium" style="color: var(--text-muted); font-size: var(--text-sm); font-family: var(--font-mono)">
+              管理
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <div class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8 flex-1 flex items-center justify-center">
+        <main class="page-main w-full max-w-sm">
+          <div class="section-card p-6 md:p-8">
+            <h1 class="section-title" style="margin-top: 0; margin-bottom: 1.5rem">
+              <span class="section-prompt">#</span> {hasToken ? '登录' : '初始设置'}
+            </h1>
+            <form id="login-form">
+              <div class="mb-4">
+                <label for="token-input" class="block mb-2" style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-muted)">
+                  {hasToken ? 'Token' : '设置管理 Token'}
+                </label>
+                <input
+                  id="token-input"
+                  type="password"
+                  placeholder={hasToken ? '请输入 Token' : '设置一个安全的 Token'}
+                  required
+                  class="w-full"
+                  style="padding: 0.5rem 0.75rem; border: 1px solid var(--card-border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text); font-family: var(--font-mono); font-size: var(--text-sm)"
+                />
+              </div>
+              <p id="error-msg" class="comment-error mb-4" style="display: none"></p>
+              <button
+                type="submit"
+                class="w-full comment-submit"
+                style="padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: var(--text-sm)"
+              >
+                {hasToken ? '登录' : '设置并登录'}
+              </button>
+            </form>
+            {!hasToken && (
+              <p class="mt-4" style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted)">
+                首次使用需要设置管理 Token，设置后无法更改。
+              </p>
+            )}
+          </div>
+        </main>
+      </div>
+
+      <footer class="py-6 mt-auto border-t" style="background: var(--footer-bg); border-color: var(--border)">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6" style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted)">
+          <p class="m-0">
+            <a href="/" class="transition-colors hover:opacity-80" style="color: var(--accent)">
+              ← 返回站点
+            </a>
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <script is:inline define:vars={{ hasToken }}>
+      const form = document.getElementById('login-form')
+      const input = document.getElementById('token-input')
+      const errorMsg = document.getElementById('error-msg')
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const token = input.value.trim()
+        if (!token) return
+
+        errorMsg.style.display = 'none'
+        const btn = form.querySelector('button[type="submit"]')
+        btn.disabled = true
+        btn.textContent = '处理中...'
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, isSetup: !hasToken }),
+          })
+          const data = await res.json()
+          if (!res.ok) {
+            errorMsg.textContent = data.error || '操作失败'
+            errorMsg.style.display = 'block'
+            btn.disabled = false
+            btn.textContent = hasToken ? '登录' : '设置并登录'
+            return
+          }
+          window.location.href = '/admin'
+        } catch {
+          errorMsg.textContent = '网络错误'
+          errorMsg.style.display = 'block'
+          btn.disabled = false
+          btn.textContent = hasToken ? '登录' : '设置并登录'
+        }
+      })
+    </script>
+  </body>
+</html>

@@ -1,14 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
+import type { AdminNavItem } from '../lib/admin-config'
 
-const TOKEN_KEY = 'comment_admin_token'
 const THEME_KEY = 'theme'
 const HUE_KEY = 'themeHue'
 const DEFAULT_HUE = 250
-
-export interface AdminNavItem {
-  title: string
-  url: string
-}
 
 interface AdminLayoutProps {
   title: string
@@ -18,29 +13,14 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ title, siteName, navItems, children }: AdminLayoutProps) {
-  const [token, setToken] = useState('')
-  const [tokenHint, setTokenHint] = useState('')
   const [pathname, setPathname] = useState('')
   const [hue, setHue] = useState(DEFAULT_HUE)
   const [themeOpen, setThemeOpen] = useState(false)
   const themeRef = useRef<HTMLDivElement>(null)
-  const [hasToken, setHasToken] = useState<boolean | null>(null)
-  const [setupToken, setSetupToken] = useState('')
-  const [setupError, setSetupError] = useState('')
-  const [setupLoading, setSetupLoading] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/admin/config')
-      .then((r) => r.json())
-      .then((d: { hasToken?: boolean }) => setHasToken(!!d.hasToken))
-      .catch(() => setHasToken(true))
-  }, [])
+  const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
     setPathname(window.location.pathname)
-    try {
-      setToken(sessionStorage.getItem(TOKEN_KEY) || '')
-    } catch {}
     const h = localStorage.getItem(HUE_KEY)
     if (h !== null) {
       const n = parseInt(h, 10)
@@ -64,46 +44,14 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
     return () => document.removeEventListener('click', close)
   }, [themeOpen])
 
-  const saveToken = () => {
-    const v = token.trim()
+  const handleLogout = async () => {
+    setLoggingOut(true)
     try {
-      sessionStorage.setItem(TOKEN_KEY, v)
-    } catch {}
-    setTokenHint(v ? '已保存' : '已清除')
-    setTimeout(() => setTokenHint(''), 1500)
-    window.dispatchEvent(new CustomEvent('admin-token-saved'))
-  }
-
-  const doSetup = () => {
-    const v = setupToken.trim()
-    if (!v) {
-      setSetupError('请输入 Token')
-      return
+      await fetch('/api/admin/logout', { method: 'POST' })
+      window.location.href = '/admin/login'
+    } catch {
+      setLoggingOut(false)
     }
-    setSetupError('')
-    setSetupLoading(true)
-    fetch('/api/admin/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: v }),
-    })
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.error) {
-          setSetupError(d.error)
-          return
-        }
-        try {
-          sessionStorage.setItem(TOKEN_KEY, v)
-        } catch {}
-        setToken(v)
-        setHasToken(true)
-        setTokenHint('已设置')
-        window.dispatchEvent(new CustomEvent('admin-token-saved'))
-        setTimeout(() => setTokenHint(''), 1500)
-      })
-      .catch(() => setSetupError('设置失败'))
-      .finally(() => setSetupLoading(false))
   }
 
   const toggleDark = () => {
@@ -138,14 +86,15 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
               管理
             </a>
           </div>
-          <nav className="hidden lg:flex items-center gap-4" aria-label="管理导航">
+          <nav className="hidden lg:flex items-center gap-5" aria-label="管理导航">
             {navItems.map((item) => (
               <a
                 key={item.url}
                 href={item.url}
-                className={`admin-nav-link${pathname.startsWith(item.url) ? ' admin-nav-active' : ''}`}
+                className={`nav-link-cute py-1 flex items-center gap-1.5${pathname.startsWith(item.url) ? ' admin-nav-active' : ''}`}
                 style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)' }}
               >
+                <span className="nav-symbol" style={{ color: 'var(--accent)' }}>›</span>
                 {item.title}
               </a>
             ))}
@@ -202,78 +151,32 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
               <span className="dark:hidden" aria-hidden>dark</span>
               <span className="hidden dark:inline" aria-hidden>light</span>
             </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="search-trigger px-2.5 py-1.5 rounded border transition-colors hover:bg-(--card-border)"
+              style={{ borderColor: 'var(--card-border)', background: 'var(--card-bg)', color: 'var(--accent)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)' }}
+              aria-label="登出"
+            >
+              {loggingOut ? '...' : '登出'}
+            </button>
           </div>
         </div>
         <div className="lg:hidden border-t px-4 sm:px-6 py-2.5 overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
-          <nav className="flex gap-4 min-w-max pb-1" aria-label="管理导航">
+          <nav className="flex gap-5 min-w-max pb-1" aria-label="管理导航">
             {navItems.map((item) => (
               <a
                 key={item.url}
                 href={item.url}
-                className={`admin-nav-link whitespace-nowrap py-1${pathname.startsWith(item.url) ? ' admin-nav-active' : ''}`}
+                className={`nav-link-cute whitespace-nowrap py-1 flex items-center gap-1.5${pathname.startsWith(item.url) ? ' admin-nav-active' : ''}`}
                 style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)' }}
               >
+                <span className="nav-symbol" style={{ color: 'var(--accent)' }}>›</span>
                 {item.title}
               </a>
             ))}
           </nav>
-        </div>
-        <div
-          className="admin-token-bar border-t px-4 sm:px-6 py-2.5 flex items-center justify-center gap-3 flex-wrap"
-          style={{ borderColor: 'var(--border)', background: 'var(--page-bg)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
-        >
-          {hasToken === null ? (
-            <span style={{ color: 'var(--text-muted)' }}>加载中...</span>
-          ) : !hasToken ? (
-            <>
-              <label htmlFor="admin-setup-input" style={{ color: 'var(--text-muted)' }}>
-                首次设置 Token
-              </label>
-              <input
-                id="admin-setup-input"
-                type="password"
-                value={setupToken}
-                onChange={(e) => { setSetupToken(e.target.value); setSetupError('') }}
-                placeholder="设置管理 Token"
-                className="admin-token-input"
-                style={{ flex: 1, minWidth: '12rem', maxWidth: '20rem', padding: '0.35rem 0.6rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--text)' }}
-              />
-              <button
-                type="button"
-                onClick={doSetup}
-                disabled={setupLoading}
-                className="admin-token-save"
-                style={{ padding: '0.35rem 0.65rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--accent)', cursor: 'pointer' }}
-              >
-                {setupLoading ? '设置中...' : '设置'}
-              </button>
-              {setupError ? <span style={{ color: 'var(--accent)' }}>{setupError}</span> : null}
-            </>
-          ) : (
-            <>
-              <label htmlFor="admin-token-input" style={{ color: 'var(--text-muted)' }}>
-                Token
-              </label>
-              <input
-                id="admin-token-input"
-                type="password"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                placeholder="ADMIN_TOKEN"
-                className="admin-token-input"
-                style={{ flex: 1, minWidth: '12rem', maxWidth: '20rem', padding: '0.35rem 0.6rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--text)' }}
-              />
-              <button
-                type="button"
-                onClick={saveToken}
-                className="admin-token-save"
-                style={{ padding: '0.35rem 0.65rem', border: '1px solid var(--card-border)', borderRadius: 'var(--radius-sm)', background: 'var(--card-bg)', color: 'var(--accent)', cursor: 'pointer' }}
-              >
-                保存
-              </button>
-              {tokenHint ? <span style={{ color: 'var(--text-muted)' }}>{tokenHint}</span> : null}
-            </>
-          )}
         </div>
       </header>
 

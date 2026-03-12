@@ -1,20 +1,12 @@
 import type { APIRoute } from 'astro'
 import { getAllShortlinks, addShortlink } from '../../../lib/shortlinks-db'
-import { getAdminToken } from '../../../lib/config-db'
+import { checkAdminSession, unauthorizedResponse } from '../../../lib/admin-auth'
 
 export const prerender = false
 
-async function checkToken(url: URL): Promise<string | null> {
-  const token = url.searchParams.get('token')
-  const adminToken = await getAdminToken()
-  if (!token || !adminToken || token !== adminToken) return null
-  return token
-}
-
-export const GET: APIRoute = async ({ url }) => {
-  const token = await checkToken(url)
-  if (!token) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+export const GET: APIRoute = async ({ session }) => {
+  if (!(await checkAdminSession(session))) {
+    return unauthorizedResponse()
   }
   const list = await getAllShortlinks()
   return new Response(JSON.stringify({ data: list }), {
@@ -22,11 +14,9 @@ export const GET: APIRoute = async ({ url }) => {
   })
 }
 
-export const POST: APIRoute = async ({ request, url }) => {
-  const token = url.searchParams.get('token')
-  const adminToken = await getAdminToken()
-  if (!token || !adminToken || token !== adminToken) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+export const POST: APIRoute = async ({ request, session }) => {
+  if (!(await checkAdminSession(session))) {
+    return unauthorizedResponse()
   }
   if (request.headers.get('content-type')?.includes('application/json') === false) {
     return new Response(JSON.stringify({ error: 'Content-Type must be application/json' }), {

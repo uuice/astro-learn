@@ -1,24 +1,27 @@
 import { defineMiddleware, sequence } from "astro:middleware"
 
-const validation =  defineMiddleware(async (_, next) => {
-    console.log("validation request")
-    const response = await next()
-    console.log("validation response")
-    return response
+const adminAuth = defineMiddleware(async (context, next) => {
+  const { pathname } = context.url
+
+  // 只处理 /admin 页面路由，排除 /api/admin API 路由
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/api/')) {
+    const isLoggedIn = await context.session?.get('adminLoggedIn')
+    console.log(`[middleware] pathname: ${pathname}, isLoggedIn: ${isLoggedIn}, session exists: ${!!context.session}`)
+
+    if (pathname === '/admin/login') {
+      if (isLoggedIn) {
+        console.log('[middleware] redirecting to /admin (already logged in)')
+        return context.redirect('/admin')
+      }
+    } else {
+      if (!isLoggedIn) {
+        console.log('[middleware] redirecting to /admin/login (not logged in)')
+        return context.redirect('/admin/login')
+      }
+    }
+  }
+
+  return next()
 })
 
-const auth =  defineMiddleware(async (_, next) => {
-    console.log("auth request")
-    const response = await next()
-    console.log("auth response")
-    return response
-})
-
-const greeting = defineMiddleware(async (_, next) => {
-    console.log("greeting request")
-    const response = await next()
-    console.log("greeting response")
-    return response
-})
-
-export const onRequest = sequence(validation, auth, greeting)
+export const onRequest = sequence(adminAuth)

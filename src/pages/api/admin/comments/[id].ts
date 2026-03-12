@@ -1,18 +1,12 @@
 import type { APIRoute } from 'astro'
-import { deleteComment, approveComment } from '../../../lib/comments-db'
-import { getAdminToken } from '../../../lib/config-db'
+import { deleteComment, approveComment } from '../../../../lib/comments-db'
+import { checkAdminSession, unauthorizedResponse } from '../../../../lib/admin-auth'
 
 export const prerender = false
 
-async function checkAuth(url: URL): Promise<boolean> {
-  const token = url.searchParams.get('token')
-  const adminToken = await getAdminToken()
-  return !!(token && adminToken && token === adminToken)
-}
-
-export const DELETE: APIRoute = async ({ params, url }) => {
-  if (!(await checkAuth(url))) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+export const DELETE: APIRoute = async ({ params, session }) => {
+  if (!(await checkAdminSession(session))) {
+    return unauthorizedResponse()
   }
   const id = params.id
   if (!id) {
@@ -27,9 +21,9 @@ export const DELETE: APIRoute = async ({ params, url }) => {
   })
 }
 
-export const PATCH: APIRoute = async ({ params, url }) => {
-  if (!(await checkAuth(url))) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+export const PATCH: APIRoute = async ({ params, session }) => {
+  if (!(await checkAdminSession(session))) {
+    return unauthorizedResponse()
   }
   const id = params.id
   if (!id) {

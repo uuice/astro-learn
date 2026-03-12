@@ -1,16 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const TOKEN_KEY = 'comment_admin_token'
-
-function getStoredToken(): string {
-  if (typeof sessionStorage === 'undefined') return ''
-  try {
-    return sessionStorage.getItem(TOKEN_KEY) || ''
-  } catch {
-    return ''
-  }
-}
-
 interface CommentItem {
   id: string
   postId: string
@@ -23,28 +12,15 @@ interface CommentItem {
 }
 
 export default function CommentAdmin() {
-  const [token, setToken] = useState('')
   const [list, setList] = useState<CommentItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    setToken(getStoredToken())
-    const onSaved = () => setToken(getStoredToken())
-    window.addEventListener('admin-token-saved', onSaved)
-    return () => window.removeEventListener('admin-token-saved', onSaved)
-  }, [])
-
   const load = useCallback(async () => {
-    const t = getStoredToken().trim()
-    if (!t) {
-      setError('请先在顶部输入 Token 并保存')
-      return
-    }
     setError('')
     setLoading(true)
     try {
-      const res = await fetch(`/api/comments?token=${encodeURIComponent(t)}`)
+      const res = await fetch('/api/admin/comments')
       const json = await res.json()
       if (!res.ok) {
         setError(json.error || '加载失败')
@@ -61,23 +37,19 @@ export default function CommentAdmin() {
   }, [])
 
   useEffect(() => {
-    if (getStoredToken().trim()) load()
+    load()
   }, [load])
 
   const remove = async (id: string) => {
-    const t = getStoredToken().trim()
-    if (!t) return
     try {
-      const res = await fetch(`/api/comments/${id}?token=${encodeURIComponent(t)}`, { method: 'DELETE' })
+      const res = await fetch(`/api/admin/comments/${id}`, { method: 'DELETE' })
       if (res.ok) setList((prev) => prev.filter((c) => c.id !== id))
     } catch {}
   }
 
   const approve = async (id: string) => {
-    const t = getStoredToken().trim()
-    if (!t) return
     try {
-      const res = await fetch(`/api/comments/${id}?token=${encodeURIComponent(t)}`, { method: 'PATCH' })
+      const res = await fetch(`/api/admin/comments/${id}`, { method: 'PATCH' })
       if (res.ok) setList((prev) => prev.map((c) => (c.id === id ? { ...c, status: 'approved' as const } : c)))
     } catch {}
   }
@@ -91,12 +63,11 @@ export default function CommentAdmin() {
       <div className="comment-block-title"># 评论管理</div>
       <div className="comment-admin-toolbar">
         <button type="button" className="comment-submit" onClick={load} disabled={loading}>
-          {loading ? '加载中...' : '加载'}
+          {loading ? '加载中...' : '刷新'}
         </button>
       </div>
       {error ? <p className="comment-error">{error}</p> : null}
-      {!token.trim() ? <p className="comment-muted">请先在顶部输入 Token 并保存</p> : null}
-      {list.length === 0 && !loading && token.trim() ? (
+      {list.length === 0 && !loading ? (
         <p className="comment-muted">暂无数据</p>
       ) : list.length > 0 ? (
         <ul className="comment-admin-list">

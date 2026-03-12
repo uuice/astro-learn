@@ -1,16 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-
-const TOKEN_KEY = 'comment_admin_token'
-
-function getStoredToken(): string {
-  if (typeof sessionStorage === 'undefined') return ''
-  try {
-    return sessionStorage.getItem(TOKEN_KEY) || ''
-  } catch {
-    return ''
-  }
-}
 
 type ContentData = {
   posts: { id: string; data: Record<string, unknown> }[]
@@ -33,23 +22,24 @@ export default function ContentDataAdmin() {
   const [tab, setTab] = useState<Tab>('posts')
   const [detail, setDetail] = useState<{ id: string; data: Record<string, unknown> } | null>(null)
 
-  useEffect(() => {
-    const t = getStoredToken().trim()
-    if (!t) {
-      setError('请先在顶部输入 Token 并保存')
-      setLoading(false)
-      return
-    }
+  const load = useCallback(async () => {
     setError('')
-    fetch(`/api/admin/content?token=${encodeURIComponent(t)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('加载失败')
-        return res.json()
-      })
-      .then(setData)
-      .catch(() => setError('加载失败'))
-      .finally(() => setLoading(false))
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin/content')
+      if (!res.ok) throw new Error('加载失败')
+      const json = await res.json()
+      setData(json)
+    } catch {
+      setError('加载失败')
+    } finally {
+      setLoading(false)
+    }
   }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
 
   const list = data ? data[tab] : []
   const columns = tab === 'posts' ? ['title', 'url', 'published'] : tab === 'pages' ? ['title', 'alias', 'url'] : ['title', 'url']
@@ -87,7 +77,7 @@ export default function ContentDataAdmin() {
 
   return (
     <div className="content-data-admin">
-      <div className="content-admin-tabs">
+      <div className="content-admin-tabs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
         {TABS.map(({ key, label }) => (
           <button
             key={key}
@@ -98,6 +88,15 @@ export default function ContentDataAdmin() {
             {label} ({data[key].length})
           </button>
         ))}
+        <button
+          type="button"
+          className="comment-submit"
+          onClick={load}
+          disabled={loading}
+          style={{ marginLeft: 'auto' }}
+        >
+          {loading ? '加载中...' : '刷新'}
+        </button>
       </div>
       <div className="content-admin-table-wrap">
         <table className="content-admin-table">

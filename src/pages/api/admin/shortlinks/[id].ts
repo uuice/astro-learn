@@ -1,18 +1,12 @@
 import type { APIRoute } from 'astro'
 import { deleteShortlink } from '../../../../lib/shortlinks-db'
-import { getAdminToken } from '../../../../lib/config-db'
+import { checkAdminSession, unauthorizedResponse } from '../../../../lib/admin-auth'
 
 export const prerender = false
 
-async function checkAuth(url: URL): Promise<boolean> {
-  const token = url.searchParams.get('token')
-  const adminToken = await getAdminToken()
-  return !!(token && adminToken && token === adminToken)
-}
-
-export const DELETE: APIRoute = async ({ params, url }) => {
-  if (!(await checkAuth(url))) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+export const DELETE: APIRoute = async ({ params, session }) => {
+  if (!(await checkAdminSession(session))) {
+    return unauthorizedResponse()
   }
   const id = params.id
   if (!id) {

@@ -1,14 +1,12 @@
 import type { APIRoute } from 'astro'
 import { getCollection } from 'astro:content'
-import { getAdminToken } from '../../../lib/config-db'
+import { checkAdminSession, unauthorizedResponse } from '../../../lib/admin-auth'
 
 export const prerender = false
 
-export const GET: APIRoute = async ({ url }) => {
-  const token = url.searchParams.get('token')
-  const adminToken = await getAdminToken()
-  if (!token || !adminToken || token !== adminToken) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+export const GET: APIRoute = async ({ session }) => {
+  if (!(await checkAdminSession(session))) {
+    return unauthorizedResponse()
   }
   const [posts, pages, authors] = await Promise.all([
     getCollection('post'),

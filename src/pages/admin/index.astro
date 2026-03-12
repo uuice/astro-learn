@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro'
+import { adminNav } from '../../lib/admin-config'
 ---
 <AdminLayout title="管理">
   <div class="intro-bubble">
@@ -10,16 +11,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro'
       <span class="section-prompt">#</span> 管理模块
     </h2>
     <ul class="terminal-list" style="border:none;background:transparent;padding:0">
-      <li>
-        <a href="/admin/comments" class="block py-2 px-3 rounded transition-colors hover:bg-(--card-bg)" style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--text);border:1px solid var(--card-border);margin-bottom:0.5rem">
-          <span class="comment-symbol" style="color:var(--accent)">▸</span> 评论
-        </a>
-      </li>
-      <li>
-        <a href="/admin/content" class="block py-2 px-3 rounded transition-colors hover:bg-(--card-bg)" style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--text);border:1px solid var(--card-border);margin-bottom:0.5rem">
-          <span class="comment-symbol" style="color:var(--accent)">▸</span> 数据
-        </a>
-      </li>
+      {adminNav.map((item) => (
+        <li>
+          <a href={item.url} class="block py-2 px-3 rounded transition-colors hover:bg-(--card-bg)" style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--text);border:1px solid var(--card-border);margin-bottom:0.5rem">
+            <span class="comment-symbol" style="color:var(--accent)">▸</span> {item.title}
+          </a>
+        </li>
+      ))}
     </ul>
   </section>
 </AdminLayout>
