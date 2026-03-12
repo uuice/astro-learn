@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import type { AdminNavItem } from '../lib/admin-config'
+import type { AdminNavItem } from '../lib/admin-site-config-db'
 
 const THEME_KEY = 'theme'
 const HUE_KEY = 'themeHue'

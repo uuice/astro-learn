@@ -1,6 +1,8 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro'
-import { adminNav } from '../../lib/admin-config'
+import { getAdminNav } from '../../lib/admin-site-config-db'
+
+const adminNav = await getAdminNav()
 ---
 <AdminLayout title="管理">
   <div class="intro-bubble">

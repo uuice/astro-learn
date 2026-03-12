@@ -2,7 +2,7 @@
 import '../assets/styles/global.css'
 import AdminLayoutReact from './AdminLayout.tsx'
 import { getCollection } from 'astro:content'
-import { adminNav } from '../lib/admin-config'
+import { getAdminNav } from '../lib/admin-site-config-db'
 
 export const prerender = false
 
@@ -13,6 +13,7 @@ interface Props {
 const { title } = Astro.props
 const [setting] = await getCollection('setting')
 const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+const adminNav = await getAdminNav()
 ---
 <!doctype html>
 <html lang="zh-CN">

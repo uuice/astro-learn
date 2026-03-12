@@ -1,0 +1,238 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro'
+import SiteConfigAdmin from '../../components/admin/SiteConfigAdmin.tsx'
+
+export const prerender = false
+---
+
+<AdminLayout title="配置">
+  <div class="intro-bubble">
+    <p class="m-0 code-label">$ cat admin/config</p>
+  </div>
+  <section class="section-card p-6 md:p-10">
+    <SiteConfigAdmin client:load />
+  </section>
+</AdminLayout>
+
+<style is:global>
+  .config-key {
+    font-weight: 600;
+  }
+
+  .config-type {
+    display: inline-block;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    letter-spacing: 0.025em;
+    margin-left: 0.5rem;
+  }
+
+  .config-type-json {
+    background: hsl(var(--hue, 250) 60% 92%);
+    color: hsl(var(--hue, 250) 50% 45%);
+  }
+
+  .dark .config-type-json {
+    background: hsl(var(--hue, 250) 30% 22%);
+    color: hsl(var(--hue, 250) 60% 70%);
+  }
+
+  .config-type-string {
+    background: hsl(160 50% 92%);
+    color: hsl(160 50% 35%);
+  }
+
+  .dark .config-type-string {
+    background: hsl(160 30% 18%);
+    color: hsl(160 50% 65%);
+  }
+
+  .config-value-preview {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.375rem;
+  }
+
+  .config-value-preview code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    word-break: break-all;
+    white-space: pre-wrap;
+    display: block;
+    max-height: 3rem;
+    overflow: hidden;
+  }
+
+  .config-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+  }
+
+  .config-modal {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 32rem;
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  .config-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--card-border);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .config-modal-close {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    transition: all 0.15s;
+  }
+
+  .config-modal-close:hover {
+    background: var(--card-border);
+    color: var(--text);
+  }
+
+  .config-modal-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .config-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .config-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .config-field input,
+  .config-field select,
+  .config-field textarea {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 0.375rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .config-field input:focus,
+  .config-field select:focus,
+  .config-field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px hsl(var(--hue, 250) 60% 50% / 0.15);
+  }
+
+  .config-field input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--card-border);
+  }
+
+  .config-field select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M2.5 4.5L6 8l3.5-3.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+
+  .config-field textarea {
+    resize: vertical;
+    min-height: 4rem;
+  }
+
+  .config-json-input {
+    font-family: var(--font-mono) !important;
+    font-size: var(--text-xs) !important;
+    line-height: 1.6;
+    min-height: 12rem;
+  }
+
+  .config-format-btn {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--card-border);
+    border-radius: 0.25rem;
+    background: var(--card-bg);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .config-format-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .config-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--card-border);
+  }
+
+  .config-cancel-btn {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: 0.375rem;
+    background: var(--card-bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .config-cancel-btn:hover {
+    background: var(--card-border);
+    color: var(--text);
+  }
+</style>
