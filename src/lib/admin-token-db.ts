@@ -11,7 +11,7 @@ const defaultData: AdminTokenData = { adminToken: '' }
 function getDbPath(): string {
   const dir = join(process.cwd(), 'data')
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
-  return join(dir, 'config.json')
+  return join(dir, 'admin-token-config.json')
 }
 
 let dbPromise: Promise<Awaited<ReturnType<typeof JSONFilePreset<AdminTokenData>>>> | null = null
