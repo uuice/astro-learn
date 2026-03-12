@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro'
-import { getAdminToken, setAdminToken } from '../../../lib/config-db'
+import { getAdminToken, setAdminToken } from '../../../lib/admin-token-db'
 
 export const prerender = false
 

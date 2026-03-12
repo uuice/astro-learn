@@ -1,12 +1,12 @@
 import type { APIRoute } from 'astro'
-import { getConfig } from '../../../lib/config-db'
+import { hasAdminToken } from '../../../lib/admin-token-db'
 
 export const prerender = false
 
 export const GET: APIRoute = async () => {
-  const config = await getConfig()
+  const hasToken = await hasAdminToken()
   return new Response(
-    JSON.stringify({ hasToken: !!(config.adminToken && config.adminToken.length > 0) }),
+    JSON.stringify({ hasToken }),
     { headers: { 'Content-Type': 'application/json' } }
   )
 }
