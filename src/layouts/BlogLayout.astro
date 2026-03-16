@@ -72,7 +72,7 @@ const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defau
       </header>
 
       <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8 flex-1 flex flex-col lg:flex-row gap-8 lg:gap-10">
-        <main class="flex-1 min-w-0 page-main">
+        <main class="flex-1 min-w-0 page-main" id="pjax-main">
           <slot />
         </main>
         <div class="w-64 shrink-0 hidden lg:block">
@@ -111,6 +111,10 @@ const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defau
 
       <a href="#" id="back-to-top" class="back-to-top fixed right-6 bottom-6 z-40 opacity-0 pointer-events-none transition-opacity duration-200" style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text);background:var(--card-bg);border:1px solid var(--card-border);padding:0.4rem 0.65rem;border-radius:var(--radius-sm);box-shadow:var(--shadow)" aria-label="返回顶部">$ cd top</a>
     </div>
+    <script src="../scripts/pjax.ts" />
+    <style is:global>
+      .page-main.pjax-transitioning { opacity: 0.7; transition: opacity 0.15s ease-out; }
+    </style>
     <script is:inline>
       (function(){
         var topBtn = document.getElementById('back-to-top')
