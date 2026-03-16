@@ -27,7 +27,7 @@ const list = posts.filter((p) => postIds.has(p.id)).sort((a, b) => b.data.create
         <p class="m-0" style="color:var(--text-muted);font-family:var(--font-mono)">// no posts in this category</p>
       </div>
     ) : (
-      <div class="section-card overflow-hidden animate-in animate-in-delay-3">
+      <div class="section-card border-0! bg-transparent! overflow-hidden animate-in animate-in-delay-3">
       <ul class="post-list terminal-list">
         {list.map((entry) => (
           <li>
