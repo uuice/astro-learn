@@ -77,10 +77,8 @@ function init() {
     void handleNavigate(url, true)
   })
 
-  window.addEventListener('popstate', (e) => {
-    if (e.state?.pjax) {
-      void handleNavigate(window.location.href, false)
-    }
+  window.addEventListener('popstate', () => {
+    void handleNavigate(window.location.href, false)
   })
 
   window.addEventListener('pageshow', (e) => {
