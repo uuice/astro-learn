@@ -9,6 +9,7 @@ import rehypePresetMinify from 'rehype-preset-minify'
 import tailwindcss from '@tailwindcss/vite'
 import node from '@astrojs/node'
 import react from '@astrojs/react'
+import vue from '@astrojs/vue'
 
 const rehypePluginsBase = [rehypeSlug]
 
@@ -39,7 +40,7 @@ export default defineConfig({
     remarkRehype: { footnoteLabel: 'Footnotes' },
     gfm: true,
     extendMarkdownConfig: true,
-  }), react()],
+  }), react(), vue()],
 
   vite: {
     plugins: [tailwindcss()],
