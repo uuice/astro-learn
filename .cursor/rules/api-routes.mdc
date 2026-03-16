@@ -1,0 +1,39 @@
+---
+description: API 路由约定 — 文件即路由、返回格式、鉴权
+globs: src/pages/api/**/*.ts
+alwaysApply: false
+---
+
+# API 路由约定
+
+## 基本结构
+
+```typescript
+import type { APIRoute } from 'astro'
+
+export const prerender = false
+
+export const GET: APIRoute = async ({ url }) => {
+  const param = url.searchParams.get('key')
+  if (!param) {
+    return new Response(JSON.stringify({ error: 'Missing key' }), { status: 400 })
+  }
+  const data = await fetchData(param)
+  return new Response(JSON.stringify({ data }), {
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+```
+
+## 规则
+
+- 文件即路由：`src/pages/api/comments/index.ts` → `/api/comments`
+- 需服务端执行的路由 **必须** 设置 `export const prerender = false`
+- 返回格式统一：成功 `{ data: T }`，失败 `{ error: string }` + 4xx 状态码
+- POST 请求先校验 `Content-Type`，再 `try/catch` 解析 JSON body
+- 数据操作调用 `src/lib/*-db` 模块，不在路由中直接操作文件
+
+## 后台 API
+
+- 路径在 `src/pages/api/admin/`
+- 需校验管理员身份（session `adminLoggedIn`）

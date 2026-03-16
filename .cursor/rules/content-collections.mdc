@@ -1,0 +1,55 @@
+---
+description: Content Collections 约定 — schema、loader、ID 生成
+globs: src/content/**,src/content.config.ts
+alwaysApply: false
+---
+
+# Content Collections 约定
+
+## 定义位置
+
+`src/content.config.ts` — 使用 `defineCollection` + `glob()`/`file()` loader + Zod schema
+
+## 核心 Schema
+
+所有文章/页面共享 `baseSchema`：
+
+```typescript
+const baseSchema = {
+  id: z.string(),
+  title: z.string(),
+  alias: z.union([z.string(), z.null()]).optional().default(''),
+  cover: z.union([z.string(), z.null()]).optional().default(''),
+  created_time: z.union([z.string(), z.date()]),
+  updated_time: z.union([z.string(), z.date()]),
+  categories: z.union([z.array(z.string()), z.null()]).default([]),
+  tags: z.union([z.array(z.string()), z.null()]).default([]),
+  excerpt: z.union([z.string(), z.null()]).optional().default(''),
+  published: z.boolean().default(true),
+}
+```
+
+## ID 与 URL 生成
+
+- 使用 `@utils/index` 的 `generatePostId`、`generatePageId`、`generateAuthorId`、`titleToUrl`
+- URL 由 `titleToUrl(alias || title)` 配合 prefix 生成
+- loader 中的 `generateId` 必须与工具函数一致
+
+## 博客文章 frontmatter
+
+```yaml
+---
+title: 文章标题
+alias: optional-url-slug
+categories: [分类名]
+tags: [标签1, 标签2]
+published: true
+created_time: 2025-01-01
+updated_time: 2025-01-01
+excerpt: 可选摘要
+---
+```
+
+## 派生数据
+
+分类/标签不单独存储，由 `src/utils/derived-collections.ts` 的 `getDerivedFromPosts(posts)` 从文章集合派生

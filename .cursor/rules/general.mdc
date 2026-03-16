@@ -1,0 +1,45 @@
+---
+description: 项目通用约定 — 技术栈、代码风格、路径别名
+alwaysApply: true
+---
+
+# 项目通用约定
+
+## 技术栈
+
+- Astro 5 SSR (`output: 'server'`)，适配器 `@astrojs/node`（mode: middleware）
+- UI 框架：React 19 + Vue 3（交互组件）；静态组件写 `.astro`
+- 样式：Tailwind 4（`@tailwindcss/vite`），全局 CSS 变量定义在 `src/assets/styles/global.css`
+- 内容：`@astrojs/mdx`，Content Collections（glob/file loaders + Zod）
+- 数据层：lowdb（`src/lib/*-db.ts`），持久化到 `data/` 目录
+- 包管理：pnpm；脚本 `pnpm dev` / `pnpm build` / `pnpm preview`
+
+## 代码风格
+
+- **无分号**（ESLint `semi: ['error', 'never']`），唯一例外 `eslint.config.js`
+- 中文注释/文案可接受；用户可见文案保持现有口吻
+- TypeScript strict 模式，类型从 `src/types.ts` 或各模块导出引入
+
+## 路径别名
+
+| 别名            | 实际路径           |
+| --------------- | ------------------ |
+| `@/*`           | `src/*`            |
+| `@components/*` | `src/components/*` |
+| `@layouts/*`    | `src/layouts/*`    |
+| `@assets/*`     | `src/assets/*`     |
+| `@utils/*`      | `src/utils/*`      |
+| `@pages/*`      | `src/pages/*`      |
+
+## 目录职责
+
+| 路径                     | 用途                                          |
+| ------------------------ | --------------------------------------------- |
+| `src/pages/`             | 页面 & API 路由（`api/` 子目录）              |
+| `src/layouts/`           | BlogLayout（前台）、AdminLayout（后台）       |
+| `src/components/client/` | React 客户端交互组件                          |
+| `src/components/vue/`    | Vue 客户端交互组件                            |
+| `src/components/admin/`  | 后台 React 组件                               |
+| `src/lib/`               | 数据访问层（lowdb）                           |
+| `src/utils/`             | 工具函数（`titleToUrl`、`generatePostId` 等） |
+| `src/content/`           | Content Collections 源文件                    |

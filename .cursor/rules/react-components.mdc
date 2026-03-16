@@ -1,0 +1,46 @@
+---
+description: React 组件约定 — 函数组件、admin 与 client 分离
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React 组件约定
+
+## 何时使用 React
+
+- 仅在需要客户端交互时使用，静态内容写 `.astro`
+- 前台交互组件放 `src/components/client/`
+- 后台管理组件放 `src/components/admin/`
+
+## 基本模式
+
+```tsx
+import { useState, useEffect } from 'react'
+
+interface Props {
+  postId: string
+}
+
+export default function MyComponent({ postId }: Props) {
+  const [data, setData] = useState<Item[]>([])
+
+  useEffect(() => { fetchData() }, [postId])
+
+  return <div className="section-card">...</div>
+}
+```
+
+## 规则
+
+- 函数组件 + Hooks，不用 class 组件
+- Props 用 TypeScript interface 声明，`export default function` 导出
+- API 调用统一用 `fetch`，返回格式参照 `{ data }` / `{ error }`
+- 样式用项目语义化类 + CSS 变量，`className` 而非 `style` 优先
+
+## 在 Astro 中使用
+
+```astro
+<MyComp client:load postId="xxx" />
+```
+
+JSX 配置：`tsconfig.json` 中 `jsx: "react-jsx"`、`jsxImportSource: "react"`

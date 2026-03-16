@@ -1,0 +1,52 @@
+---
+description: Astro 页面与布局约定 — 终端/CLI 设计风格
+globs: '**/*.astro'
+alwaysApply: false
+---
+
+# Astro 页面约定
+
+## 布局
+
+- 前台页面用 `BlogLayout.astro`，传入 `title` prop
+- 后台页面用 `AdminLayout.astro`，路由以 `/admin` 开头
+- 主内容区：`max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 md:py-8`
+- 主内容容器 `id="pjax-main"`
+
+## 数据获取
+
+```astro
+const posts = await getCollection('post', ({ data }) => data.published)
+const [setting] = await getCollection('setting')
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+```
+
+## 终端/CLI 设计风格
+
+所有页面遵循「在终端敲命令看输出」的视觉语言：
+
+- 区块标题用 `# export …`、`$ cd categories` 等拟终端文案
+- 列表用等宽字体、行内符号（`@` 日期、`▸` 分类、`#` 标签）
+- 颜色 **全部** 通过 CSS 变量，禁止硬编码色值
+
+## 语义化样式类（优先复用）
+
+| 类名             | 用途                                              |
+| ---------------- | ------------------------------------------------- |
+| `section-card`   | 卡片容器（白/暗底、边框、圆角、hover 高亮）       |
+| `section-title`  | 区块标题，内放 `section-prompt`（`$`/`#`）        |
+| `code-label`     | 终端风格小字（mono、`--text-xs`、`--text-muted`） |
+| `terminal-list`  | 终端风格列表容器                                  |
+| `post-card-cute` | 文章卡片                                          |
+| `animate-in`     | 入场动画，配合 `animate-in-delay-1` ~ `10`        |
+
+## 导入框架组件
+
+在 `.astro` 中导入 Vue/React 组件时，使用与文件名 **不同** 的别名以避免 Astro 编译器局部声明冲突：
+
+```astro
+---
+import CommentComp from '../components/vue/Comment.vue'
+---
+<CommentComp client:load postId="/about" />
+```

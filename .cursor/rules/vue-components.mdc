@@ -1,0 +1,44 @@
+---
+description: Vue 组件约定 — script setup、样式复用
+globs: "**/*.vue"
+alwaysApply: false
+---
+
+# Vue 组件约定
+
+## 基本模式
+
+- 使用 `<script setup lang="ts">` + Composition API
+- Props 用 `defineProps<{ ... }>()` 声明
+- 组件放 `src/components/vue/` 目录
+
+```vue
+<template>
+  <div class="section-card p-4" style="border-radius: var(--radius)">
+    <h3 class="section-title">
+      <span class="section-prompt">#</span> 标题
+    </h3>
+    <!-- 内容 -->
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+
+const props = defineProps<{ postId: string }>()
+</script>
+```
+
+## 样式
+
+- 优先使用项目已有的语义化 CSS 类（`section-card`、`code-label`、`comment-*` 等）
+- 颜色/字体用 CSS 变量（`var(--accent)`、`var(--text-muted)`、`var(--font-mono)`）
+- 不使用 `<style scoped>`，除非样式确实仅限当前组件且不影响全局
+
+## 在 Astro 中使用
+
+需用 `client:load`（或 `client:visible` 等）指令激活水合：
+
+```astro
+<VueComp client:load postId="xxx" />
+```
