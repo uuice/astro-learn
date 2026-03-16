@@ -15,12 +15,29 @@ interface CommentProps {
   postId: string
 }
 
-function buildTree(list: CommentItem[]): { root: CommentItem; children: CommentItem[] }[] {
-  const roots = list.filter((c) => !c.parentId).sort((a, b) => a.createdAt - b.createdAt)
-  return roots.map((root) => ({
-    root,
-    children: list.filter((c) => c.parentId === root.id).sort((a, b) => a.createdAt - b.createdAt),
-  }))
+interface TreeNode {
+  comment: CommentItem
+  children: TreeNode[]
+}
+
+function buildTree(list: CommentItem[]): TreeNode[] {
+  const map = new Map<string, TreeNode>()
+  const roots: TreeNode[] = []
+  for (const c of list) map.set(c.id, { comment: c, children: [] })
+  for (const c of list) {
+    const node = map.get(c.id)!
+    if (c.parentId && map.has(c.parentId)) {
+      map.get(c.parentId)!.children.push(node)
+    } else {
+      roots.push(node)
+    }
+  }
+  const sortNodes = (nodes: TreeNode[]) => {
+    nodes.sort((a, b) => a.comment.createdAt - b.comment.createdAt)
+    nodes.forEach((n) => sortNodes(n.children))
+  }
+  sortNodes(roots)
+  return roots
 }
 
 export default function Comment({ postId }: CommentProps) {
@@ -108,6 +125,34 @@ export default function Comment({ postId }: CommentProps) {
   }
 
   const tree = buildTree(list)
+  const authorMap = new Map(list.map((c) => [c.id, c.author]))
+
+  const renderNode = (node: TreeNode) => {
+    const c = node.comment
+    const parentAuthor = c.parentId ? authorMap.get(c.parentId) : null
+    return (
+      <li key={c.id} className={`comment-thread${c.parentId ? ' comment-item-reply' : ''}`}>
+        <div className="comment-item">
+          <div className="comment-item-meta">
+            <span className="comment-symbol">@</span> {c.author}
+            {c.email ? <span className="comment-email"> &lt;{c.email}&gt;</span> : null}
+            {parentAuthor ? <span className="comment-reply-to"> 回复 @ {parentAuthor}</span> : null}
+            <span className="comment-sep">·</span>
+            <span className="comment-date">{formatDate(c.createdAt)}</span>
+            <button type="button" className="comment-reply-btn" onClick={() => startReply(c.id, c.author)}>
+              回复
+            </button>
+          </div>
+          <div className="comment-item-content">{c.content}</div>
+        </div>
+        {node.children.length > 0 ? (
+          <ul className="comment-replies">
+            {node.children.map(renderNode)}
+          </ul>
+        ) : null}
+      </li>
+    )
+  }
 
   return (
     <div className="comment-block">
@@ -119,41 +164,7 @@ export default function Comment({ postId }: CommentProps) {
           {tree.length === 0 ? (
             <li className="comment-muted">暂无评论</li>
           ) : (
-            tree.map(({ root, children }) => (
-              <li key={root.id} className="comment-thread">
-                <div className="comment-item">
-                  <div className="comment-item-meta">
-                    <span className="comment-symbol">@</span> {root.author}
-                    {root.email ? <span className="comment-email"> &lt;{root.email}&gt;</span> : null}
-                    <span className="comment-sep">·</span>
-                    <span className="comment-date">{formatDate(root.createdAt)}</span>
-                    <button type="button" className="comment-reply-btn" onClick={() => startReply(root.id, root.author)}>
-                      回复
-                    </button>
-                  </div>
-                  <div className="comment-item-content">{root.content}</div>
-                </div>
-                {children.length > 0 ? (
-                  <ul className="comment-replies">
-                    {children.map((c) => (
-                      <li key={c.id} className="comment-item comment-item-reply">
-                        <div className="comment-item-meta">
-                          <span className="comment-symbol">@</span> {c.author}
-                          {c.email ? <span className="comment-email"> &lt;{c.email}&gt;</span> : null}
-                          <span className="comment-reply-to"> 回复 @ {root.author}</span>
-                          <span className="comment-sep">·</span>
-                          <span className="comment-date">{formatDate(c.createdAt)}</span>
-                          <button type="button" className="comment-reply-btn" onClick={() => startReply(root.id, c.author)}>
-                            回复
-                          </button>
-                        </div>
-                        <div className="comment-item-content">{c.content}</div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </li>
-            ))
+            tree.map(renderNode)
           )}
         </ul>
       )}
