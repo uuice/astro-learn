@@ -37,6 +37,13 @@ const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defau
     </script>
   </head>
   <body class="min-h-screen flex flex-col antialiased">
+    <!-- 顶部滚动进度条：animation-timeline: scroll(root block) -->
+    <div
+      class="scroll-progress-bar fixed top-0 left-0 right-0 z-50 h-0.5 origin-left"
+      role="presentation"
+      aria-hidden="true"
+      style="background: var(--accent); animation: scale-progress linear; animation-duration: 1ms; animation-timeline: scroll(root block); animation-range: 0% 100%;"
+    />
     <!-- <BackgroundGradient client:load /> -->
     <div class="min-h-screen flex flex-col">
       <header class="sticky top-0 z-30 flex flex-col border-b" style="background:var(--header-bg);border-color:var(--border)">
@@ -113,6 +120,10 @@ const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defau
     <script src="../scripts/pjax.ts" />
     <style is:global>
       .page-main.pjax-transitioning { opacity: 0.7; transition: opacity 0.15s ease-out; }
+      @keyframes scale-progress {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+      }
     </style>
     <script is:inline>
       (function(){
