@@ -70,7 +70,18 @@ async function handleNavigate(url: string, pushState = true) {
 function init() {
   document.addEventListener('click', (e) => {
     const link = (e.target as Element).closest('a')
-    if (!link || !isPjaxLink(link)) return
+    if (!link) return
+    const href = link.getAttribute('href')
+    if (href?.startsWith('#')) {
+      e.preventDefault()
+      const id = href.slice(1)
+      const element = document.getElementById(id)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+      return
+    }
+    if (!isPjaxLink(link)) return
     e.preventDefault()
     const url = link.href
     if (url === window.location.href) return

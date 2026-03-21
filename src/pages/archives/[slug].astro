@@ -18,7 +18,7 @@ const dateStr = new Date(post.data.created_timestamp).toLocaleDateString('zh-CN'
   <p class="mb-4 animate-in animate-in-delay-1">
     <a href="/archives" class="inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium transition-colors hover:bg-(--card-border)" style="color:var(--accent);font-family:var(--font-mono)">$ cd ..</a>
   </p>
-  <article class="section-card overflow-hidden animate-in animate-in-delay-2">
+  <article class="section-card animate-in animate-in-delay-2">
     <header class="px-6 md:px-10 pt-6 pb-5 border-b" style="border-color:var(--card-border)">
       <p class="doc-detail-header-export">### export <span class="export-name">{postSlug}</span></p>
       <h1 class="font-bold mb-2" style="color:var(--text);font-size:var(--text-xl);font-family:var(--font-mono);margin:0">{post.data.title}</h1>
@@ -46,7 +46,7 @@ const dateStr = new Date(post.data.created_timestamp).toLocaleDateString('zh-CN'
             <ul>
               {tocList.map((h, i) => (
                 <li class="doc-detail-toc-item" style={`animation-delay: ${0.08 + i * 0.04}s`}>
-                  <a href={`#${h.slug}`} class={h.depth === 3 ? 'toc-depth-3' : ''}>
+                  <a href={`#${h.slug}`} class={h.depth === 3 ? 'toc-depth-3' : ''} data-no-pjax>
                     {h.text}
                   </a>
                 </li>
