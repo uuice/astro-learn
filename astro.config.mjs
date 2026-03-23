@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config'
+import { defineConfig, sessionDrivers } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import remarkToc from 'remark-toc'
 import remarkCustomDirectives from './src/plugins/remark-custom-directives.mjs'
@@ -16,7 +16,7 @@ const rehypePluginsBase = [rehypeSlug]
 export default defineConfig({
   output: 'server',
   session: {
-    driver: 'fs',
+    driver: sessionDrivers.fs(),
   },
   markdown: {
     syntaxHighlight: 'shiki',
