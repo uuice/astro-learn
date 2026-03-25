@@ -30,6 +30,9 @@
       ],
       "@templates/*": [
         "./src/templates/*"
+      ],
+      "@libraries/*": [
+        "./src/libraries/*"
       ]
     },
     "jsx": "react-jsx",

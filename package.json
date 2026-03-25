@@ -21,7 +21,9 @@
     "pack:build": "pnpm build && pnpm run pack",
     "astro": "astro",
     "lint": "eslint src --ext .js,.astro --fix",
-    "lint:check": "eslint src --ext .js,.astro"
+    "lint:check": "eslint src --ext .js,.astro",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.2",
@@ -45,7 +47,8 @@
     "remark-toc": "^9.0.0",
     "unist-util-visit": "^5.1.0",
     "uuid": "^13.0.0",
-    "vue": "^3.5.30"
+    "vue": "^3.5.30",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
@@ -61,6 +64,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-mdx": "^3.7.0",
     "less": "^4.6.4",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.2.2",
+    "vitest": "^4.1.1"
   }
 }
