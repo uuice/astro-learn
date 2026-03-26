@@ -1,6 +1,6 @@
 /**
- * 评论集合 ORM 示例（数据写入 `data/comments-orm-example.json`，与业务 `comments.json` 隔离）。
- * 以下为「用法说明 + 可调用示例函数」，按需 `import { exampleCommentCreate, ... }` 在脚本或路由里试跑。
+ * 评论集合示例（数据在 `data/comments-orm-example.json`，与业务 `comments.json` 隔离）。
+ * 约定：增删改查通过 `getDb().update` + lodash；只读聚合用 `lodashChain()`。
  */
 import { z } from 'zod'
 import { createModel } from './model.js'
@@ -16,7 +16,6 @@ export const CommentSchema = z.object({
   createdAt: z.number(),
 })
 
-/** 与测试共用，便于重置 `data/` 下文件 */
 export const EXAMPLE_COMMENT_DB_FILE = 'comments-orm-example.json'
 
 export const CommentModel = createModel({
@@ -26,43 +25,15 @@ export const CommentModel = createModel({
   idField: 'id',
 })
 
-/*
- * ─── 增删改查与链式调用（摘录）────────────────────────────────────────
- *
- * 增
- *   await CommentModel.create({ postId, author, content, status: 'pending', createdAt: Date.now() })
- *   await CommentModel.insertMany([{ ... }, { ... }])
- *
- * 查
- *   await CommentModel.findById(id)
- *   await CommentModel.findOne({ postId: 'x', status: 'approved' })
- *   await CommentModel.find({ status: 'pending' }, { limit: 5 })
- *   await CommentModel.find({ postId: 'x' }).sort({ createdAt: -1 }).skip(0).limit(10)
- *   await CommentModel.countDocuments({ status: 'approved' })
- *   await CommentModel.exists({ author: 'bob' })
- *
- * 改
- *   await CommentModel.updateOne({ id }, { status: 'approved' })
- *   await CommentModel.updateMany({ postId: 'x' }, { status: 'approved' })
- *
- * 删
- *   await CommentModel.deleteOne({ id })
- *   await CommentModel.deleteMany({ postId: 'x' })
- *
- * lodash.chain（先执行查询，再对结果数组链式处理）
- *   const ch = await CommentModel.find({ status: 'pending' }).sort({ createdAt: -1 }).chain()
- *   const authors = ch.map('author').uniq().value()
- *
- * lowdb 单例（绕过 Model，直接改 JSON 根对象）
- *   const db = await CommentModel.getDb()
- *   await db.update((data) => { data.comments.push({ ... }) })
- */
+function newId() {
+  return `_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
+}
 
 // ─── 增 ─────────────────────────────────────────────────────────────
 
-/** 创建一条待审核评论（id 自动生成） */
 export async function exampleCommentCreate() {
-  return CommentModel.create({
+  const doc = CommentModel.schema.parse({
+    id: newId(),
     postId: 'demo-post',
     author: 'alice',
     email: 'alice@example.com',
@@ -70,123 +41,190 @@ export async function exampleCommentCreate() {
     status: 'pending',
     createdAt: Date.now(),
   })
+  const db = await CommentModel.getDb()
+  await db.update((data) => {
+    const list = data.comments
+    if (!Array.isArray(list)) {
+      data.comments = [doc]
+      return
+    }
+    list.push(doc)
+  })
+  return doc
 }
 
-/** 批量插入多条评论 */
 export async function exampleCommentInsertMany() {
   const t = Date.now()
-  return CommentModel.insertMany([
-    {
+  const docs = [
+    CommentModel.schema.parse({
+      id: newId(),
       postId: 'demo-post',
       author: 'bob',
       content: '批量 1',
       status: 'pending',
       createdAt: t,
-    },
-    {
+    }),
+    CommentModel.schema.parse({
+      id: newId(),
       postId: 'demo-post',
       author: 'carol',
       content: '批量 2',
       status: 'approved',
       createdAt: t + 1,
-    },
-  ])
+    }),
+  ]
+  const db = await CommentModel.getDb()
+  await db.update((data) => {
+    const list = data.comments
+    if (!Array.isArray(list)) {
+      data.comments = [...docs]
+      return
+    }
+    list.push(...docs)
+  })
+  return docs
 }
 
-// ─── 查 ─────────────────────────────────────────────────────────────
+// ─── 查（lodash chain）──────────────────────────────────────────────
 
-/** 按 id 查一条 */
 export async function exampleCommentFindById(id: string) {
-  return CommentModel.findById(id)
+  const ch = await CommentModel.lodashChain()
+  return ch.find({ id } as z.infer<typeof CommentSchema>).value() ?? null
 }
 
-/** findOne：单条匹配 */
-export async function exampleCommentFindOne() {
-  return CommentModel.findOne({ postId: 'demo-post', status: 'approved' })
+export async function exampleCommentFindOneApproved() {
+  const ch = await CommentModel.lodashChain()
+  return ch.find({ postId: 'demo-post', status: 'approved' }).value() ?? null
 }
 
-/**
- * ModelQuery 链式：where → sort → skip → limit，再 await 取数组
- */
+/** 已审核：按时间倒序，最多 5 条 */
+export async function exampleCommentFindApprovedSortedLimited() {
+  const ch = await CommentModel.lodashChain()
+  return ch.filter({ status: 'approved' }).orderBy(['createdAt'], ['desc']).take(5).value()
+}
+
+/** 过滤 + 排序 + 分页 */
 export async function exampleCommentFindQueryChain() {
-  return CommentModel.find({ postId: 'demo-post' })
-    .where({ status: 'pending' })
-    .sort({ createdAt: -1 })
-    .skip(0)
-    .limit(20)
+  const ch = await CommentModel.lodashChain()
+  return ch
+    .filter((c) => c.postId === 'demo-post' && c.status === 'pending')
+    .orderBy(['createdAt'], ['desc'])
+    .take(20)
+    .value()
 }
 
-/** 第二参数传初始分页（与链式 skip/limit 二选一组合使用） */
-export async function exampleCommentFindWithInitialOptions() {
-  return CommentModel.find({ status: 'approved' }, { sort: { createdAt: -1 }, limit: 5 })
-}
-
-/** count / exists */
 export async function exampleCommentCountAndExists() {
-  const total = await CommentModel.countDocuments()
-  const approved = await CommentModel.countDocuments({ status: 'approved' })
-  const hasBob = await CommentModel.exists({ author: 'bob' })
+  const rows = (await CommentModel.lodashChain()).value()
+  const total = rows.length
+  const approved = rows.filter((c) => c.status === 'approved').length
+  const hasBob = rows.some((c) => c.author === 'bob')
   return { total, approved, hasBob }
 }
 
-// ─── lodash.chain ────────────────────────────────────────────────────
-
-/**
- * 先执行查询，再对结果用 `lodash.chain`：map / uniq / take / value
- */
 export async function exampleCommentLodashChain() {
-  const wrapped = await CommentModel.find({ postId: 'demo-post' })
-    .sort({ createdAt: -1 })
-    .chain()
+  const ch = await CommentModel.lodashChain()
+  const uniqueAuthors = ch
+    .filter({ postId: 'demo-post' })
+    .orderBy(['createdAt'], ['desc'])
+    .map('author')
+    .uniq()
+    .value()
 
-  const uniqueAuthors = wrapped.map('author').uniq().value()
-  const firstThreeContents = wrapped.map('content').take(3).value()
+  const ch2 = await CommentModel.lodashChain()
+  const firstThreeContents = ch2
+    .filter({ postId: 'demo-post' })
+    .orderBy(['createdAt'], ['desc'])
+    .map('content')
+    .take(3)
+    .value()
+
   return { uniqueAuthors, firstThreeContents }
 }
 
-/**
- * 过滤后再 map（iteratee 函数形式）
- */
 export async function exampleCommentLodashChainWithPredicate() {
-  const wrapped = await CommentModel.find().chain()
-  const pendingIds = wrapped
+  const ch = await CommentModel.lodashChain()
+  return ch
     .filter((c) => c.status === 'pending')
     .map('id')
     .value()
-  return pendingIds
 }
 
 // ─── 改 ─────────────────────────────────────────────────────────────
 
-/** 按条件改一条 */
 export async function exampleCommentUpdateOne(id: string) {
-  return CommentModel.updateOne({ id }, { status: 'approved' })
+  const db = await CommentModel.getDb()
+  let matched = false
+  let modified = false
+  await db.update((data) => {
+    const list = data.comments
+    if (!Array.isArray(list)) return
+    const idx = list.findIndex((c) => c.id === id)
+    if (idx === -1) return
+    matched = true
+    const prev = JSON.stringify(list[idx])
+    const next = { ...list[idx], status: 'approved' as const }
+    if (prev !== JSON.stringify(next)) {
+      modified = true
+      list[idx] = CommentModel.schema.parse(next)
+    }
+  })
+  return { matched, modified }
 }
 
-/** 按条件批量改 */
 export async function exampleCommentUpdateMany() {
-  return CommentModel.updateMany({ postId: 'demo-post', status: 'pending' }, { status: 'approved' })
+  const db = await CommentModel.getDb()
+  let matched = 0
+  let modified = 0
+  await db.update((data) => {
+    const list = data.comments
+    if (!Array.isArray(list)) return
+    for (let i = 0; i < list.length; i++) {
+      const c = list[i]
+      if (c.postId !== 'demo-post' || c.status !== 'pending') continue
+      matched++
+      const next = { ...c, status: 'approved' as const }
+      if (JSON.stringify(c) !== JSON.stringify(next)) {
+        modified++
+        list[i] = CommentModel.schema.parse(next)
+      }
+    }
+  })
+  return { matched, modified }
 }
 
 // ─── 删 ─────────────────────────────────────────────────────────────
 
-/** 删一条 */
 export async function exampleCommentDeleteOne(id: string) {
-  return CommentModel.deleteOne({ id })
+  const db = await CommentModel.getDb()
+  let deleted = false
+  await db.update((data) => {
+    const list = data.comments
+    if (!Array.isArray(list)) return
+    const idx = list.findIndex((c) => c.id === id)
+    if (idx === -1) return
+    list.splice(idx, 1)
+    deleted = true
+  })
+  return deleted
 }
 
-/** 按条件批量删（谨慎） */
 export async function exampleCommentDeleteManyByPost(postId: string) {
-  return CommentModel.deleteMany({ postId })
+  const db = await CommentModel.getDb()
+  let count = 0
+  await db.update((data) => {
+    const list = data.comments
+    if (!Array.isArray(list)) return
+    const next = list.filter((c) => c.postId !== postId)
+    count = list.length - next.length
+    data.comments = next
+  })
+  return count
 }
 
-// ─── lowdb 单例 update ───────────────────────────────────────────────
+// ─── lowdb 手写 push（与 create 类似）──────────────────────────────────
 
-/**
- * 直接使用 lowdb：与 Model 共用同一 `getDb()` 单例，适合自定义原子写入。
- * 若手写对象，需自行满足 CommentSchema 字段。
- */
 export async function exampleCommentRawLowdbUpdate(validDoc: z.infer<typeof CommentSchema>) {
+  const parsed = CommentModel.schema.parse(validDoc)
   const db = await CommentModel.getDb()
   await db.update((data) => {
     const list = data.comments
@@ -194,14 +232,11 @@ export async function exampleCommentRawLowdbUpdate(validDoc: z.infer<typeof Comm
       data.comments = []
       return
     }
-    list.push(validDoc)
+    list.push(parsed)
   })
-  return validDoc
+  return parsed
 }
 
-// ─── 一键跑通（可选，用于本地脚本调试）────────────────────────────────
-
-/** 顺序演示：插入 → 查询链 → 更新 → lodash chain → 删除（使用上面创建的 id） */
 export async function runCommentModelExamples() {
   const created = await exampleCommentCreate()
   await exampleCommentInsertMany()

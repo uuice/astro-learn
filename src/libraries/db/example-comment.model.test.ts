@@ -3,16 +3,15 @@ import { join } from 'node:path'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 import { clearJsonDbCache } from './connection.js'
 import {
-  CommentModel,
   EXAMPLE_COMMENT_DB_FILE,
   exampleCommentCountAndExists,
   exampleCommentCreate,
   exampleCommentDeleteManyByPost,
   exampleCommentDeleteOne,
+  exampleCommentFindApprovedSortedLimited,
   exampleCommentFindById,
-  exampleCommentFindOne,
+  exampleCommentFindOneApproved,
   exampleCommentFindQueryChain,
-  exampleCommentFindWithInitialOptions,
   exampleCommentInsertMany,
   exampleCommentLodashChain,
   exampleCommentLodashChainWithPredicate,
@@ -35,7 +34,7 @@ function resetExampleDbFile(): void {
   clearJsonDbCache()
 }
 
-describe('example-comment.model ORM 示例', () => {
+describe('example-comment.model（lowdb + lodash + lodashChain）', () => {
   beforeEach(() => {
     resetExampleDbFile()
   })
@@ -51,16 +50,16 @@ describe('example-comment.model ORM 示例', () => {
     expect(doc.author).toBe('alice')
   })
 
-  it('findById / findOne', async () => {
+  it('findById / findOne（lodash chain）', async () => {
     const doc = await exampleCommentCreate()
     const byId = await exampleCommentFindById(doc.id)
     expect(byId?.id).toBe(doc.id)
 
-    const one = await exampleCommentFindOne()
+    const one = await exampleCommentFindOneApproved()
     expect(one).toBeNull()
 
-    await CommentModel.updateOne({ id: doc.id }, { status: 'approved' })
-    const one2 = await exampleCommentFindOne()
+    await exampleCommentUpdateOne(doc.id)
+    const one2 = await exampleCommentFindOneApproved()
     expect(one2?.status).toBe('approved')
   })
 
@@ -72,16 +71,16 @@ describe('example-comment.model ORM 示例', () => {
     expect(hasBob).toBe(true)
   })
 
-  it('ModelQuery 链式 find：where / sort / limit', async () => {
+  it('lodashChain：filter / orderBy / take', async () => {
     await exampleCommentInsertMany()
     const list = await exampleCommentFindQueryChain()
     expect(list.length).toBeGreaterThan(0)
     expect(list.every((c) => c.postId === 'demo-post' && c.status === 'pending')).toBe(true)
   })
 
-  it('find 第二参数 initialOptions', async () => {
+  it('lodashChain：filter / sort / take 限制条数', async () => {
     await exampleCommentInsertMany()
-    const approved = await exampleCommentFindWithInitialOptions()
+    const approved = await exampleCommentFindApprovedSortedLimited()
     expect(approved.length).toBeLessThanOrEqual(5)
     expect(approved.every((c) => c.status === 'approved')).toBe(true)
   })
