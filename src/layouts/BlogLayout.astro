@@ -22,6 +22,7 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 const recordInfo = setting?.data.recordSettings ? { ...setting.data.recordSettings } : undefined
 const showRecord = recordInfo?.showRecord !== false && (recordInfo?.icpNumber || recordInfo?.policeNumber)
 const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defaultAuthor.data.excerpt, url: defaultAuthor.data.url } : undefined
+const documentTitle = title === siteName ? siteName : `${title} · ${siteName}`
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -30,7 +31,7 @@ const author = defaultAuthor ? { title: defaultAuthor.data.title, excerpt: defau
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{siteName}</title>
+    <title>{documentTitle}</title>
     <script is:inline>
       (function(){var d=document.documentElement,k='theme',v=localStorage.getItem(k);if(v==='dark'||(!v&&window.matchMedia('(prefers-color-scheme:dark)').matches))d.classList.add('dark');else d.classList.remove('dark');var h=localStorage.getItem('themeHue');if(h!==null){var n=parseInt(h,10);if(!isNaN(n)&&n>=0&&n<=360)d.style.setProperty('--hue',String(n))}})()
 

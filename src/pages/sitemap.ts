@@ -17,6 +17,7 @@ export const GET: APIRoute = async () => {
 
   const posts = await getCollection('post', ({ data }) => data.published)
   const pages = await getCollection('page', ({ data }) => data.published)
+  const authorEntries = await getCollection('author')
   const { categories, tags } = getDerivedFromPosts(posts)
 
   const today = new Date().toISOString().split('T')[0]
@@ -27,6 +28,7 @@ export const GET: APIRoute = async () => {
   urls.push(`  <url><loc>${loc('/archives')}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>`)
   urls.push(`  <url><loc>${loc('/links')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`)
   urls.push(`  <url><loc>${loc('/about')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`)
+  urls.push(`  <url><loc>${loc('/navigations')}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`)
 
   for (const post of posts) {
     const lastmod = new Date(post.data.updated_timestamp ?? post.data.created_timestamp).toISOString().split('T')[0]
@@ -36,6 +38,11 @@ export const GET: APIRoute = async () => {
   for (const page of pages) {
     const lastmod = new Date(page.data.updated_timestamp ?? page.data.created_timestamp).toISOString().split('T')[0]
     urls.push(`  <url><loc>${loc(page.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`)
+  }
+
+  for (const a of authorEntries) {
+    const lastmod = new Date(a.data.updated_timestamp ?? a.data.created_timestamp).toISOString().split('T')[0]
+    urls.push(`  <url><loc>${loc(a.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.55</priority></url>`)
   }
 
   for (const cat of categories) {

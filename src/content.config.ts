@@ -99,7 +99,13 @@ const menu = defineCollection({
   loader: file('src/content/json/menu.json', {
     parser: (text) => {
       const arr = JSON.parse(text) as { title: string; icon?: string; url: string; target?: string }[]
-      return Object.fromEntries(arr.map((item, i) => [item.title || String(i), { id: item.title || String(i), ...item }]))
+      // 使用序号作键/id，保证 getCollection 排序与 JSON 数组顺序一致（用 title 作键会按字符串排序）
+      return Object.fromEntries(
+        arr.map((item, i) => {
+          const id = String(i).padStart(4, '0')
+          return [id, { id, ...item }]
+        }),
+      )
     },
   }),
   schema: menuItem,
