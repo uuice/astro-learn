@@ -33,7 +33,7 @@
           "id": "angular-docs",
           "title": "Angular 官方文档",
           "description": "一个用于构建移动和桌面 Web 应用的平台",
-          "url": "https://angular.io/docs",
+          "url": "https://angular.dev/",
           "icon": "🅰️",
           "tags": ["Angular", "TypeScript", "框架"]
         }
@@ -51,14 +51,6 @@
           "url": "https://www.freecodecamp.org/learn",
           "icon": "🏕️",
           "tags": ["免费课程", "认证", "编程学习"]
-        },
-        {
-          "id": "udemy",
-          "title": "Udemy",
-          "description": "提供各类付费课程，包含大量优质前端开发教程",
-          "url": "https://www.udemy.com/topic/web-development/",
-          "icon": "📖",
-          "tags": ["付费课程", "视频教程", "技能提升"]
         },
         {
           "id": "codecademy",
@@ -161,14 +153,6 @@
       "name": "API参考",
       "description": "常用的 API 文档和参考资源",
       "websites": [
-        {
-          "id": "jsonplaceholder",
-          "title": "JSONPlaceholder",
-          "description": "免费的在线 REST API，用于测试和原型开发",
-          "url": "https://jsonplaceholder.typicode.com/",
-          "icon": "🔌",
-          "tags": ["REST API", "测试", "模拟数据"]
-        },
         {
           "id": "axios",
           "title": "Axios 文档",
