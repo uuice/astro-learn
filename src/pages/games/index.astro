@@ -1,0 +1,41 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import Banner from '../../components/Banner.astro'
+import { getCollection } from 'astro:content'
+
+const [setting] = await getCollection('setting')
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+---
+<BlogLayout title={`小游戏 - ${siteName}`}>
+  <Banner title="小游戏" subtitle="轻量互动 · 学习与摸鱼皆可；后续会陆续增加更多条目" />
+  <div class="intro-bubble animate-in animate-in-delay-1">
+    <p class="m-0 code-label">$ ls games/</p>
+    <p class="m-0 mt-1 code-label">[INFO] 点击下方条目进入对应游戏；列表会随更新追加</p>
+  </div>
+  <section class="space-y-5 animate-in animate-in-delay-2">
+    <h2 class="section-title">
+      <span class="section-prompt">#</span> export 游戏列表
+    </h2>
+    <div class="section-card p-0 overflow-hidden">
+      <ul class="terminal-list m-0">
+        <li>
+          <a
+            href="/games/math"
+            class="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-4 px-4 border-b transition-colors hover:bg-(--card-border)/30"
+            style="border-color:var(--card-border)"
+          >
+            <span>
+              <span class="code-label mr-2" style="color:var(--accent)">▸</span>
+              <span class="font-semibold" style="font-family:var(--font-mono);color:var(--text)">算术挑战</span>
+              <span class="code-label ml-2" style="color:var(--text-muted)">PixiJS · 口算练习</span>
+            </span>
+            <span class="code-label shrink-0" style="color:var(--accent)">$ open →</span>
+          </a>
+        </li>
+        <li class="py-4 px-4 code-label" style="color:var(--text-muted)">
+          <span class="opacity-80">// more games coming soon…</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+</BlogLayout>

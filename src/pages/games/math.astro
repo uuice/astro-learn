@@ -1,0 +1,23 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import MathPixiGame from '../../components/client/MathPixiGame'
+import { getCollection } from 'astro:content'
+
+const [setting] = await getCollection('setting')
+const siteName = setting?.data.siteSetting?.siteName ?? '博客'
+---
+<BlogLayout title={`算术挑战 - ${siteName}`}>
+  <div class="intro-bubble animate-in">
+    <p class="m-0 code-label">$ cd games/math</p>
+    <p class="m-0 mt-1 code-label">
+      [INFO] 难度 + 题型（加减乘除可多选）· 10 题 ×10 分 · 全屏与统计见界面内 ·{' '}
+      <a href="/games" class="nav-link-cute" style="color:var(--accent)">返回游戏列表</a>
+    </p>
+  </div>
+  <section class="animate-in animate-in-delay-1">
+    <h2 class="section-title mb-4">
+      <span class="section-prompt">#</span> export 算术挑战
+    </h2>
+    <MathPixiGame client:load />
+  </section>
+</BlogLayout>

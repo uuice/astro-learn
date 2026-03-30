@@ -29,6 +29,8 @@ export const GET: APIRoute = async () => {
   urls.push(`  <url><loc>${loc('/links')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`)
   urls.push(`  <url><loc>${loc('/about')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`)
   urls.push(`  <url><loc>${loc('/navigations')}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`)
+  urls.push(`  <url><loc>${loc('/games')}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`)
+  urls.push(`  <url><loc>${loc('/games/math')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.45</priority></url>`)
 
   for (const post of posts) {
     const lastmod = new Date(post.data.updated_timestamp ?? post.data.created_timestamp).toISOString().split('T')[0]

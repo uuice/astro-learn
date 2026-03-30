@@ -24,6 +24,12 @@
     "target": "_self"
   },
   {
+    "title": "小游戏",
+    "icon": "",
+    "url": "/games",
+    "target": "_self"
+  },
+  {
     "title": "关于",
     "icon": "",
     "url": "/about",

@@ -38,6 +38,7 @@
     "lodash": "^4.17.23",
     "lowdb": "^7.0.1",
     "pinyin": "^4.0.0",
+    "pixi.js": "^8.17.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "rehype-autolink-headings": "^7.1.0",
