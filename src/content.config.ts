@@ -18,8 +18,15 @@ const baseSchema = {
   published: z.boolean().default(true),
 }
 
-function withComputed<T extends z.ZodRawShape>(shape: T, urlPrefix: string) {
-  return z.object({ ...shape, symbolsCount: z.number().optional(), url: z.string().optional() }).transform((data) => {
+/** 仅与 baseSchema 组合使用；泛型 z.object({ ...shape }) 在 Zod 4 下 infer 无法稳定包含 url/title 等键 */
+const postPageShape = {
+  ...baseSchema,
+  symbolsCount: z.number().optional(),
+  url: z.string().optional(),
+}
+
+function withComputed(urlPrefix: string) {
+  return z.object(postPageShape).transform((data) => {
     const slug = data.url || titleToUrl(data.alias || data.title)
     return {
       ...data,
@@ -37,7 +44,7 @@ const post = defineCollection({
     base: './src/content/blog',
     generateId: ({ data }) => { const d = data as FrontmatterBase; return generatePostId(d.title, d.alias ?? '') },
   }),
-  schema: withComputed(baseSchema, '/archives'),
+  schema: withComputed('/archives'),
 })
 
 const page = defineCollection({
@@ -46,7 +53,7 @@ const page = defineCollection({
     base: './src/content/page',
     generateId: ({ data }) => { const d = data as FrontmatterBase; return generatePageId(d.title, d.alias ?? '') },
   }),
-  schema: withComputed(baseSchema, '/pages'),
+  schema: withComputed('/pages'),
 })
 
 const author = defineCollection({
