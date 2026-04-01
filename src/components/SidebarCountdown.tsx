@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 
 const WORK_START_HOUR = 9
 const WORK_START_MINUTE = 0
@@ -53,22 +53,74 @@ function getNextWorkStart(from: Date): Date {
   return next
 }
 
-function formatHm(ms: number): string {
-  const h = Math.floor(ms / 3600000)
-  const m = Math.floor((ms % 3600000) / 60000)
-  return `${h} 小时 ${m} 分`
+const countdownColors = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)'] as const
+
+/** 实时倒计时数字：各段交替用 accent / accent-2 / accent-3，单位字用 muted */
+function ColoredCountdown({ ms }: { ms: number }) {
+  if (ms <= 0) {
+    return <span style={{ color: 'var(--text-muted)' }}>0 秒</span>
+  }
+  const totalSeconds = Math.floor(ms / 1000)
+  const sec = totalSeconds % 60
+  const totalMinutes = Math.floor(totalSeconds / 60)
+  const min = totalMinutes % 60
+  const totalHours = Math.floor(totalMinutes / 60)
+  const hour = totalHours % 24
+  const days = Math.floor(totalHours / 24)
+
+  let ci = 0
+  const nextColor = () => countdownColors[ci++ % countdownColors.length]
+  const labelStyle = { color: 'var(--text-muted)' as const }
+
+  const out: ReactNode[] = []
+  let key = 0
+  const pushNum = (n: number) => {
+    out.push(
+      <span key={key++} style={{ color: nextColor() }}>
+        {n}
+      </span>,
+    )
+  }
+  const pushLabel = (s: string) => {
+    out.push(
+      <span key={key++} style={labelStyle}>
+        {s}
+      </span>,
+    )
+  }
+
+  if (days > 0) {
+    pushNum(days)
+    pushLabel(' 天 ')
+    pushNum(hour)
+    pushLabel(' 小时 ')
+    pushNum(min)
+    pushLabel(' 分 ')
+    pushNum(sec)
+    pushLabel(' 秒')
+  } else if (totalHours > 0) {
+    pushNum(totalHours)
+    pushLabel(' 小时 ')
+    pushNum(min)
+    pushLabel(' 分 ')
+    pushNum(sec)
+    pushLabel(' 秒')
+  } else if (totalMinutes > 0) {
+    pushNum(totalMinutes)
+    pushLabel(' 分 ')
+    pushNum(sec)
+    pushLabel(' 秒')
+  } else {
+    pushNum(sec)
+    pushLabel(' 秒')
+  }
+
+  return <>{out}</>
 }
 
-function formatUntilWork(ms: number): string {
-  if (ms <= 0) return '马上上班'
-  const days = Math.floor(ms / 86400000)
-  const rest = ms % 86400000
-  const h = Math.floor(rest / 3600000)
-  const m = Math.floor((rest % 3600000) / 60000)
-  if (days > 0) {
-    return `${days} 天 ${h} 小时 ${m} 分`
-  }
-  return formatHm(ms)
+function UntilNextWorkCountdown({ ms }: { ms: number }) {
+  if (ms <= 0) return <span style={{ color: 'var(--text-muted)' }}>马上上班</span>
+  return <ColoredCountdown ms={ms} />
 }
 
 interface HolidayItem {
@@ -94,6 +146,13 @@ function toDateOnly(d: Date): string {
 function parseDateOnly(s: string): Date {
   const [y, m, d] = s.split('-').map(Number)
   return new Date(y, m - 1, d)
+}
+
+/** 自然日结束（含当日假期最后一天到 23:59:59.999） */
+function endOfDateOnly(s: string): Date {
+  const d = parseDateOnly(s)
+  d.setHours(23, 59, 59, 999)
+  return d
 }
 
 export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
@@ -127,41 +186,77 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
   const workEndToday = new Date(now)
   workEndToday.setHours(WORK_END_HOUR, WORK_END_MINUTE, 0, 0)
 
-  let workStatusText: string
-  let untilWorkHint: string | null = null
+  let workLine: ReactNode
+  let untilWorkLine: ReactNode | null = null
+  const workClock = `${WORK_START_HOUR}:${String(WORK_START_MINUTE).padStart(2, '0')}`
 
   if (isWeekend(now)) {
-    workStatusText = '周末休息，今日不上班'
+    workLine = '周末休息，今日不上班'
     const nextStart = getNextWorkStart(now)
-    untilWorkHint = `距离下次上班（${WORK_START_HOUR}:${String(WORK_START_MINUTE).padStart(2, '0')}）还有 ${formatUntilWork(nextStart.getTime() - now.getTime())}`
+    const ms = nextStart.getTime() - now.getTime()
+    untilWorkLine = (
+      <>
+        距离下次上班（
+        <span style={{ color: 'var(--accent)' }}>{workClock}</span>
+        ）还有 <UntilNextWorkCountdown ms={ms} />
+      </>
+    )
   } else if (now < workStartToday) {
-    workStatusText = `距离上班还有 ${formatHm(workStartToday.getTime() - now.getTime())}`
+    const ms = workStartToday.getTime() - now.getTime()
+    workLine = (
+      <>
+        距离上班还有 <ColoredCountdown ms={ms} />
+      </>
+    )
   } else if (now < workEndToday) {
-    workStatusText = `距离下班还有 ${formatHm(workEndToday.getTime() - now.getTime())}`
+    const ms = workEndToday.getTime() - now.getTime()
+    workLine = (
+      <>
+        距离下班还有 <ColoredCountdown ms={ms} />
+      </>
+    )
   } else {
-    workStatusText = '已下班'
+    workLine = '已下班'
     const nextStart = getNextWorkStart(now)
-    untilWorkHint = `距离下次上班（${WORK_START_HOUR}:${String(WORK_START_MINUTE).padStart(2, '0')}）还有 ${formatUntilWork(nextStart.getTime() - now.getTime())}`
+    const ms = nextStart.getTime() - now.getTime()
+    untilWorkLine = (
+      <>
+        距离下次上班（
+        <span style={{ color: 'var(--accent)' }}>{workClock}</span>
+        ）还有 <UntilNextWorkCountdown ms={ms} />
+      </>
+    )
   }
 
   const sorted = [...holidays].sort((a, b) => a.start.localeCompare(b.start))
   const pastHolidays = sorted.filter((h) => h.end < todayStr)
   const remainingHolidays = sorted.filter((h) => h.end >= todayStr)
 
-  let holidayText: string
+  let holidayLine: ReactNode
   const inHoliday = sorted.find((h) => todayStr >= h.start && todayStr <= h.end)
   if (inHoliday) {
-    const end = parseDateOnly(inHoliday.end)
-    const left = Math.ceil((end.getTime() - now.getTime()) / 86400000)
-    holidayText = `正在放 ${inHoliday.name}，还剩 ${left} 天`
+    const endAt = endOfDateOnly(inHoliday.end)
+    const leftMs = endAt.getTime() - now.getTime()
+    holidayLine =
+      leftMs <= 0 ? (
+        `正在放 ${inHoliday.name}，今日收尾`
+      ) : (
+        <>
+          正在放 <span style={{ color: 'var(--accent)' }}>{inHoliday.name}</span>，还剩 <ColoredCountdown ms={leftMs} />
+        </>
+      )
   } else {
     const next = sorted.find((h) => h.start > todayStr)
     if (next) {
       const start = parseDateOnly(next.start)
-      const days = Math.ceil((start.getTime() - now.getTime()) / 86400000)
-      holidayText = `距离 ${next.name} 还有 ${days} 天`
+      const ms = start.getTime() - now.getTime()
+      holidayLine = (
+        <>
+          距离 <span style={{ color: 'var(--accent)' }}>{next.name}</span> 还有 <ColoredCountdown ms={ms} />
+        </>
+      )
     } else {
-      holidayText = '暂无假期'
+      holidayLine = '暂无假期'
     }
   }
 
@@ -176,16 +271,23 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
         <span className="section-prompt">$</span> countdown
       </h3>
       <div className="mt-2 space-y-2" style={{ color: 'var(--text-muted)' }}>
-        <p className="m-0">{workStatusText}</p>
-        {untilWorkHint && <p className="m-0">{untilWorkHint}</p>}
-        <p className="m-0">{holidayText}</p>
+        <p className="m-0">{workLine}</p>
+        {untilWorkLine && <p className="m-0">{untilWorkLine}</p>}
+        <p className="m-0">{holidayLine}</p>
       </div>
       {pastHolidays.length > 0 && (
         <div className="mt-3 pt-2 border-t" style={{ borderColor: 'var(--card-border)' }}>
           <p className="m-0 mb-1" style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>已过假期</p>
           <ul className="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
             {pastHolidays.map((h) => (
-              <li key={h.name}>
+              <li
+                key={h.name}
+                style={{
+                  textDecoration: 'line-through',
+                  textDecorationColor: 'var(--text-muted)',
+                  opacity: 0.88,
+                }}
+              >
                 {h.name} {formatRange(h)}
               </li>
             ))}
