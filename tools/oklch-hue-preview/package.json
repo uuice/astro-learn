@@ -1,0 +1,40 @@
+{
+  "name": "oklch-hue-preview",
+  "displayName": "OKLCH + var(--hue) Preview",
+  "description": "在同一 CSS 文件中根据 :root --hue 为 oklch(... var(--hue)) 提供颜色预览",
+  "version": "0.1.2",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onLanguage:less",
+    "onLanguage:postcss",
+    "onLanguage:tailwindcss"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {},
+  "scripts": {
+    "compile": "esbuild src/extension.ts --bundle --platform=node --target=es2022 --outfile=out/extension.js --external:vscode --format=cjs --sourcemap",
+    "check": "tsc -p ./ --noEmit",
+    "watch": "esbuild src/extension.ts --bundle --platform=node --target=es2022 --outfile=out/extension.js --external:vscode --format=cjs --sourcemap --watch",
+    "package": "vsce package --no-dependencies",
+    "vscode:prepublish": "pnpm compile"
+  },
+  "devDependencies": {
+    "@types/culori": "^4.0.1",
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.7.1",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "culori": "^4.0.1"
+  }
+}
