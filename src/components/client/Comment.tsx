@@ -134,9 +134,21 @@ export default function Comment({ postId }: CommentProps) {
       <li key={c.id} className={`comment-thread${c.parentId ? ' comment-item-reply' : ''}`}>
         <div className="comment-item">
           <div className="comment-item-meta">
-            <span className="comment-symbol">@</span> {c.author}
-            {c.email ? <span className="comment-email"> &lt;{c.email}&gt;</span> : null}
-            {parentAuthor ? <span className="comment-reply-to"> 回复 @ {parentAuthor}</span> : null}
+            <span className="sym sym-at">@</span> {c.author}
+            {c.email ? (
+              <span className="comment-email">
+                {' '}
+                <span className="sym sym-chevron">&lt;</span>
+                {c.email}
+                <span className="sym sym-chevron">&gt;</span>
+              </span>
+            ) : null}
+            {parentAuthor ? (
+              <span className="comment-reply-to">
+                {' '}
+                <span className="sym sym-info">回复</span> <span className="sym sym-at">@</span> {parentAuthor}
+              </span>
+            ) : null}
             <span className="comment-sep">·</span>
             <span className="comment-date">{formatDate(c.createdAt)}</span>
             <button type="button" className="comment-reply-btn" onClick={() => startReply(c.id, c.author)}>
@@ -156,24 +168,34 @@ export default function Comment({ postId }: CommentProps) {
 
   return (
     <div className="comment-block">
-      <div className="comment-block-title"># 评论</div>
+      <div className="comment-block-title">
+        <span className="sym sym-hash">#</span> <span className="sym sym-keyword">评论</span>
+      </div>
       {loading ? (
-        <p className="comment-muted">加载中...</p>
+        <p className="comment-muted">
+          <span className="sym sym-comment">//</span> 加载中...
+        </p>
       ) : (
         <ul className="comment-list">
           {tree.length === 0 ? (
-            <li className="comment-muted">暂无评论</li>
+            <li className="comment-muted">
+              <span className="sym sym-comment">//</span> 暂无评论
+            </li>
           ) : (
             tree.map(renderNode)
           )}
         </ul>
       )}
       <form onSubmit={handleSubmit} className="comment-form">
-        {pendingNotice ? <p className="comment-pending">评论已提交，待审核后显示</p> : null}
+        {pendingNotice ? (
+          <p className="comment-pending">
+            <span className="sym sym-info">[INFO]</span> 评论已提交，待审核后显示
+          </p>
+        ) : null}
         {error ? <p className="comment-error">{error}</p> : null}
         {replyToAuthor ? (
           <p className="comment-replying">
-            回复 @ {replyToAuthor}
+            <span className="sym sym-info">回复</span> <span className="sym sym-at">@</span> {replyToAuthor}
             <button type="button" className="comment-cancel-reply" onClick={cancelReply}>
               取消
             </button>
@@ -181,7 +203,7 @@ export default function Comment({ postId }: CommentProps) {
         ) : null}
         <div className="comment-form-row">
           <label className="comment-label">
-            <span className="comment-symbol">@</span> 昵称
+            <span className="sym sym-at">@</span> <span className="sym sym-keyword">昵称</span>
           </label>
           <input
             type="text"
@@ -193,7 +215,9 @@ export default function Comment({ postId }: CommentProps) {
           />
         </div>
         <div className="comment-form-row">
-          <label className="comment-label">邮箱</label>
+          <label className="comment-label">
+            <span className="sym sym-keyword">邮箱</span>
+          </label>
           <input
             type="email"
             className="comment-input"
@@ -204,7 +228,9 @@ export default function Comment({ postId }: CommentProps) {
           />
         </div>
         <div className="comment-form-row">
-          <label className="comment-label">内容</label>
+          <label className="comment-label">
+            <span className="sym sym-comment">内容</span>
+          </label>
           <textarea
             className="comment-textarea"
             value={content}

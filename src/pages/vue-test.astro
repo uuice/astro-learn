@@ -8,8 +8,8 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 ---
 <BlogLayout title={`Vue 测试 - ${siteName}`}>
   <div class="intro-bubble animate-in">
-    <p class="m-0 code-label">$ vue-test.astro → client:load</p>
-    <p class="m-0 mt-1 code-label">[INFO] 下方为 Vue 3 组件，点击按钮可测试响应式</p>
+    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> vue-test.astro → client:load</p>
+    <p class="m-0 code-label"><span class="sym sym-info">[INFO]</span> 下方为 Vue 3 组件，点击按钮可测试响应式</p>
   </div>
   <section class="space-y-4 animate-in animate-in-delay-1">
     <VueTestComp client:load />

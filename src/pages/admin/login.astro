@@ -28,8 +28,9 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
       <header class="sticky top-0 z-30 flex flex-col border-b" style="background: var(--header-bg); border-color: var(--border)">
         <div class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <div class="flex items-center gap-6">
-            <a href="/" class="font-semibold transition-opacity hover:opacity-80 flex items-center gap-1.5" style="color: var(--text); font-size: var(--text-sm); font-family: var(--font-mono)">
-              <span class="code-label">$</span> {siteName}
+            <a href="/" class="header-brand font-semibold transition-opacity hover:opacity-80 flex items-center gap-1.5" style="font-size:var(--text-sm);font-family:var(--font-mono)">
+              <span class="code-label sym sym-prompt">$</span>
+              <span class="header-brand-name">{siteName}</span>
             </a>
             <span style="color: var(--text-muted); font-size: var(--text-xs)">/</span>
             <span class="font-medium" style="color: var(--text-muted); font-size: var(--text-sm); font-family: var(--font-mono)">

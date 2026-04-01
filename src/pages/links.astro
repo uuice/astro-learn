@@ -9,12 +9,12 @@ const links = await getCollection('link')
 <BlogLayout title="友情链接">
   <Banner title="友情链接" subtitle="交换链接、友链" />
   <div class="intro-bubble animate-in animate-in-delay-1">
-    <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{links.length}</strong> links --top={links.length}</p>
-    <p class="m-0 mt-1 code-label">[INFO] 点击链接在新窗口打开</p>
+    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> count: <strong>{links.length}</strong> links <span class="sym sym-flag">--top={links.length}</span></p>
+    <p class="m-0 code-label"><span class="sym sym-info">[INFO]</span> 点击链接在新窗口打开</p>
   </div>
   <section class="space-y-5">
     <h2 class="section-title animate-in animate-in-delay-2"><span class="section-prompt">##</span> export 友链</h2>
-    <p class="code-label mb-3">// {links.length} links</p>
+    <p class="code-label mb-3"><span class="sym sym-comment">//</span> {links.length} links</p>
     <div class="section-card border-0! bg-transparent! overflow-hidden animate-in animate-in-delay-3">
     <ul class="post-list terminal-list">
       {links.map((entry) => (
@@ -26,7 +26,7 @@ const links = await getCollection('link')
             class="terminal-item block py-2 px-3 transition-colors hover:bg-(--page-bg)"
             style="font-family:var(--font-mono);font-size:var(--text-sm)"
           >
-            <div class="terminal-export-line">### link <span class="export-name">{entry.data.title.replace(/\s+/g, '-').toLowerCase()}</span></div>
+            <div class="terminal-export-line"><span class="sym sym-export-hash">###</span> <span class="sym sym-keyword">link</span> <span class="export-name">{entry.data.title.replace(/\s+/g, '-').toLowerCase()}</span></div>
             <div class="terminal-meta-line">
               <span class="font-medium">{entry.data.title}</span>
               {entry.data.type && <span class="meta-from"> type="{entry.data.type}"</span>}

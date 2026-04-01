@@ -17,6 +17,95 @@ type DigitMode = 'single' | 'double'
 
 const ALL_OPS: Op[] = ['+', '-', '*', '/']
 
+/** HSL → RGB，与站点 --hue 联动（s/l ∈ [0,1]） */
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  const H = ((h % 360) + 360) % 360
+  const S = Math.max(0, Math.min(1, s))
+  const L = Math.max(0, Math.min(1, l))
+  const c = (1 - Math.abs(2 * L - 1)) * S
+  const hh = H / 60
+  const x = c * (1 - Math.abs((hh % 2) - 1))
+  const m = L - c / 2
+  let r = 0
+  let g = 0
+  let b = 0
+  if (hh < 1) {
+    r = c
+    g = x
+    b = 0
+  } else if (hh < 2) {
+    r = x
+    g = c
+    b = 0
+  } else if (hh < 3) {
+    r = 0
+    g = c
+    b = x
+  } else if (hh < 4) {
+    r = 0
+    g = x
+    b = c
+  } else if (hh < 5) {
+    r = x
+    g = 0
+    b = c
+  } else {
+    r = c
+    g = 0
+    b = x
+  }
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)]
+}
+
+function toPixiHex(r: number, g: number, b: number): number {
+  return ((r & 255) << 16) | ((g & 255) << 8) | (b & 255)
+}
+
+/** 基于站点色相的偏移（与 global.css chroma 思路一致） */
+function themeHex(hueBase: number, hueOffset: number, s: number, l: number): number {
+  const [r, g, b] = hslToRgb(hueBase + hueOffset, s, l)
+  return toPixiHex(r, g, b)
+}
+
+function readCssHue(): number {
+  if (typeof window === 'undefined') return 250
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--hue').trim()
+  const n = parseInt(raw, 10)
+  return Number.isFinite(n) ? ((n % 360) + 360) % 360 : 250
+}
+
+function buildPixiPalette(hue: number) {
+  const h = ((hue % 360) + 360) % 360
+  const tx = (off: number, s: number, l: number) => themeHex(h, off, s, l)
+  return {
+    bg: tx(0, 0.14, 0.07),
+    panel: tx(0, 0.11, 0.1),
+    panel2: tx(0, 0.13, 0.12),
+    card: tx(8, 0.16, 0.17),
+    cardHover: tx(18, 0.18, 0.24),
+    accent: tx(0, 0.52, 0.62),
+    accent2: tx(32, 0.48, 0.64),
+    accent3: tx(58, 0.45, 0.62),
+    accentHover: tx(18, 0.5, 0.7),
+    text: 0xf0f2fa,
+    muted: tx(0, 0.08, 0.52),
+    prompt: tx(145, 0.42, 0.58),
+    info: tx(200, 0.4, 0.56),
+    keyword: tx(40, 0.45, 0.6),
+    ok: tx(150, 0.48, 0.54),
+    bad: tx(22, 0.52, 0.62),
+    chipDigitOn: tx(30, 0.22, 0.28),
+    chipOpOn: tx(34, 0.2, 0.26),
+    chipOpOff: tx(0, 0.06, 0.11),
+    opFill: {
+      '+': tx(0, 0.55, 0.72),
+      '-': tx(52, 0.5, 0.68),
+      '*': tx(108, 0.5, 0.68),
+      '/': tx(168, 0.48, 0.68),
+    } as Record<Op, number>,
+  }
+}
+
 function randomInt(min: number, max: number) {
   return min + Math.floor(Math.random() * (max - min + 1))
 }
@@ -90,21 +179,6 @@ function buildChoices(answer: number): number[] {
   return shuffle([...set])
 }
 
-/** 终端风深色 + 轻微层次与描边，与博客主题变量协调 */
-const COL = {
-  bg: 0x0c0e14,
-  panel: 0x12151f,
-  panel2: 0x181c28,
-  card: 0x222a3a,
-  cardHover: 0x2e3850,
-  accent: 0x7c9cff,
-  accentHover: 0xa8bcff,
-  text: 0xf2f4fa,
-  muted: 0x8b93a8,
-  ok: 0x5ee9a0,
-  bad: 0xff9b9b,
-}
-
 export default function MathPixiGame() {
   const wrapRef = useRef<HTMLDivElement>(null)
   const shellRef = useRef<HTMLDivElement>(null)
@@ -137,6 +211,7 @@ export default function MathPixiGame() {
     let fsResizeHandler: (() => void) | null = null
 
     const run = async () => {
+      const COL = buildPixiPalette(readCssHue())
       await app.init({
         width: W,
         height: H,
@@ -157,7 +232,7 @@ export default function MathPixiGame() {
       const rootFrame = new Graphics()
       rootFrame.roundRect(10, 10, W - 20, H - 20, 22)
       rootFrame.fill({ color: COL.panel, alpha: 0.94 })
-      rootFrame.stroke({ width: 1, color: COL.accent, alpha: 0.22 })
+      rootFrame.stroke({ width: 1, color: COL.accent2, alpha: 0.28 })
       root.addChild(rootFrame)
 
       const menuLayer = new Container()
@@ -174,7 +249,7 @@ export default function MathPixiGame() {
         style: {
           fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
           fontSize: 22,
-          fill: COL.accentHover,
+          fill: COL.accent2,
           align: 'center',
           letterSpacing: 1,
           dropShadow: {
@@ -203,12 +278,12 @@ export default function MathPixiGame() {
       const menuPanel = new Graphics()
       menuPanel.roundRect(18, 76, W - 36, 218, 16)
       menuPanel.fill({ color: COL.panel2, alpha: 0.55 })
-      menuPanel.stroke({ width: 1, color: COL.accent, alpha: 0.1 })
+      menuPanel.stroke({ width: 1, color: COL.accent3, alpha: 0.18 })
       menuLayer.addChildAt(menuPanel, 0)
 
       const menuLabelDigit = new Text({
         text: '难度',
-        style: { fontFamily: 'system-ui, sans-serif', fontSize: 12, fill: COL.muted },
+        style: { fontFamily: 'system-ui, sans-serif', fontSize: 12, fill: COL.info },
       })
       menuLabelDigit.x = 36
       menuLabelDigit.y = 86
@@ -216,7 +291,7 @@ export default function MathPixiGame() {
 
       const menuLabelOp = new Text({
         text: '题型（可多选）',
-        style: { fontFamily: 'system-ui, sans-serif', fontSize: 12, fill: COL.muted },
+        style: { fontFamily: 'system-ui, sans-serif', fontSize: 12, fill: COL.prompt },
       })
       menuLabelOp.x = 36
       menuLabelOp.y = 176
@@ -227,7 +302,7 @@ export default function MathPixiGame() {
         style: {
           fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
           fontSize: 15,
-          fill: COL.muted,
+          fill: COL.accent3,
           letterSpacing: 0.5,
         },
       })
@@ -240,9 +315,9 @@ export default function MathPixiGame() {
         style: {
           fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
           fontSize: 15,
-          fill: COL.accentHover,
+          fill: COL.accent,
           fontWeight: '600',
-          dropShadow: { alpha: 0.35, angle: Math.PI / 2, blur: 3, color: 0x1a3a6e, distance: 0 },
+          dropShadow: { alpha: 0.35, angle: Math.PI / 2, blur: 3, color: 0x0a0a12, distance: 0 },
         },
       })
       scoreLabel.x = W - 130
@@ -254,7 +329,7 @@ export default function MathPixiGame() {
         style: {
           fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
           fontSize: 13,
-          fill: COL.muted,
+          fill: COL.info,
           letterSpacing: 0.5,
         },
       })
@@ -271,7 +346,7 @@ export default function MathPixiGame() {
       const qCard = new Graphics()
       qCard.roundRect(-196, -46, 392, 92, 16)
       qCard.fill({ color: COL.panel2, alpha: 0.85 })
-      qCard.stroke({ width: 1, color: COL.accent, alpha: 0.28 })
+      qCard.stroke({ width: 1, color: COL.accent3, alpha: 0.35 })
       qWrap.addChild(qCard)
 
       const questionText = new Text({
@@ -283,11 +358,11 @@ export default function MathPixiGame() {
           align: 'center',
           fontWeight: '600',
           dropShadow: {
-            alpha: 0.4,
+            alpha: 0.35,
             angle: Math.PI / 2,
-            blur: 6,
-            color: 0x000000,
-            distance: 1,
+            blur: 8,
+            color: COL.accent,
+            distance: 0,
           },
         },
       })
@@ -316,7 +391,7 @@ export default function MathPixiGame() {
       const gamePanel = new Graphics()
       gamePanel.roundRect(16, 36, W - 32, 300, 18)
       gamePanel.fill({ color: COL.panel2, alpha: 0.4 })
-      gamePanel.stroke({ width: 1, color: COL.accent, alpha: 0.1 })
+      gamePanel.stroke({ width: 1, color: COL.accent2, alpha: 0.15 })
       gameLayer.addChildAt(gamePanel, 0)
 
       let digitMode: DigitMode = 'single'
@@ -336,7 +411,7 @@ export default function MathPixiGame() {
         g.clear()
         g.roundRect(0, 0, w, h, 12)
         g.fill(fill)
-        g.stroke({ width: 1, color: COL.accent, alpha: strokeA })
+        g.stroke({ width: 1, color: COL.accent2, alpha: strokeA })
       }
 
       function makeAnswerButton(x: number, y: number, w: number, h: number, idx: number) {
@@ -486,11 +561,11 @@ export default function MathPixiGame() {
         g.clear()
         g.roundRect(0, 0, w, h, 10)
         if (selected) {
-          g.fill({ color: 0x2a3d5c, alpha: 0.95 })
+          g.fill({ color: COL.chipDigitOn, alpha: 0.95 })
           g.stroke({ width: 2, color: COL.accent, alpha: 0.9 })
         } else {
           g.fill({ color: COL.card, alpha: 0.85 })
-          g.stroke({ width: 1, color: COL.accent, alpha: 0.25 })
+          g.stroke({ width: 1, color: COL.accent3, alpha: 0.3 })
         }
       }
 
@@ -498,11 +573,11 @@ export default function MathPixiGame() {
         g.clear()
         g.roundRect(0, 0, w, h, 10)
         if (on) {
-          g.fill({ color: 0x283448, alpha: 0.95 })
-          g.stroke({ width: 2, color: COL.accent, alpha: 0.8 })
+          g.fill({ color: COL.chipOpOn, alpha: 0.95 })
+          g.stroke({ width: 2, color: COL.accent2, alpha: 0.85 })
         } else {
-          g.fill({ color: 0x151820, alpha: 0.9 })
-          g.stroke({ width: 1, color: COL.muted, alpha: 0.3 })
+          g.fill({ color: COL.chipOpOff, alpha: 0.95 })
+          g.stroke({ width: 1, color: COL.muted, alpha: 0.35 })
         }
       }
 
@@ -516,7 +591,7 @@ export default function MathPixiGame() {
       cDigitSingle.addChild(gDigitSingle)
       const tDigitSingle = new Text({
         text: '个位数',
-        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 15, fill: COL.text },
+        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 15, fill: COL.prompt },
       })
       tDigitSingle.anchor.set(0.5, 0.5)
       tDigitSingle.x = digitW / 2
@@ -526,6 +601,8 @@ export default function MathPixiGame() {
         selectedDigitMode = 'single'
         paintDigitChip(gDigitSingle, digitW, digitH, true)
         paintDigitChip(gDigitDouble, digitW, digitH, false)
+        tDigitSingle.style.fill = COL.prompt
+        tDigitDouble.style.fill = COL.muted
       })
       menuLayer.addChild(cDigitSingle)
 
@@ -539,7 +616,7 @@ export default function MathPixiGame() {
       cDigitDouble.addChild(gDigitDouble)
       const tDigitDouble = new Text({
         text: '两位数',
-        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 15, fill: COL.text },
+        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 15, fill: COL.muted },
       })
       tDigitDouble.anchor.set(0.5, 0.5)
       tDigitDouble.x = digitW / 2
@@ -549,6 +626,8 @@ export default function MathPixiGame() {
         selectedDigitMode = 'double'
         paintDigitChip(gDigitSingle, digitW, digitH, false)
         paintDigitChip(gDigitDouble, digitW, digitH, true)
+        tDigitSingle.style.fill = COL.muted
+        tDigitDouble.style.fill = COL.info
       })
       menuLayer.addChild(cDigitDouble)
 
@@ -585,7 +664,7 @@ export default function MathPixiGame() {
           style: {
             fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
             fontSize: 22,
-            fill: COL.text,
+            fill: COL.opFill[op],
           },
         })
         t.anchor.set(0.5, 0.5)
@@ -609,7 +688,7 @@ export default function MathPixiGame() {
       cStart.addChild(gStart)
       const tStart = new Text({
         text: '开始游戏',
-        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 17, fill: COL.text },
+        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 17, fill: COL.accent2 },
       })
       tStart.anchor.set(0.5, 0.5)
       tStart.x = menuBtnW / 2
@@ -633,7 +712,7 @@ export default function MathPixiGame() {
         style: {
           fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
           fontSize: 22,
-          fill: COL.accentHover,
+          fill: COL.accent2,
           align: 'center',
           letterSpacing: 1,
           dropShadow: {
@@ -668,7 +747,7 @@ export default function MathPixiGame() {
       const summaryPanel = new Graphics()
       summaryPanel.roundRect(18, 72, W - 36, 232, 16)
       summaryPanel.fill({ color: COL.panel2, alpha: 0.55 })
-      summaryPanel.stroke({ width: 1, color: COL.accent, alpha: 0.12 })
+      summaryPanel.stroke({ width: 1, color: COL.accent3, alpha: 0.2 })
       summaryLayer.addChildAt(summaryPanel, 0)
 
       addLabeledButton(summaryLayer, menuLeft, 320, menuBtnW, menuBtnH, '重新开始', '返回本局设置', () => {

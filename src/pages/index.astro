@@ -13,8 +13,8 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
   <Banner title={siteName} subtitle={setting?.data.siteSetting?.siteDescription} />
   <!-- 技术栈说明: 使用 Astro 构建，使用 Tailwind CSS 进行样式，使用 Shiki 进行代码高亮，使用 Remark 进行 Markdown 解析，使用 Rehype 进行 HTML 转换 -->
   <div class="intro-bubble animate-in animate-in-delay-1">
-    <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{sorted.length}</strong> posts --top={sorted.length}</p>
-    <p class="m-0 mt-1 code-label">[INFO] 共 {sorted.length} 篇，点击标题进入文章</p>
+    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> count: <strong>{sorted.length}</strong> posts <span class="sym sym-flag">--top={sorted.length}</span></p>
+    <p class="m-0 code-label"><span class="sym sym-info">[INFO]</span> 共 {sorted.length} 篇，点击标题进入文章</p>
   </div>
   <section class="space-y-5">
     <h2 class="section-title animate-in animate-in-delay-2">
@@ -22,7 +22,7 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
     </h2>
     {sorted.length === 0 ? (
       <div class="section-card p-8 text-center animate-in animate-in-delay-3">
-        <p class="m-0" style="color:var(--text-muted);font-family:var(--font-mono)">// no posts yet</p>
+        <p class="m-0 code-label"><span class="sym sym-comment">//</span> no posts yet</p>
       </div>
     ) : (
       <div class="section-card border-0! bg-transparent! overflow-hidden animate-in animate-in-delay-3">

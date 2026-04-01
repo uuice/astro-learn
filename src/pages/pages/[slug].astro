@@ -15,7 +15,7 @@ const dateStr = new Date(pageEntry.data.created_timestamp).toLocaleDateString('z
 <BlogLayout title={pageEntry.data.title}>
   <Banner title={pageEntry.data.title} subtitle={pageEntry.data.excerpt || ''} />
   <div class="intro-bubble">
-    <p class="m-0 code-label">$ cat pages/{slug}.md</p>
+    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> cat pages/{slug}.md</p>
     <p class="doc-detail-meta flex flex-wrap items-center gap-x-4 gap-y-1">
       <span><span class="doc-detail-meta-label" aria-label="日期">@</span> {dateStr}</span>
       {pageEntry.data.categories?.length ? (
@@ -24,8 +24,8 @@ const dateStr = new Date(pageEntry.data.created_timestamp).toLocaleDateString('z
       {pageEntry.data.tags?.length ? (
         <span class="flex items-center gap-1.5 flex-wrap">
           <span class="doc-detail-meta-label" aria-label="标签">#</span>
-          {pageEntry.data.tags.map((t) => (
-            <span class="doc-detail-meta-tag">{t}</span>
+          {pageEntry.data.tags.map((t, i) => (
+            <span class={`doc-detail-meta-tag chroma-tag chroma-tag--${i % 6}`}>{t}</span>
           ))}
         </span>
       ) : null}

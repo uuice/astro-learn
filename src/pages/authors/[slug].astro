@@ -13,7 +13,7 @@ const { Content } = await render(authorEntry)
 <BlogLayout title={authorEntry.data.title}>
   <Banner title={authorEntry.data.title} subtitle={authorEntry.data.excerpt || ''} />
   <div class="intro-bubble">
-    <p class="m-0 code-label">$ cat author/{slug}.md</p>
+    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> cat author/{slug}.md</p>
   </div>
   <article class="section-card p-6 md:p-10 prose max-w-none prose-headings:font-semibold prose-img:rounded-xl markdown-body">
     <Content />

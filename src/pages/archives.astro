@@ -18,8 +18,8 @@ const groups = Array.from(byYearMonth.entries()).sort((a, b) => b[0].localeCompa
 <BlogLayout title="归档">
   <Banner title="归档" subtitle="按时间查看文章" />
   <div class="intro-bubble animate-in animate-in-delay-1">
-    <p class="m-0 code-label">$ count: <strong style="color:var(--accent)">{sorted.length}</strong> posts --top={sorted.length}</p>
-    <p class="m-0 mt-1 code-label">[INFO] 按时间分组浏览</p>
+    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> count: <strong>{sorted.length}</strong> posts <span class="sym sym-flag">--top={sorted.length}</span></p>
+    <p class="m-0 code-label"><span class="sym sym-info">[INFO]</span> 按时间分组浏览</p>
   </div>
   <section class="space-y-8">
     {groups.map(([ym, list], i) => (
@@ -28,7 +28,7 @@ const groups = Array.from(byYearMonth.entries()).sort((a, b) => b[0].localeCompa
         <h2 class="section-title">
           <span class="section-prompt">##</span> export {ym}
         </h2>
-        <p class="code-label mb-3">// {list.length} posts</p>
+        <p class="code-label mb-3"><span class="sym sym-comment">//</span> {list.length} posts</p>
         <ul class="post-list terminal-list">
           {list.map((entry) => (
             <li>

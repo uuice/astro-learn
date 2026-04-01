@@ -53,12 +53,15 @@ function getNextWorkStart(from: Date): Date {
   return next
 }
 
-const countdownColors = ['var(--accent)', 'var(--accent-2)', 'var(--accent-3)'] as const
-
-/** 实时倒计时数字：各段交替用 accent / accent-2 / accent-3，单位字用 muted */
+/** 实时倒计时数字：各段用 chroma-tag--0…5 轮换，单位字用 muted */
 function ColoredCountdown({ ms }: { ms: number }) {
   if (ms <= 0) {
-    return <span style={{ color: 'var(--text-muted)' }}>0 秒</span>
+    return (
+      <>
+        <span className="chroma-tag chroma-tag--0">0</span>
+        <span style={{ color: 'var(--text-muted)' }}> 秒</span>
+      </>
+    )
   }
   const totalSeconds = Math.floor(ms / 1000)
   const sec = totalSeconds % 60
@@ -69,14 +72,14 @@ function ColoredCountdown({ ms }: { ms: number }) {
   const days = Math.floor(totalHours / 24)
 
   let ci = 0
-  const nextColor = () => countdownColors[ci++ % countdownColors.length]
   const labelStyle = { color: 'var(--text-muted)' as const }
 
   const out: ReactNode[] = []
   let key = 0
   const pushNum = (n: number) => {
+    const idx = ci++ % 6
     out.push(
-      <span key={key++} style={{ color: nextColor() }}>
+      <span key={key++} className={`chroma-tag chroma-tag--${idx}`}>
         {n}
       </span>,
     )
@@ -171,10 +174,13 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
         style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
       >
         <h3 className="section-title">
-          <span className="section-prompt">$</span> countdown
+          <span className="section-prompt">$</span>
+          <span className="sym sym-keyword">countdown</span>
         </h3>
         <div className="mt-2" style={{ color: 'var(--text-muted)' }}>
-          <p className="m-0">加载中...</p>
+          <p className="m-0">
+            <span className="sym sym-comment">//</span> 加载中...
+          </p>
         </div>
       </div>
     )
@@ -197,7 +203,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     untilWorkLine = (
       <>
         距离下次上班（
-        <span style={{ color: 'var(--accent)' }}>{workClock}</span>
+        <span className="sym sym-prompt">{workClock}</span>
         ）还有 <UntilNextWorkCountdown ms={ms} />
       </>
     )
@@ -222,7 +228,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     untilWorkLine = (
       <>
         距离下次上班（
-        <span style={{ color: 'var(--accent)' }}>{workClock}</span>
+        <span className="sym sym-prompt">{workClock}</span>
         ）还有 <UntilNextWorkCountdown ms={ms} />
       </>
     )
@@ -239,10 +245,12 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     const leftMs = endAt.getTime() - now.getTime()
     holidayLine =
       leftMs <= 0 ? (
-        `正在放 ${inHoliday.name}，今日收尾`
+        <>
+          正在放 <span className="sym sym-keyword">{inHoliday.name}</span>，今日收尾
+        </>
       ) : (
         <>
-          正在放 <span style={{ color: 'var(--accent)' }}>{inHoliday.name}</span>，还剩 <ColoredCountdown ms={leftMs} />
+          正在放 <span className="sym sym-keyword">{inHoliday.name}</span>，还剩 <ColoredCountdown ms={leftMs} />
         </>
       )
   } else {
@@ -252,11 +260,15 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       const ms = start.getTime() - now.getTime()
       holidayLine = (
         <>
-          距离 <span style={{ color: 'var(--accent)' }}>{next.name}</span> 还有 <ColoredCountdown ms={ms} />
+          距离 <span className="sym sym-keyword">{next.name}</span> 还有 <ColoredCountdown ms={ms} />
         </>
       )
     } else {
-      holidayLine = '暂无假期'
+      holidayLine = (
+        <>
+          <span className="sym sym-comment">//</span> 暂无假期
+        </>
+      )
     }
   }
 
@@ -268,7 +280,8 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
     >
       <h3 className="section-title">
-        <span className="section-prompt">$</span> countdown
+        <span className="section-prompt">$</span>
+        <span className="sym sym-keyword">countdown</span>
       </h3>
       <div className="mt-2 space-y-2" style={{ color: 'var(--text-muted)' }}>
         <p className="m-0">{workLine}</p>
@@ -277,9 +290,12 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       </div>
       {pastHolidays.length > 0 && (
         <div className="mt-3 pt-2 border-t" style={{ borderColor: 'var(--card-border)' }}>
-          <p className="m-0 mb-1" style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>已过假期</p>
+          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>
+            <span className="sym sym-hash">#</span>{' '}
+            <span className="sym sym-keyword">已过假期</span>
+          </p>
           <ul className="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
-            {pastHolidays.map((h) => (
+            {pastHolidays.map((h, i) => (
               <li
                 key={h.name}
                 style={{
@@ -288,7 +304,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
                   opacity: 0.88,
                 }}
               >
-                {h.name} {formatRange(h)}
+                <span className={`chroma-tag chroma-tag--${i % 6}`}>{h.name}</span> {formatRange(h)}
               </li>
             ))}
           </ul>
@@ -296,11 +312,14 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       )}
       {remainingHolidays.length > 0 && (
         <div className="mt-3 pt-2 border-t" style={{ borderColor: 'var(--card-border)' }}>
-          <p className="m-0 mb-1" style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>剩余假期</p>
+          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>
+            <span className="sym sym-hash">#</span>{' '}
+            <span className="sym sym-keyword">剩余假期</span>
+          </p>
           <ul className="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
-            {remainingHolidays.map((h) => (
+            {remainingHolidays.map((h, i) => (
               <li key={h.name}>
-                {h.name} {formatRange(h)}
+                <span className={`chroma-tag chroma-tag--${i % 6}`}>{h.name}</span> {formatRange(h)}
               </li>
             ))}
           </ul>
