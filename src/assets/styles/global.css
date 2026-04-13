@@ -21,16 +21,21 @@ html {
   --radius-sm: 0.375rem;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --page-bg: oklch(0.98 0.008 var(--hue));
-  --card-bg: oklch(1 0.004 var(--hue));
+  /* 不透明底色（--card-bg-base 等）；前台 blog-skin 下再用 color-mix 透出底图 */
+  --page-bg-base: oklch(0.98 0.008 var(--hue));
+  --card-bg-base: oklch(1 0.004 var(--hue));
+  --header-bg-base: oklch(1 0.004 var(--hue));
+  --footer-bg-base: oklch(0.96 0.01 var(--hue));
+  --page-bg: var(--page-bg-base);
+  --card-bg: var(--card-bg-base);
+  --header-bg: var(--header-bg-base);
+  --footer-bg: var(--footer-bg-base);
   --card-border: oklch(0.92 0.02 var(--hue));
   --text: oklch(0.28 0.02 var(--hue));
   --text-muted: oklch(0.45 0.03 var(--hue));
   --accent: oklch(0.5 0.15 var(--hue));
   --accent-2: oklch(0.55 0.14 calc(var(--hue) + 30));
   --accent-3: oklch(0.55 0.14 calc(var(--hue) + 60));
-  --header-bg: oklch(1 0.004 var(--hue));
-  --footer-bg: oklch(0.96 0.01 var(--hue));
   --border: oklch(0.92 0.02 var(--hue));
   --banner-from: oklch(0.96 0.012 var(--hue));
   --banner-via: oklch(0.93 0.02 var(--hue));
@@ -71,20 +76,24 @@ html {
     oklch(0.48 0.15 calc(var(--hue) + 220))
   );
   --prose-selection-bg: var(--chroma-prompt);
-  --prose-selection-fg: var(--card-bg);
+  --prose-selection-fg: var(--card-bg-base);
 }
 
 .dark {
-  --page-bg: oklch(0.18 0.02 var(--hue));
-  --card-bg: oklch(0.22 0.025 var(--hue));
+  --page-bg-base: oklch(0.18 0.02 var(--hue));
+  --card-bg-base: oklch(0.22 0.025 var(--hue));
+  --header-bg-base: oklch(0.18 0.02 var(--hue));
+  --footer-bg-base: oklch(0.18 0.02 var(--hue));
+  --page-bg: var(--page-bg-base);
+  --card-bg: var(--card-bg-base);
+  --header-bg: var(--header-bg-base);
+  --footer-bg: var(--footer-bg-base);
   --card-border: oklch(0.32 0.03 var(--hue));
   --text: oklch(0.95 0.01 var(--hue));
   --text-muted: oklch(0.65 0.03 var(--hue));
   --accent: oklch(0.75 0.15 var(--hue));
   --accent-2: oklch(0.75 0.13 calc(var(--hue) + 30));
   --accent-3: oklch(0.75 0.13 calc(var(--hue) + 60));
-  --header-bg: oklch(0.18 0.02 var(--hue));
-  --footer-bg: oklch(0.18 0.02 var(--hue));
   --border: oklch(0.32 0.03 var(--hue));
   --banner-from: oklch(0.22 0.025 var(--hue));
   --banner-via: oklch(0.28 0.03 var(--hue));
@@ -196,9 +205,43 @@ html {
 body {
   font-size: var(--text-base);
   line-height: var(--line-height-body);
+  position: relative;
+  min-height: 100vh;
   background: var(--page-bg);
   color: var(--text);
   font-family: system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', 'PingFang SC', sans-serif;
+}
+/* 仅前台 Blog：动漫底图 + 蒙版 + 表面半透明（Admin 等仍为实色底） */
+body.blog-skin {
+  --page-bg: color-mix(in oklch, var(--page-bg-base) 88%, transparent);
+  --card-bg: color-mix(in oklch, var(--card-bg-base) 76%, transparent);
+  --header-bg: color-mix(in oklch, var(--header-bg-base) 72%, transparent);
+  --footer-bg: color-mix(in oklch, var(--footer-bg-base) 78%, transparent);
+  background: transparent;
+}
+.dark body.blog-skin {
+  --page-bg: color-mix(in oklch, var(--page-bg-base) 86%, transparent);
+  --card-bg: color-mix(in oklch, var(--card-bg-base) 74%, transparent);
+  --header-bg: color-mix(in oklch, var(--header-bg-base) 70%, transparent);
+  --footer-bg: color-mix(in oklch, var(--footer-bg-base) 76%, transparent);
+}
+body.blog-skin::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: url('/images/anime-bg.jpg') center center / cover no-repeat;
+}
+body.blog-skin::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: color-mix(in oklch, var(--page-bg-base) 76%, transparent);
+}
+.dark body.blog-skin::after {
+  background: color-mix(in oklch, var(--page-bg-base) 86%, transparent);
 }
 
 /* 终端符号 / 语法高亮（配合 .sym-* 与 .chroma-tag--*） */
@@ -1427,7 +1470,7 @@ body {
   line-height: 1.5em;
   text-align: center;
   background: var(--chroma-prompt);
-  color: var(--card-bg);
+  color: var(--card-bg-base);
   border-radius: 50%;
   font-size: var(--text-xs);
   font-weight: 600;
@@ -1808,11 +1851,11 @@ body {
   isolation: isolate;
   background: linear-gradient(
     128deg,
-    var(--banner-from) 0%,
-    var(--banner-bloom-a) 28%,
-    var(--banner-via) 52%,
-    var(--banner-bloom-b) 78%,
-    var(--banner-bloom-c) 100%
+    color-mix(in oklch, var(--banner-from) 82%, transparent) 0%,
+    color-mix(in oklch, var(--banner-bloom-a) 78%, transparent) 28%,
+    color-mix(in oklch, var(--banner-via) 82%, transparent) 52%,
+    color-mix(in oklch, var(--banner-bloom-b) 78%, transparent) 78%,
+    color-mix(in oklch, var(--banner-bloom-c) 82%, transparent) 100%
   );
   box-shadow:
     inset 0 1px 0 oklch(1 0.02 calc(var(--hue) + 40) / 0.35),
@@ -1866,6 +1909,12 @@ body {
   line-height: var(--line-height-banner-title);
 }
 @media (prefers-reduced-transparency: reduce) {
+  body.blog-skin::before {
+    opacity: 0.35;
+  }
+  body.blog-skin::after {
+    background: color-mix(in oklch, var(--page-bg-base) 96%, transparent);
+  }
   .banner-hero-title-text {
     background: none;
     -webkit-background-clip: unset;
