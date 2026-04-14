@@ -82,8 +82,9 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
               <span className="code-label">$</span> {siteName}
             </a>
             <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)' }}>/</span>
-            <a href="/admin" className="font-medium transition-opacity hover:opacity-80" style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)' }}>
+            <a href="/admin" className="font-medium transition-opacity hover:opacity-80 inline-flex items-center gap-1" style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)' }}>
               管理
+              <span className="admin-header-cute select-none" aria-hidden="true">✨</span>
             </a>
           </div>
           <nav className="hidden lg:flex items-center gap-5" aria-label="管理导航">

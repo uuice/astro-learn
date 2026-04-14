@@ -65,4 +65,5 @@ const holidayData = holidayEntry ? { year: holidayEntry.data.year, holidays: hol
   {holidayData && (
     <SidebarCountdown client:load year={holidayData.year} holidays={holidayData.holidays} />
   )}
+  <p class="cute-sidebar-garland" aria-hidden="true">✦ · ✧ · ⋆ · ♡</p>
 </aside>
