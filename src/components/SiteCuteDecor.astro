@@ -1,0 +1,18 @@
+---
+interface Props {
+  variant?: 'blog' | 'admin'
+}
+const { variant = 'blog' } = Astro.props
+const layerClass = variant === 'admin' ? 'site-cute-layer site-cute-layer--admin' : 'site-cute-layer'
+---
+
+<div class={layerClass} aria-hidden="true">
+  <span class="cute-float-icon cute-float-icon--1">✦</span>
+  <span class="cute-float-icon cute-float-icon--2">✧</span>
+  <span class="cute-float-icon cute-float-icon--3">⋆</span>
+  <span class="cute-float-icon cute-float-icon--4">✦</span>
+  <span class="cute-float-icon cute-float-icon--5">★</span>
+  <span class="cute-float-icon cute-float-icon--6">✧</span>
+  <span class="cute-blob cute-blob--a" />
+  <span class="cute-blob cute-blob--b" />
+</div>

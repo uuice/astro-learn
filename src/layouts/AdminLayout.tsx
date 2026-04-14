@@ -74,7 +74,7 @@ export default function AdminLayout({ title, siteName, navItems, children }: Adm
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="relative z-[1] min-h-screen flex flex-col">
       <header className="sticky top-0 z-30 flex flex-col border-b" style={{ background: 'var(--header-bg)', borderColor: 'var(--border)' }}>
         <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">

@@ -4,6 +4,7 @@ import DarkModeToggle from '../components/DarkModeToggle.astro'
 import Search from '../components/Search.astro'
 import ThemeColor from '../components/ThemeColor.astro'
 import Sidebar from '../components/Sidebar.astro'
+import SiteCuteDecor from '../components/SiteCuteDecor.astro'
 import { getCollection } from 'astro:content'
 import { getDerivedFromPosts } from '../utils/derived-collections'
 interface Props {
@@ -38,6 +39,7 @@ const documentTitle = title === siteName ? siteName : `${title} · ${siteName}`
     </script>
   </head>
   <body class="blog-skin min-h-screen flex flex-col antialiased">
+    <div class="blog-bg-comic-bottom" aria-hidden="true" />
     <!-- 顶部滚动进度条：animation-timeline: scroll(root block) -->
     <div
       class="scroll-progress-bar fixed top-0 left-0 right-0 z-50 h-0.5 origin-left"
@@ -45,13 +47,15 @@ const documentTitle = title === siteName ? siteName : `${title} · ${siteName}`
       aria-hidden="true"
       style="background: var(--accent); animation: scale-progress linear; animation-duration: 1ms; animation-timeline: scroll(root block); animation-range: 0% 100%;"
     />
+    <SiteCuteDecor variant="blog" />
     <!-- <BackgroundGradient client:load /> -->
-    <div class="min-h-screen flex flex-col">
+    <div class="relative z-[1] min-h-screen flex flex-col">
       <header class="sticky top-0 z-30 flex flex-col border-b" style="background:var(--header-bg);border-color:var(--border)">
         <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <a href="/" class="header-brand font-semibold transition-opacity hover:opacity-80 flex items-center gap-1.5" style="font-size:var(--text-sm);font-family:var(--font-mono)">
             <span class="code-label sym sym-prompt">$</span>
             <span class="header-brand-name">{siteName}</span>
+            <span class="header-cute-sparkle select-none" aria-hidden="true">✨</span>
           </a>
           <nav class="hidden lg:flex items-center gap-5" aria-label="主导航">
             {menu.map((item) => (
@@ -159,7 +163,10 @@ const documentTitle = title === siteName ? siteName : `${title} · ${siteName}`
             </span>
             <a href="#" id="footer-back-to-top" class="transition-colors hover:opacity-80" style="color:var(--accent)">返回顶部</a>
           </p>
-          <p class="font-medium" style="color:var(--text)">© {new Date().getFullYear()} {siteName}</p>
+          <p class="font-medium flex flex-wrap items-center gap-x-1.5 gap-y-0.5" style="color:var(--text)">
+            <span aria-hidden="true" class="footer-cute-emoji select-none">♡</span>
+            <span>© {new Date().getFullYear()} {siteName}</span>
+          </p>
           <p class="pt-1" style="font-size:var(--text-xs);color:var(--text-muted)">网站基于 <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="hover:opacity-80" style="color:var(--accent)">Astro</a> 构建 · <a href="/rss" target="_blank" rel="noopener noreferrer" class="hover:opacity-80" style="color:var(--accent)">RSS</a> · <a href="/sitemap" target="_blank" rel="noopener noreferrer" class="hover:opacity-80" style="color:var(--accent)">Sitemap</a></p>
           {showRecord && (
             <p class="pt-1.5" style="font-size:var(--text-xs)">
