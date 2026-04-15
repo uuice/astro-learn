@@ -17,7 +17,7 @@
     "pm2:restart:bun": "pm2 restart astro-blog-bun",
     "pm2:logs:bun": "pm2 logs astro-blog-bun",
     "pm2:delete:bun": "pm2 delete astro-blog-bun",
-    "pack": "tar -czvf astro-blog-release.tar.gz dist server.mjs package.json pnpm-lock.yaml ecosystem.config.cjs",
+    "pack": "tar -czvf astro-blog-release-$(date +%Y-%m-%d-%H%M%S).tar.gz dist server.mjs package.json pnpm-lock.yaml ecosystem.config.cjs",
     "pack:build": "pnpm build && pnpm run pack",
     "astro": "astro",
     "lint": "eslint src --ext .js,.astro --fix",
