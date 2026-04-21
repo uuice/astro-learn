@@ -239,7 +239,7 @@ body.blog-skin::before {
   z-index: -2;
   pointer-events: none;
   background: url('/images/comic/12.jpg') center center / cover no-repeat;
-  opacity: 0.3;
+  opacity: 0.18;
 }
 body.blog-skin::after {
   content: '';
@@ -857,6 +857,16 @@ body.blog-skin::after {
 .doc-detail-body {
   border-left: 1px solid var(--card-border);
   padding-left: 1.25rem;
+}
+.doc-detail-body .prose,
+.doc-detail-body .markdown-body {
+  font-size: var(--text-base);
+  line-height: 1.82;
+}
+.doc-detail-body .prose p,
+.doc-detail-body .markdown-body p {
+  margin-top: 0.9em;
+  margin-bottom: 0.9em;
 }
 @media (max-width: 1023px) {
   .doc-detail-body { border-left: none; padding-left: 0; }
@@ -1822,9 +1832,16 @@ body.blog-skin::after {
   }
   .post-card-meta-line {
     margin-top: 0.35rem !important;
+    font-size: var(--text-xs);
+    opacity: 0.92;
+  }
+  .post-card-meta-line .post-card-sep {
+    display: none;
   }
   .post-card-excerpt-line {
     margin-top: 0.4rem !important;
+    border-left-width: 1px;
+    padding-left: 0.55em;
   }
   .terminal-list .post-card-cute,
   .terminal-list .terminal-item {
@@ -1862,6 +1879,10 @@ body.blog-skin::after {
   .error-page-nav {
     padding: 0.65rem 0.85rem;
   }
+  .doc-detail-body .prose,
+  .doc-detail-body .markdown-body {
+    line-height: 1.9;
+  }
 }
 .terminal-meta-line .meta-from,
 .post-card-link .meta-from {
@@ -1884,11 +1905,6 @@ body.blog-skin::after {
   background: transparent;
   padding: 0.5rem 0;
 }
-.section-card > .terminal-list {
-  /* padding-left: 0.9rem; */
-  /* padding-right: 0.9rem; */
-}
-
 .archive-group .section-title,
 .nav-category-group .section-title { margin-bottom: 0.35rem; }
 .archive-group .code-label.mb-3,
@@ -2118,6 +2134,11 @@ body.blog-skin::after {
 .search-trigger:focus-visible,
 #dark-toggle:focus-visible,
 #theme-color-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:where(a, button, input, textarea, summary, [role='button']):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
 
 .back-to-top {
   text-decoration: none;
@@ -2139,17 +2160,17 @@ body.blog-skin::after {
   overflow: hidden;
 }
 .site-cute-layer--admin {
-  opacity: 0.55;
+  opacity: 0.4;
 }
 @keyframes cute-float-drift {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.38; }
-  33% { transform: translate(6px, -10px) rotate(8deg); opacity: 0.52; }
-  66% { transform: translate(-5px, 6px) rotate(-6deg); opacity: 0.44; }
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.28; }
+  33% { transform: translate(6px, -10px) rotate(8deg); opacity: 0.4; }
+  66% { transform: translate(-5px, 6px) rotate(-6deg); opacity: 0.33; }
 }
 @keyframes cute-float-drift-alt {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
-  40% { transform: translate(-7px, 6px) rotate(-6deg); opacity: 0.46; }
-  75% { transform: translate(5px, -9px) rotate(5deg); opacity: 0.36; }
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.22; }
+  40% { transform: translate(-7px, 6px) rotate(-6deg); opacity: 0.35; }
+  75% { transform: translate(5px, -9px) rotate(5deg); opacity: 0.27; }
 }
 @keyframes cute-dot-twinkle {
   0%, 100% { opacity: 0.28; transform: scale(1); }

@@ -26,7 +26,7 @@ const DEFAULT_HUE = 250
       </button>
     </div>
     <div class="flex items-center gap-2 mb-2">
-      <input type="range" id="theme-color-slider" min="0" max="360" value={DEFAULT_HUE} class="theme-hue-slider flex-1 h-3 rounded-full appearance-none cursor-pointer" style="background:linear-gradient(to right,red,yellow,lime,cyan,blue,magenta,red)" />
+      <input type="range" id="theme-color-slider" min="0" max="360" step="5" value={DEFAULT_HUE} class="theme-hue-slider flex-1 h-3 rounded-full appearance-none cursor-pointer" style="background:linear-gradient(to right,red,yellow,lime,cyan,blue,magenta,red)" />
       <output id="theme-color-value" class="shrink-0 min-w-12 h-7 px-2 rounded-lg flex items-center justify-center font-mono text-sm" style="background:var(--card-border);color:var(--text)">{DEFAULT_HUE}</output>
     </div>
   </div>
@@ -34,10 +34,18 @@ const DEFAULT_HUE = 250
 <script define:vars={{ DEFAULT_HUE }}>
   (function () {
     var key = 'themeHue'
+    var hueStep = 5
     var root = document.documentElement
-    function applyHue(h) {
+    function normalizeHue(h) {
       var n = Math.round(Number(h))
-      if (isNaN(n) || n < 0 || n > 360) return
+      if (isNaN(n)) return null
+      if (n < 0) n = 0
+      if (n > 360) n = 360
+      return Math.round(n / hueStep) * hueStep
+    }
+    function applyHue(h) {
+      var n = normalizeHue(h)
+      if (n === null) return
       root.style.setProperty('--hue', String(n))
       var val = document.getElementById('theme-color-value')
       var slider = document.getElementById('theme-color-slider')
@@ -82,7 +90,7 @@ const DEFAULT_HUE = 250
         slider.addEventListener('input', function () {
           var h = slider.value
           applyHue(h)
-          localStorage.setItem(key, h)
+          localStorage.setItem(key, slider.value)
         })
       }
       if (reset) {
