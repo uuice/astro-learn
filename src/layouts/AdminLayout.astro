@@ -33,10 +33,8 @@ const adminNav = await getAdminNav()
   <body class="admin-skin min-h-screen flex flex-col antialiased">
     <SiteCuteDecor variant="admin" />
     <AdminLayoutReact client:load siteName={siteName} navItems={adminNav}>
-      <Fragment slot="controls">
-        <ThemeColor />
-        <DarkModeToggle />
-      </Fragment>
+      <ThemeColor slot="controls" />
+      <DarkModeToggle slot="controls" />
       <slot />
     </AdminLayoutReact>
   </body>
