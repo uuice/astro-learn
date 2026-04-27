@@ -26,13 +26,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@astrojs/mdx": "^5.0.2",
-    "@astrojs/node": "^10.0.3",
-    "@astrojs/react": "^5.0.1",
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/node": "^10.0.6",
+    "@astrojs/react": "^5.0.4",
     "@astrojs/vue": "^6.0.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^6.0.8",
+    "astro": "^6.1.9",
     "express": "^5.2.1",
     "flexsearch": "^0.8.212",
     "lodash": "^4.17.23",
