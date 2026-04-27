@@ -29,7 +29,6 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
         <div class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <div class="flex items-center gap-6">
             <a href="/" class="header-brand font-semibold transition-opacity hover:opacity-80 flex items-center gap-1.5" style="font-size:var(--text-sm);font-family:var(--font-mono)">
-              <span class="code-label sym sym-prompt">$</span>
               <span class="header-brand-name">{siteName}</span>
             </a>
             <span style="color: var(--text-muted); font-size: var(--text-xs)">/</span>
@@ -44,7 +43,7 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
         <main class="page-main w-full max-w-sm">
           <div class="section-card p-6 md:p-8">
             <h1 class="section-title" style="margin-top: 0; margin-bottom: 1.5rem">
-              <span class="section-prompt">#</span> {hasToken ? '登录' : '初始设置'}
+              {hasToken ? '登录' : '初始设置'}
             </h1>
             <form id="login-form">
               <div class="mb-4">

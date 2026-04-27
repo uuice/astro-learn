@@ -173,14 +173,9 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
         className="section-card p-4 overflow-hidden"
         style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
       >
-        <h3 className="section-title">
-          <span className="section-prompt">$</span>
-          <span className="sym sym-keyword">countdown</span>
-        </h3>
+        <h3 className="section-title">倒计时</h3>
         <div className="mt-2" style={{ color: 'var(--text-muted)' }}>
-          <p className="m-0">
-            <span className="sym sym-comment">//</span> 加载中...
-          </p>
+          <p className="m-0">加载中...</p>
         </div>
       </div>
     )
@@ -203,7 +198,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     untilWorkLine = (
       <>
         距离下次上班（
-        <span className="sym sym-prompt">{workClock}</span>
+        <span>{workClock}</span>
         ）还有 <UntilNextWorkCountdown ms={ms} />
       </>
     )
@@ -228,7 +223,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     untilWorkLine = (
       <>
         距离下次上班（
-        <span className="sym sym-prompt">{workClock}</span>
+        <span>{workClock}</span>
         ）还有 <UntilNextWorkCountdown ms={ms} />
       </>
     )
@@ -246,11 +241,11 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     holidayLine =
       leftMs <= 0 ? (
         <>
-          正在放 <span className="sym sym-keyword">{inHoliday.name}</span>，今日收尾
+          正在放 {inHoliday.name}，今日收尾
         </>
       ) : (
         <>
-          正在放 <span className="sym sym-keyword">{inHoliday.name}</span>，还剩 <ColoredCountdown ms={leftMs} />
+          正在放 {inHoliday.name}，还剩 <ColoredCountdown ms={leftMs} />
         </>
       )
   } else {
@@ -260,13 +255,13 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       const ms = start.getTime() - now.getTime()
       holidayLine = (
         <>
-          距离 <span className="sym sym-keyword">{next.name}</span> 还有 <ColoredCountdown ms={ms} />
+          距离 {next.name} 还有 <ColoredCountdown ms={ms} />
         </>
       )
     } else {
       holidayLine = (
         <>
-          <span className="sym sym-comment">//</span> 暂无假期
+          暂无假期
         </>
       )
     }
@@ -279,10 +274,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       className="section-card p-4 overflow-hidden"
       style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
     >
-      <h3 className="section-title">
-        <span className="section-prompt">$</span>
-        <span className="sym sym-keyword">countdown</span>
-      </h3>
+      <h3 className="section-title">倒计时</h3>
       <div className="mt-2 space-y-2" style={{ color: 'var(--text-muted)' }}>
         <p className="m-0">{workLine}</p>
         {untilWorkLine && <p className="m-0">{untilWorkLine}</p>}
@@ -290,10 +282,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       </div>
       {pastHolidays.length > 0 && (
         <div className="mt-3 pt-2 border-t" style={{ borderColor: 'var(--card-border)' }}>
-          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>
-            <span className="sym sym-hash">#</span>{' '}
-            <span className="sym sym-keyword">已过假期</span>
-          </p>
+          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>已过假期</p>
           <ul className="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
             {pastHolidays.map((h, i) => (
               <li
@@ -312,10 +301,7 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
       )}
       {remainingHolidays.length > 0 && (
         <div className="mt-3 pt-2 border-t" style={{ borderColor: 'var(--card-border)' }}>
-          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>
-            <span className="sym sym-hash">#</span>{' '}
-            <span className="sym sym-keyword">剩余假期</span>
-          </p>
+          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>剩余假期</p>
           <ul className="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
             {remainingHolidays.map((h, i) => (
               <li key={h.name}>

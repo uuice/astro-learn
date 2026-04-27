@@ -16,7 +16,7 @@ alwaysApply: false
 <template>
   <div class="section-card p-4" style="border-radius: var(--radius)">
     <h3 class="section-title">
-      <span class="section-prompt">#</span> 标题
+      标题
     </h3>
     <!-- 内容 -->
   </div>
@@ -34,6 +34,7 @@ const props = defineProps<{ postId: string }>()
 - 优先使用项目已有的语义化 CSS 类（`section-card`、`code-label`、`comment-*` 等）
 - 颜色/字体用 CSS 变量（`var(--accent)`、`var(--text-muted)`、`var(--font-mono)`）
 - 不使用 `<style scoped>`，除非样式确实仅限当前组件且不影响全局
+- 用户可见文案避免终端拟态符号与命令词，避免重复信息行与低信息量占位文案
 
 ## 在 Astro 中使用
 

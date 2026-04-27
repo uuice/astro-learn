@@ -5,18 +5,13 @@ import { getAdminNav } from '../../lib/admin-site-config-db'
 const adminNav = await getAdminNav()
 ---
 <AdminLayout title="管理">
-  <div class="intro-bubble">
-    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> cd admin</p>
-  </div>
   <section class="section-card p-6 md:p-10">
-    <h2 class="section-title" style="margin-top:0">
-      <span class="section-prompt">#</span> 管理模块
-    </h2>
+    <h2 class="section-title" style="margin-top:0">管理模块</h2>
     <ul class="terminal-list" style="border:none;background:transparent;padding:0">
       {adminNav.map((item) => (
         <li>
           <a href={item.url} class="block py-2 px-3 rounded transition-colors hover:bg-(--card-bg)" style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--text);border:1px solid var(--card-border);margin-bottom:0.5rem">
-            <span class="comment-symbol" style="color:var(--accent)">▸</span> {item.title}
+            {item.title}
           </a>
         </li>
       ))}

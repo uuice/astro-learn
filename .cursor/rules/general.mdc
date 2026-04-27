@@ -19,6 +19,7 @@ alwaysApply: true
 - **无分号**（ESLint `semi: ['error', 'never']`），唯一例外 `eslint.config.js`
 - 中文注释/文案可接受；用户可见文案保持现有口吻
 - TypeScript strict 模式，类型从 `src/types.ts` 或各模块导出引入
+- 用户可见文案避免终端拟态符号与命令词（如 `$`、`#`、`export`、`cd`、`cat`、`ls`、`[INFO]`），并避免重复标题/低信息量占位文案
 
 ## 路径别名
 

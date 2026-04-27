@@ -10,22 +10,19 @@ interface Props {
 const { title, url, excerpt = '', pubDate, categories = [], tags = [] } = Astro.props
 const date = typeof pubDate === 'number' ? new Date(pubDate) : pubDate
 const dateStr = date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
-const slug = title.replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '').toLowerCase() || 'post'
 ---
 <article class="post-card-cute section-card group" style="border-radius:var(--radius)">
   <a href={url} class="post-card-link block px-4 py-3 transition-colors hover:text-(--accent)">
-    <div class="terminal-export-line"><span class="sym sym-export-hash">###</span> <span class="sym sym-keyword">export</span> <span class="export-name">{slug}</span></div>
     <p class="post-card-title-line m-0 mt-1 font-mono text-sm">{title}</p>
     <p class="post-card-meta-line m-0 mt-0.5 font-mono text-xs">
-      <span class="post-card-meta-comment">//</span>
-      <span class="post-card-symbol" aria-label="日期">@</span> {dateStr}
+      发布于 {dateStr}
       {categories.length ? (
-        <><span class="post-card-sep">·</span><span class="post-card-symbol" aria-label="分类">▸</span> {categories.join(', ')}</>
+        <><span class="post-card-sep">·</span>分类：{categories.join(', ')}</>
       ) : null}
       {tags.length ? (
         <>
           <span class="post-card-sep">·</span>
-          <span class="post-card-symbol" aria-label="标签">#</span>{' '}
+          <span>标签：</span>{' '}
           {tags.map((tag, i) => (
             <span class={`chroma-tag chroma-tag--${i % 6}`}>{tag}</span>
           ))}

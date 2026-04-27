@@ -1,5 +1,5 @@
 ---
-description: Astro 页面与布局约定 — 终端/CLI 设计风格
+description: Astro 页面与布局约定 — 简洁信息卡片风格
 globs: '**/*.astro'
 alwaysApply: false
 ---
@@ -21,12 +21,12 @@ const [setting] = await getCollection('setting')
 const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 ```
 
-## 终端/CLI 设计风格
+## 页面视觉与文案
 
-所有页面遵循「在终端敲命令看输出」的视觉语言：
+所有页面遵循「简洁信息卡片」语言：
 
-- 区块标题用 `# export …`、`$ cd categories` 等拟终端文案
-- 列表用等宽字体、行内符号（`@` 日期、`▸` 分类、`#` 标签）
+- 优先呈现真实信息（标题、摘要、分类、标签、时间），避免终端拟态符号和命令词（如 `$`、`#`、`export`、`cd`、`cat`、`ls`、`[INFO]`）
+- 避免重复信息（如 slug 行重复标题、路径行重复分组标题）与低信息量占位文案（如“页面详情”“已准备就绪”）
 - 颜色 **全部** 通过 CSS 变量，禁止硬编码色值
 
 ## 语义化样式类（优先复用）
@@ -34,9 +34,9 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 | 类名             | 用途                                              |
 | ---------------- | ------------------------------------------------- |
 | `section-card`   | 卡片容器（白/暗底、边框、圆角、hover 高亮）       |
-| `section-title`  | 区块标题，内放 `section-prompt`（`$`/`#`）        |
-| `code-label`     | 终端风格小字（mono、`--text-xs`、`--text-muted`） |
-| `terminal-list`  | 终端风格列表容器                                  |
+| `section-title`  | 区块标题，使用直观中文标题                         |
+| `code-label`     | 辅助信息小字（mono、`--text-xs`、`--text-muted`） |
+| `terminal-list`  | 列表容器（历史命名保留，按普通列表使用）           |
 | `post-card-cute` | 文章卡片                                          |
 | `animate-in`     | 入场动画，配合 `animate-in-delay-1` ~ `10`        |
 

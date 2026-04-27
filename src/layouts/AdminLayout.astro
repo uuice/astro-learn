@@ -1,6 +1,8 @@
 ---
 import '../assets/styles/global.css'
 import SiteCuteDecor from '../components/SiteCuteDecor.astro'
+import ThemeColor from '../components/ThemeColor.astro'
+import DarkModeToggle from '../components/DarkModeToggle.astro'
 import AdminLayoutReact from './AdminLayout.tsx'
 import { getCollection } from 'astro:content'
 import { getAdminNav } from '../lib/admin-site-config-db'
@@ -30,7 +32,11 @@ const adminNav = await getAdminNav()
   </head>
   <body class="admin-skin min-h-screen flex flex-col antialiased">
     <SiteCuteDecor variant="admin" />
-    <AdminLayoutReact client:load title={title} siteName={siteName} navItems={adminNav}>
+    <AdminLayoutReact client:load siteName={siteName} navItems={adminNav}>
+      <Fragment slot="controls">
+        <ThemeColor />
+        <DarkModeToggle />
+      </Fragment>
       <slot />
     </AdminLayoutReact>
   </body>

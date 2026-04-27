@@ -72,11 +72,12 @@ description: Guides development for the Astro-learn blog (Astro 5 SSR + React + 
 
 ## 页面样式与设计风格
 
-项目采用**终端/CLI 风格**的视觉语言，新页面与组件需遵循以下约定。
+项目采用**简洁信息卡片风格**（保留圆角、边框、等宽字体与动效），新页面与组件需遵循以下约定。
 
 ### 设计语言
 
-- **主题**：像在终端里「敲命令、看输出」——导航用 `$`、`›`，区块标题用 `# export …`、`$ cd categories` 等拟终端文案；列表用等宽字体、行内符号（如 `@` 日期、`▸` 分类、`#` 标签）
+- **主题**：清晰信息层级，优先展示真实内容（标题、摘要、分类、标签、时间），避免终端拟态文案与符号（如 `$`、`#`、`export`、`cd`、`cat`、`ls`、`[INFO]`）
+- **去冗余**：避免“slug 行 + 标题”这类重复信息；避免“页面详情/作者详情/已准备就绪”这类低信息量占位文案
 - **色彩**：全部通过 CSS 变量，禁止硬编码色值。亮/暗色在 `:root` 与 `.dark` 中分别定义
 
 ### 色彩与字体变量（global.css）
@@ -84,7 +85,7 @@ description: Guides development for the Astro-learn blog (Astro 5 SSR + React + 
 - **颜色**：`--page-bg`、`--card-bg`、`--card-border`、`--text`、`--text-muted`、`--accent`、`--accent-2`/`--accent-3`、`--header-bg`、`--footer-bg`、`--border`；色相由 `--hue`（0–360）统一控制，亮暗主题用 oklch 区分
 - **字号**：`--text-xs` ~ `--text-4xl`（0.75rem ~ 2.25rem）
 - **圆角/阴影**：`--radius`、`--radius-sm`；`--shadow`、`--shadow-hover`
-- **字体**：正文 `system-ui, PingFang SC, sans-serif`；终端/代码感用 `--font-mono`（ui-monospace, SF Mono, Fira Code 等）
+- **字体**：正文 `system-ui, PingFang SC, sans-serif`；信息标签与局部辅助信息可用 `--font-mono`（ui-monospace, SF Mono, Fira Code 等）
 - **动效**：`--duration-fast/normal/slow`、`--ease-out-soft`、`--ease-bounce`；尊重 `prefers-reduced-motion`
 
 ### 布局
@@ -97,12 +98,12 @@ description: Guides development for the Astro-learn blog (Astro 5 SSR + React + 
 | 类名 | 用途 |
 |------|------|
 | `section-card` | 卡片容器：白/暗底、边框、圆角、hover 时边框高亮与轻微上移 |
-| `section-title` | 区块标题，内可放 `section-prompt`（如 `$`、`#`） |
-| `code-label` | 终端风格小字：mono、`--text-xs`、`--text-muted` |
+| `section-title` | 区块标题，展示清晰中文标题 |
+| `code-label` | 辅助信息小字：mono、`--text-xs`、`--text-muted` |
 | `nav-link-cute` | 导航链接：下划线动画、hover 轻微位移 |
-| `terminal-list` | 终端风格列表容器；列表项可用 `post-card-cute` 或 `terminal-item` |
-| `terminal-list-sidebar` | 侧栏用终端列表（带行提示符 `line-prompt`） |
-| `post-card-cute` | 文章卡片：拟 export 行 + 标题 + 元信息行（日期/分类/标签） |
+| `terminal-list` | 列表容器（历史命名保留，语义上按普通列表使用） |
+| `terminal-list-sidebar` | 侧栏列表容器（历史命名保留） |
+| `post-card-cute` | 文章卡片：标题 + 元信息行（日期/分类/标签） |
 | `back-to-top` | 返回顶部按钮样式 |
 | `prose` / `markdown-body` | 正文排版（标题层级、链接下划线动画、引用、列表等已在 global.css 定义） |
 
@@ -119,7 +120,7 @@ description: Guides development for the Astro-learn blog (Astro 5 SSR + React + 
 ### 新增样式时
 
 - 能复用现有类则不加新类；新类写在 `src/assets/styles/global.css`，使用现有 CSS 变量，并考虑 `.dark` 下的表现
-- 新页面结构参考 `index.astro`：Banner → `intro-bubble`（code-label）→ `<section>` + `section-title` + `section-card` + `terminal-list` / `post-list` + PostCard
+- 新页面结构参考 `index.astro`：Banner → （可选）`intro-bubble`（仅保留有效信息）→ `<section>` + `section-title` + `section-card` + `terminal-list` / `post-list` + PostCard
 
 ## 开发检查清单
 
@@ -128,4 +129,5 @@ description: Guides development for the Astro-learn blog (Astro 5 SSR + React + 
 - [ ] 类型从 `src/types.ts` 或对应 lib 引入，无硬编码 ID/URL 逻辑（用 utils）
 - [ ] 代码风格：无分号，ESLint 通过
 - [ ] 中文注释/文案可接受；用户可见文案保持与现有风格一致（如「请填写昵称和内容」等）
-- [ ] 页面样式：使用 CSS 变量与语义化类（section-card、code-label、terminal-list 等），保持终端/CLI 风格与亮暗主题一致
+- [ ] 页面样式：使用 CSS 变量与语义化类（section-card、code-label、terminal-list 等），保持简洁信息卡片风格与亮暗主题一致
+- [ ] 用户可见文案：无终端拟态符号/命令词；无重复标题与低信息量占位文案

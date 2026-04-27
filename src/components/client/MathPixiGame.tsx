@@ -893,7 +893,7 @@ export default function MathPixiGame() {
         aria-pressed={fullscreen}
         aria-label={fullscreen ? '退出全屏' : '全屏'}
       >
-        <span className="code-label">$</span> {fullscreen ? '退出全屏' : '全屏'}
+        {fullscreen ? '退出全屏' : '全屏'}
       </button>
       <div ref={wrapRef} className="math-pixi-canvas-host math-pixi-game overflow-hidden rounded-xl" />
     </div>

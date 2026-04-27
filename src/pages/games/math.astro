@@ -8,16 +8,13 @@ const siteName = setting?.data.siteSetting?.siteName ?? '博客'
 ---
 <BlogLayout title={`算术挑战 - ${siteName}`}>
   <div class="intro-bubble animate-in">
-    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> cd games/math</p>
     <p class="m-0 code-label">
-      <span class="sym sym-info">[INFO]</span> 难度 + 题型（加减乘除可多选）· 10 题 ×10 分 · 全屏与统计见界面内 ·{' '}
+      支持难度与题型设置（加减乘除可多选）· 10 题 ×10 分 · 支持全屏与统计 ·{' '}
       <a href="/games" class="nav-link-cute" style="color:var(--accent)">返回游戏列表</a>
     </p>
   </div>
   <section class="animate-in animate-in-delay-1">
-    <h2 class="section-title mb-4">
-      <span class="section-prompt">#</span> export 算术挑战
-    </h2>
+    <h2 class="section-title mb-4">算术挑战</h2>
     <MathPixiGame client:load />
   </section>
 </BlogLayout>

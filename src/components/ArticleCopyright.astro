@@ -11,28 +11,25 @@ const licenseUrl = 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
     class="border px-3 py-2.5 code-label"
     style="border-color:var(--card-border);background:var(--card-bg);border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:0.7rem;line-height:1.5;color:var(--text-muted)"
   >
-    <p class="m-0 mb-2" style="font-size:0.7rem">
-      <span class="sym sym-prompt">$</span>{' '}
-      <span class="sym sym-keyword">license</span>
-    </p>
+    <p class="m-0 mb-2" style="font-size:0.7rem">版权信息</p>
     <div class="grid gap-1" style="grid-template-columns:4.5em 1fr">
-      <span class="sym sym-keyword shrink-0">link</span>
+      <span class="shrink-0">链接</span>
       <a href={articleUrl} class="hover:opacity-80 break-all" style="color:var(--text)">{articleUrl}</a>
     </div>
     <div class="grid gap-1 mt-1" style="grid-template-columns:4.5em 1fr">
-      <span class="sym sym-at shrink-0" aria-label="日期">@</span>
+      <span class="shrink-0" aria-label="日期">日期</span>
       <span>{publishDate}</span>
     </div>
     <div class="grid gap-1 mt-1" style="grid-template-columns:4.5em 1fr">
-      <span class="sym sym-keyword shrink-0">license</span>
+      <span class="shrink-0">协议</span>
       <span>
         <a
           href={licenseUrl}
           target="_blank"
           rel="license noopener noreferrer"
-          class="sym sym-info hover:opacity-80"
+          class="hover:opacity-80"
         >CC BY-NC-SA 4.0</a>{' '}
-        <span class="sym sym-comment">转载请注明出处</span>
+        <span>转载请注明出处</span>
       </span>
     </div>
   </div>

@@ -8,10 +8,6 @@ interface Props {
   baseUrl: string
 }
 
-function slugFromTitle(t: string) {
-  return (t || '').replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '').toLowerCase() || 'post'
-}
-
 function makeSimpleSearch(docs: SearchDoc[]) {
   return (q: string, limit: number) => {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean)
@@ -126,19 +122,8 @@ export default function BlogSearch({ baseUrl }: Props) {
           </span>
           <div className="search-panel-header flex items-start justify-between gap-2">
             <div>
-              <p className="code-label mb-0.5">
-                <span className="sym sym-prompt">$</span> pwd:
-              </p>
-              <p className="code-label mb-0.5">
-                <span className="sym sym-keyword">search</span> <span className="sym sym-flag">--list</span>
-              </p>
-              <p className="code-label mb-2">
-                <span className="sym sym-info">ready</span>
-              </p>
-              <h2 className="search-panel-title">
-                <span className="sym sym-hash">#</span> &gt; 搜索
-              </h2>
-              <p className="code-label mt-1 mb-2">输入内容筛选，或按 ⏎ 打开。⇧ + ⏎ 换行</p>
+              <h2 className="search-panel-title">搜索</h2>
+              <p className="code-label mt-1 mb-2">输入关键词后按回车打开结果</p>
             </div>
             <button
               type="button"
@@ -155,14 +140,11 @@ export default function BlogSearch({ baseUrl }: Props) {
             </button>
           </div>
           <div className="search-panel-input-wrap">
-            <span className="code-label mr-2">
-              <span className="sym sym-keyword">search</span> <span className="sym sym-flag">--ai</span>
-            </span>
             <input
               ref={inputRef}
               type="search"
               autoComplete="off"
-              placeholder=""
+              placeholder="输入关键词"
               className="search-panel-input"
               style={{
                 fontFamily: 'var(--font-mono)',
@@ -180,18 +162,14 @@ export default function BlogSearch({ baseUrl }: Props) {
               }}
             />
           </div>
-          <p className="code-label mt-1 mb-2">
-            <span className="sym sym-prompt">$</span> find
-          </p>
           <div className="search-results-terminal">
-            {showEmptyHint && <p className="code-label py-4">输入关键词筛选</p>}
+            {showEmptyHint && <p className="code-label py-4">请输入关键词</p>}
             {showNoMatch && <p className="code-label py-4">无匹配结果</p>}
             {showList && matched && (
               <ul className="post-list terminal-list">
                 {matched.map((item, i, arr) => {
-                  const slug = slugFromTitle(item.title)
-                  const fromStr =
-                    item.categories && item.categories.length ? ` from "${item.categories.join(', ')}"` : ''
+                  const categoryStr =
+                    item.categories && item.categories.length ? ` · 分类：${item.categories.join(', ')}` : ''
                   const desc = (item.excerpt || (item.body ? item.body.slice(0, 100) + (item.body.length > 100 ? '…' : '') : '')).trim()
                   const isLast = i === arr.length - 1
                   return (
@@ -207,17 +185,13 @@ export default function BlogSearch({ baseUrl }: Props) {
                           padding: '0.5rem 0.75rem',
                         }}
                       >
-                        <div className="terminal-export-line">
-                          <span className="sym sym-export-hash">###</span> <span className="sym sym-keyword">export</span>{' '}
-                          <span className="export-name">{slug}</span>
-                        </div>
                         <a
                           href={item.url}
                           className="terminal-meta-line block transition-colors hover:text-(--accent)"
                           onClick={() => close()}
                         >
                           <span className="font-medium">{item.title || ''}</span>
-                          <span className="meta-from">{fromStr}</span>
+                          <span className="meta-from">{categoryStr}</span>
                           {desc ? <span className="meta-desc"> {desc}</span> : null}
                         </a>
                       </article>

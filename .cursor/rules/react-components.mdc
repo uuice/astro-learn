@@ -36,6 +36,7 @@ export default function MyComponent({ postId }: Props) {
 - Props 用 TypeScript interface 声明，`export default function` 导出
 - API 调用统一用 `fetch`，返回格式参照 `{ data }` / `{ error }`
 - 样式用项目语义化类 + CSS 变量，`className` 而非 `style` 优先
+- 用户可见文案避免终端拟态符号与命令词，避免重复信息行与低信息量占位文案
 
 ## 在 Astro 中使用
 

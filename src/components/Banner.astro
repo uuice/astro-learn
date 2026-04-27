@@ -4,8 +4,6 @@ const { title = '', subtitle = '', icon = '' } = Astro.props
 ---
 <header class="banner-hero mb-6 overflow-hidden border py-8 md:py-12 px-5 sm:px-6 rounded-lg animate-in" style="border-color:var(--card-border);color:var(--text)">
   <h1 class="banner-hero-title font-bold tracking-tight" style="font-size:var(--text-2xl);font-family:var(--font-mono);margin:0">
-    <span class="sym sym-hash">#</span>{' '}
-    <span class="sym sym-chevron">&gt;</span>{' '}
     <span class="banner-hero-title-text">{title}</span>
   </h1>
   {subtitle && (

@@ -16,15 +16,13 @@ const list = posts.filter((p) => postIds.has(p.id)).sort((a, b) => b.data.create
 <BlogLayout title={`分类: ${category.title}`}>
   <Banner title={`分类: ${category.title}`} subtitle={category.description || `共 ${list.length} 篇`} />
   <div class="intro-bubble animate-in animate-in-delay-1">
-    <p class="m-0 code-label"><span class="sym sym-prompt">$</span> count: <strong>{list.length}</strong> <span class="sym sym-flag">--top={list.length}</span></p>
-    <p class="m-0 code-label"><span class="sym sym-info">[INFO]</span> 该分类下共 {list.length} 篇文章</p>
+    <p class="m-0 code-label">共 <strong>{list.length}</strong> 篇文章</p>
   </div>
   <section class="space-y-5">
-    <h2 class="section-title animate-in animate-in-delay-2"><span class="section-prompt">##</span> export {category.title}</h2>
-    <p class="code-label mb-3"><span class="sym sym-comment">//</span> {list.length} posts</p>
+    <h2 class="section-title animate-in animate-in-delay-2">{category.title}</h2>
     {list.length === 0 ? (
       <div class="section-card p-8 text-center animate-in animate-in-delay-3">
-        <p class="m-0 code-label"><span class="sym sym-comment">//</span> no posts in this category</p>
+        <p class="m-0 code-label">该分类下暂无文章</p>
       </div>
     ) : (
       <div class="section-card border-0! bg-transparent! overflow-hidden animate-in animate-in-delay-3">
