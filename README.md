@@ -1,16 +1,16 @@
 # Astro-learn
 
-基于 **Astro 5** 构建的技术博客，支持 SSR、Content Collections、MDX、评论、短链接与后台管理。
+基于 **Astro 6** 构建的技术博客，支持 SSR、Content Collections、MDX、评论、短链接与后台管理。
 
 ## 技术栈
 
-- **Astro 5** — 主框架，SSR 模式（`output: 'server'`）
+- **Astro 6** — 主框架，SSR 模式（`output: 'server'`）
 - **适配器** — `@astrojs/node`（middleware 模式）
-- **UI** — React 19 + Vue 3（交互组件）；静态页面用 `.astro`
+- **UI** — Solid（交互组件）；静态页面用 `.astro`
 - **样式** — Tailwind 4（`@tailwindcss/vite`）
 - **内容** — `@astrojs/mdx`，Content Collections（glob/file + Zod）
 - **数据** — lowdb，持久化到 `data/` 目录
-- **包管理** — pnpm
+- **包管理** — Bun（`bun.lock`）
 
 ## 项目结构
 
@@ -19,10 +19,9 @@
 ├── public/                 # 静态资源
 ├── src/
 │   ├── assets/             # 样式、字体等
-│   ├── components/         # Astro / React / Vue 组件
-│   │   ├── client/         # 客户端交互组件（React）
-│   │   ├── vue/            # Vue 组件
-│   │   └── admin/          # 后台管理组件
+│   ├── components/         # Astro / Solid 组件
+│   │   ├── client/         # 客户端交互组件（Solid）
+│   │   └── admin/          # 后台管理组件（Solid）
 │   ├── content/            # Content Collections
 │   │   ├── blog/           # 文章
 │   │   ├── page/           # 页面（关于等）
@@ -37,18 +36,18 @@
 
 ## 命令
 
-| 命令                   | 说明                              |
-| ---------------------- | --------------------------------- |
-| `pnpm install`         | 安装依赖                          |
-| `pnpm dev`             | 本地开发（默认 `localhost:4321`） |
-| `pnpm build`           | 构建生产版本到 `./dist/`          |
-| `pnpm preview`         | 预览构建结果                      |
-| `pnpm start`           | 启动生产服务（`node server.mjs`） |
-| `pnpm run pack`        | 打包 dist + server 为 tar.gz      |
-| `pnpm run pack:build`  | 构建 + 打包                       |
-| `pnpm run lint`        | ESLint 检查并修复                 |
-| `pnpm run pm2:start`   | 使用 PM2 启动                     |
-| `pnpm run pm2:restart` | PM2 重启                          |
+| 命令 | 说明 |
+| --- | --- |
+| `bun install` | 安装依赖 |
+| `bun dev` | 本地开发（默认 `localhost:4321`） |
+| `bun run build` | 构建生产版本到 `./dist/` |
+| `bun run preview` | 预览构建结果 |
+| `bun run start` | 启动生产服务（`node server.mjs`） |
+| `bun run pack` | 打包 dist + server 为 tar.gz |
+| `bun run pack:build` | 构建 + 打包 |
+| `bun run lint` | ESLint 检查并修复 |
+| `bun run pm2:start` | 使用 PM2 启动（Bun） |
+| `bun run pm2:restart` | PM2 重启（Bun） |
 
 ## 功能概览
 
@@ -62,7 +61,7 @@
 
 ## 部署
 
-- **PM2**：`pnpm build && pnpm run pm2:start`
+- **PM2**：`bun run build && bun run pm2:start`
 
 ## 开发
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { createSignal, onMount, onCleanup } from 'solid-js'
 import {
   Application,
   Container,
@@ -180,28 +180,28 @@ function buildChoices(answer: number): number[] {
 }
 
 export default function MathPixiGame() {
-  const wrapRef = useRef<HTMLDivElement>(null)
-  const shellRef = useRef<HTMLDivElement>(null)
-  const [fullscreen, setFullscreen] = useState(false)
+  let wrapRef: HTMLDivElement | undefined
+  let shellRef: HTMLDivElement | undefined
+  const [fullscreen, setFullscreen] = createSignal(false)
 
-  const toggleFullscreen = useCallback(() => {
-    const el = shellRef.current
+  const toggleFullscreen = () => {
+    const el = shellRef
     if (!el) return
     if (!document.fullscreenElement) {
       void el.requestFullscreen?.().catch(() => {})
     } else {
       void document.exitFullscreen?.().catch(() => {})
     }
-  }, [])
+  }
 
-  useEffect(() => {
+  onMount(() => {
     const sync = () => setFullscreen(!!document.fullscreenElement)
     document.addEventListener('fullscreenchange', sync)
-    return () => document.removeEventListener('fullscreenchange', sync)
-  }, [])
+    onCleanup(() => document.removeEventListener('fullscreenchange', sync))
+  })
 
-  useEffect(() => {
-    const host = wrapRef.current
+  onMount(() => {
+    const host = wrapRef
     if (!host) return
 
     const app = new Application()
@@ -840,7 +840,7 @@ export default function MathPixiGame() {
 
       function fitStage() {
         if (destroyed) return
-        const el = wrapRef.current
+        const el = wrapRef
         if (!el) return
         const cw = Math.max(1, Math.floor(el.clientWidth))
         const ch = Math.max(1, Math.floor(el.clientHeight))
@@ -861,41 +861,36 @@ export default function MathPixiGame() {
 
     run()
 
-    return () => {
+    onCleanup(() => {
       destroyed = true
       if (roundTimer !== undefined) clearTimeout(roundTimer)
       if (fsResizeHandler) document.removeEventListener('fullscreenchange', fsResizeHandler)
       stageObserver?.disconnect()
-      const hostEl = wrapRef.current
+      const hostEl = wrapRef
       app.destroy(true, { children: true })
       if (hostEl && app.canvas?.parentNode === hostEl) hostEl.removeChild(app.canvas as HTMLCanvasElement)
-    }
-  }, [])
+    })
+  })
 
   return (
     <div
       ref={shellRef}
-      className="math-pixi-shell relative mx-auto max-w-full overflow-hidden rounded-xl border section-card"
-      style={{ borderColor: 'var(--card-border)' }}
+      class="math-pixi-shell relative mx-auto max-w-full overflow-hidden rounded-xl border section-card"
+      style="border-colo  r:var(--card-border);"
       role="region"
       aria-label="Pixi 算术小游戏"
     >
       <button
         type="button"
-        className="absolute right-3 top-3 z-10 rounded border px-2.5 py-1 font-mono text-xs transition-opacity hover:opacity-90"
-        style={{
-          borderColor: 'var(--card-border)',
-          background: 'var(--card-bg)',
-          color: 'var(--text-muted)',
-          fontSize: 'var(--text-xs)',
-        }}
+        class="absolute right-3 top-3 z-10 rounded border px-2.5 py-1 font-mono text-xs transition-opacity hover:opacity-90"
+        style="border-color:var(--card-border);background:var(--card-bg);color:var(--text-muted);font-size:var(--text-xs);"
         onClick={toggleFullscreen}
-        aria-pressed={fullscreen}
-        aria-label={fullscreen ? '退出全屏' : '全屏'}
+        aria-pressed={fullscreen()}
+        aria-label={fullscreen() ? '退出全屏' : '全屏'}
       >
-        {fullscreen ? '退出全屏' : '全屏'}
+        {fullscreen() ? '退出全屏' : '全屏'}
       </button>
-      <div ref={wrapRef} className="math-pixi-canvas-host math-pixi-game overflow-hidden rounded-xl" />
+      <div ref={wrapRef} class="math-pixi-canvas-host math-pixi-game overflow-hidden rounded-xl" />
     </div>
   )
 }

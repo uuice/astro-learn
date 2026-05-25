@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode } from 'react'
+import { createSignal, createMemo, onMount, type JSX, Show, For } from 'solid-js'
 
 const WORK_START_HOUR = 9
 const WORK_START_MINUTE = 0
@@ -58,7 +58,7 @@ function ColoredCountdown({ ms }: { ms: number }) {
   if (ms <= 0) {
     return (
       <>
-        <span className="chroma-tag chroma-tag--0">0</span>
+        <span class="chroma-tag chroma-tag--0">0</span>
         <span style={{ color: 'var(--text-muted)' }}> 秒</span>
       </>
     )
@@ -74,19 +74,18 @@ function ColoredCountdown({ ms }: { ms: number }) {
   let ci = 0
   const labelStyle = { color: 'var(--text-muted)' as const }
 
-  const out: ReactNode[] = []
-  let key = 0
+  const out: JSX.Element[] = []
   const pushNum = (n: number) => {
     const idx = ci++ % 6
     out.push(
-      <span key={key++} className={`chroma-tag chroma-tag--${idx}`}>
+      <span class={`chroma-tag chroma-tag--${idx}`}>
         {n}
       </span>,
     )
   }
   const pushLabel = (s: string) => {
     out.push(
-      <span key={key++} style={labelStyle}>
+      <span style={labelStyle}>
         {s}
       </span>,
     )
@@ -159,158 +158,152 @@ function endOfDateOnly(s: string): Date {
 }
 
 export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
-  const [now, setNow] = useState<Date | null>(null)
+  const [now, setNow] = createSignal<Date | null>(null)
 
-  useEffect(() => {
+  onMount(() => {
     setNow(new Date())
     const t = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(t)
-  }, [])
+  })
 
-  if (!now) {
-    return (
-      <div
-        className="section-card p-4 overflow-hidden"
-        style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
-      >
-        <h3 className="section-title">倒计时</h3>
-        <div className="mt-2" style={{ color: 'var(--text-muted)' }}>
-          <p className="m-0">加载中...</p>
-        </div>
-      </div>
-    )
-  }
+  const viewModel = createMemo(() => {
+    const currentNow = now()
+    let workLine: JSX.Element | string = '加载中...'
+    let untilWorkLine: JSX.Element | null = null
+    let holidayLine: JSX.Element | string = '加载中...'
+    let pastHolidays: HolidayItem[] = []
+    let remainingHolidays: HolidayItem[] = []
 
-  const todayStr = toDateOnly(now)
-  const workStartToday = new Date(now)
-  workStartToday.setHours(WORK_START_HOUR, WORK_START_MINUTE, 0, 0)
-  const workEndToday = new Date(now)
-  workEndToday.setHours(WORK_END_HOUR, WORK_END_MINUTE, 0, 0)
+    if (!currentNow) {
+      return { currentNow, workLine, untilWorkLine, holidayLine, pastHolidays, remainingHolidays }
+    }
 
-  let workLine: ReactNode
-  let untilWorkLine: ReactNode | null = null
-  const workClock = `${WORK_START_HOUR}:${String(WORK_START_MINUTE).padStart(2, '0')}`
+    const todayStr = toDateOnly(currentNow)
+    const workStartToday = new Date(currentNow)
+    workStartToday.setHours(WORK_START_HOUR, WORK_START_MINUTE, 0, 0)
+    const workEndToday = new Date(currentNow)
+    workEndToday.setHours(WORK_END_HOUR, WORK_END_MINUTE, 0, 0)
+    const workClock = `${WORK_START_HOUR}:${String(WORK_START_MINUTE).padStart(2, '0')}`
 
-  if (isWeekend(now)) {
-    workLine = '周末休息，今日不上班'
-    const nextStart = getNextWorkStart(now)
-    const ms = nextStart.getTime() - now.getTime()
-    untilWorkLine = (
-      <>
-        距离下次上班（
-        <span>{workClock}</span>
-        ）还有 <UntilNextWorkCountdown ms={ms} />
-      </>
-    )
-  } else if (now < workStartToday) {
-    const ms = workStartToday.getTime() - now.getTime()
-    workLine = (
-      <>
-        距离上班还有 <ColoredCountdown ms={ms} />
-      </>
-    )
-  } else if (now < workEndToday) {
-    const ms = workEndToday.getTime() - now.getTime()
-    workLine = (
-      <>
-        距离下班还有 <ColoredCountdown ms={ms} />
-      </>
-    )
-  } else {
-    workLine = '已下班'
-    const nextStart = getNextWorkStart(now)
-    const ms = nextStart.getTime() - now.getTime()
-    untilWorkLine = (
-      <>
-        距离下次上班（
-        <span>{workClock}</span>
-        ）还有 <UntilNextWorkCountdown ms={ms} />
-      </>
-    )
-  }
-
-  const sorted = [...holidays].sort((a, b) => a.start.localeCompare(b.start))
-  const pastHolidays = sorted.filter((h) => h.end < todayStr)
-  const remainingHolidays = sorted.filter((h) => h.end >= todayStr)
-
-  let holidayLine: ReactNode
-  const inHoliday = sorted.find((h) => todayStr >= h.start && todayStr <= h.end)
-  if (inHoliday) {
-    const endAt = endOfDateOnly(inHoliday.end)
-    const leftMs = endAt.getTime() - now.getTime()
-    holidayLine =
-      leftMs <= 0 ? (
+    if (isWeekend(currentNow)) {
+      workLine = '周末休息，今日不上班'
+      const nextStart = getNextWorkStart(currentNow)
+      const ms = nextStart.getTime() - currentNow.getTime()
+      untilWorkLine = (
         <>
-          正在放 {inHoliday.name}，今日收尾
-        </>
-      ) : (
-        <>
-          正在放 {inHoliday.name}，还剩 <ColoredCountdown ms={leftMs} />
+          距离下次上班（
+          <span>{workClock}</span>
+          ）还有 <UntilNextWorkCountdown ms={ms} />
         </>
       )
-  } else {
-    const next = sorted.find((h) => h.start > todayStr)
-    if (next) {
-      const start = parseDateOnly(next.start)
-      const ms = start.getTime() - now.getTime()
-      holidayLine = (
+    } else if (currentNow < workStartToday) {
+      const ms = workStartToday.getTime() - currentNow.getTime()
+      workLine = (
         <>
-          距离 {next.name} 还有 <ColoredCountdown ms={ms} />
+          距离上班还有 <ColoredCountdown ms={ms} />
+        </>
+      )
+    } else if (currentNow < workEndToday) {
+      const ms = workEndToday.getTime() - currentNow.getTime()
+      workLine = (
+        <>
+          距离下班还有 <ColoredCountdown ms={ms} />
         </>
       )
     } else {
-      holidayLine = (
+      workLine = '已下班'
+      const nextStart = getNextWorkStart(currentNow)
+      const ms = nextStart.getTime() - currentNow.getTime()
+      untilWorkLine = (
         <>
-          暂无假期
+          距离下次上班（
+          <span>{workClock}</span>
+          ）还有 <UntilNextWorkCountdown ms={ms} />
         </>
       )
     }
-  }
+
+    const sorted = [...holidays].sort((a, b) => a.start.localeCompare(b.start))
+    pastHolidays = sorted.filter((h) => h.end < todayStr)
+    remainingHolidays = sorted.filter((h) => h.end >= todayStr)
+
+    const inHoliday = sorted.find((h) => todayStr >= h.start && todayStr <= h.end)
+    if (inHoliday) {
+      const endAt = endOfDateOnly(inHoliday.end)
+      const leftMs = endAt.getTime() - currentNow.getTime()
+      holidayLine =
+        leftMs <= 0 ? (
+          <>
+            正在放 {inHoliday.name}，今日收尾
+          </>
+        ) : (
+          <>
+            正在放 {inHoliday.name}，还剩 <ColoredCountdown ms={leftMs} />
+          </>
+        )
+    } else {
+      const next = sorted.find((h) => h.start > todayStr)
+      if (next) {
+        const start = parseDateOnly(next.start)
+        const ms = start.getTime() - currentNow.getTime()
+        holidayLine = (
+          <>
+            距离 {next.name} 还有 <ColoredCountdown ms={ms} />
+          </>
+        )
+      } else {
+        holidayLine = (
+          <>
+            暂无假期
+          </>
+        )
+      }
+    }
+
+    return { currentNow, workLine, untilWorkLine, holidayLine, pastHolidays, remainingHolidays }
+  })
 
   const formatRange = (h: HolidayItem) => `${h.start.slice(5)}-${h.end.slice(5)} ${h.days}天`
 
   return (
     <div
-      className="section-card p-4 overflow-hidden"
-      style={{ borderRadius: 'var(--radius)', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}
+      class="section-card p-4 overflow-hidden"
+      style="border-radius:var(--radius);font-family:var(--font-mono);font-size:var(--text-xs);"
     >
-      <h3 className="section-title">倒计时</h3>
-      <div className="mt-2 space-y-2" style={{ color: 'var(--text-muted)' }}>
-        <p className="m-0">{workLine}</p>
-        {untilWorkLine && <p className="m-0">{untilWorkLine}</p>}
-        <p className="m-0">{holidayLine}</p>
+      <h3 class="section-title">倒计时</h3>
+      <div class="mt-2 space-y-2" style={{ color: 'var(--text-muted)' }}>
+        <Show when={viewModel().currentNow} fallback={<p class="m-0">加载中...</p>}>
+          <>
+            <p class="m-0">{viewModel().workLine}</p>
+            <Show when={viewModel().untilWorkLine}><p class="m-0">{viewModel().untilWorkLine}</p></Show>
+            <p class="m-0">{viewModel().holidayLine}</p>
+          </>
+        </Show>
       </div>
-      {pastHolidays.length > 0 && (
-        <div className="mt-3 pt-2 border-t" style={{ borderColor: 'var(--card-border)' }}>
-          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>已过假期</p>
-          <ul className="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
-            {pastHolidays.map((h, i) => (
-              <li
-                key={h.name}
-                style={{
-                  textDecoration: 'line-through',
-                  textDecorationColor: 'var(--text-muted)',
-                  opacity: 0.88,
-                }}
-              >
-                <span className={`chroma-tag chroma-tag--${i % 6}`}>{h.name}</span> {formatRange(h)}
+      <Show when={viewModel().pastHolidays.length > 0}>
+        <div class="mt-3 pt-2 border-t" style="border-color:var(--card-border);">
+          <p class="m-0 mb-1" style="font-size:0.7rem;">已过假期</p>
+          <ul class="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
+            <For each={viewModel().pastHolidays}>{(h, i) => (
+              <li style="text-decoration:line-through;text-decoration-color:var(--text-muted);opacity:0.88;">
+                <span class={`chroma-tag chroma-tag--${i() % 6}`}>{h.name}</span> {formatRange(h)}
               </li>
-            ))}
+            )}</For>
           </ul>
         </div>
-      )}
-      {remainingHolidays.length > 0 && (
-        <div className="mt-3 pt-2 border-t" style={{ borderColor: 'var(--card-border)' }}>
-          <p className="m-0 mb-1" style={{ fontSize: '0.7rem' }}>剩余假期</p>
-          <ul className="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
-            {remainingHolidays.map((h, i) => (
-              <li key={h.name}>
-                <span className={`chroma-tag chroma-tag--${i % 6}`}>{h.name}</span> {formatRange(h)}
+      </Show>
+      <Show when={viewModel().remainingHolidays.length > 0}>
+        <div class="mt-3 pt-2 border-t" style="border-color:var(--card-border);">
+          <p class="m-0 mb-1" style="font-size:0.7rem;">剩余假期</p>
+          <ul class="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
+            <For each={viewModel().remainingHolidays}>{(h, i) => (
+              <li>
+                <span class={`chroma-tag chroma-tag--${i() % 6}`}>{h.name}</span> {formatRange(h)}
               </li>
-            ))}
+            )}</For>
           </ul>
         </div>
-      )}
+      </Show>
     </div>
   )
 }

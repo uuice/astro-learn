@@ -13,19 +13,19 @@ published: true
 
 ## 关于本站
 
-本站是一个基于 **Astro 5** 构建的技术博客，用于发布技术文章、学习笔记与资源整理。内容以 Markdown / MDX 编写，支持分类、标签、归档与全文搜索，具备评论、短链接和后台管理，界面简洁清晰，方便阅读与导航。
+本站是一个基于 **Astro 6** 构建的技术博客，用于发布技术文章、学习笔记与资源整理。内容以 Markdown / MDX 编写，支持分类、标签、归档与全文搜索，具备评论、短链接和后台管理，界面简洁清晰，方便阅读与导航。
 
 ---
 
 ## 技术架构
 
-**框架与构建**
+### 框架与构建
 
-- **Astro 5** — 主框架，SSR 模式 + 按需岛屿，首屏精简、交互按需加载
+- **Astro 6** — 主框架，SSR 模式 + 按需岛屿，首屏精简、交互按需加载
 - **Tailwind CSS 4** — 样式与布局，配合 `@tailwindcss/typography` 排版文章
 - **Node 适配器** — 使用 `@astrojs/node`（middleware 模式），支持 session 等能力
 
-**内容与 Markdown**
+### 内容与 Markdown
 
 - **Content Collections** — 文章、页面、作者、友链等均通过集合管理
 - **MDX** — 支持在 Markdown 中嵌入 JSX 组件
@@ -33,15 +33,15 @@ published: true
 - **remark-toc / rehype-slug** — 自动目录与标题锚点
 - **GFM** — GitHub 风格 Markdown（表格、任务列表等）
 
-**搜索与交互**
+### 搜索与交互
 
 - **FlexSearch** — 前端全文搜索，生成 `search-index.json` 供检索
 - **主题与色相** — 亮 / 暗模式 + `--hue` 色相调节，用 CSS 变量统一控制
+- **Bun** — 依赖安装与脚本执行使用 Bun，锁文件为 `bun.lock`
 
-**可选集成**
+### 交互组件
 
-- **React** — 已集成，用于评论、主题切换、后台等交互组件
-- **Vue** — 已集成，可在页面或 MDX 中使用 Vue 组件
+- **Solid** — 已集成，用于评论、主题切换、后台等交互组件
 
 ---
 

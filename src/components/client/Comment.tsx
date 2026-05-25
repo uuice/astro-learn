@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { createSignal, createMemo, createEffect, For, Show, type JSX } from 'solid-js'
 
 export interface CommentItem {
   id: string
@@ -41,16 +41,16 @@ function buildTree(list: CommentItem[]): TreeNode[] {
 }
 
 export default function Comment({ postId }: CommentProps) {
-  const [list, setList] = useState<CommentItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [author, setAuthor] = useState('')
-  const [email, setEmail] = useState('')
-  const [content, setContent] = useState('')
-  const [parentId, setParentId] = useState<string | null>(null)
-  const [replyToAuthor, setReplyToAuthor] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
-  const [pendingNotice, setPendingNotice] = useState(false)
+  const [list, setList] = createSignal<CommentItem[]>([])
+  const [loading, setLoading] = createSignal(true)
+  const [author, setAuthor] = createSignal('')
+  const [email, setEmail] = createSignal('')
+  const [content, setContent] = createSignal('')
+  const [parentId, setParentId] = createSignal<string | null>(null)
+  const [replyToAuthor, setReplyToAuthor] = createSignal<string | null>(null)
+  const [submitting, setSubmitting] = createSignal(false)
+  const [error, setError] = createSignal('')
+  const [pendingNotice, setPendingNotice] = createSignal(false)
 
   const fetchComments = async () => {
     try {
@@ -64,14 +64,15 @@ export default function Comment({ postId }: CommentProps) {
     }
   }
 
-  useEffect(() => {
-    fetchComments()
-  }, [postId])
+  createEffect(() => {
+    postId
+    void fetchComments()
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault()
     setError('')
-    if (!author.trim() || !content.trim()) {
+    if (!author().trim() || !content().trim()) {
       setError('请填写昵称和内容')
       return
     }
@@ -83,10 +84,10 @@ export default function Comment({ postId }: CommentProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           postId,
-          parentId: parentId || undefined,
-          author: author.trim(),
-          email: email.trim() || undefined,
-          content: content.trim(),
+          parentId: parentId() || undefined,
+          author: author().trim(),
+          email: email().trim() || undefined,
+          content: content().trim(),
         }),
       })
       const json = await res.json()
@@ -124,19 +125,19 @@ export default function Comment({ postId }: CommentProps) {
     return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
   }
 
-  const tree = buildTree(list)
-  const authorMap = new Map(list.map((c) => [c.id, c.author]))
+  const tree = createMemo(() => buildTree(list()))
+  const authorMap = createMemo(() => new Map(list().map((c) => [c.id, c.author])))
 
-  const renderNode = (node: TreeNode) => {
+  const renderNode = (node: TreeNode): JSX.Element => {
     const c = node.comment
-    const parentAuthor = c.parentId ? authorMap.get(c.parentId) : null
+    const parentAuthor = c.parentId ? authorMap().get(c.parentId) : null
     return (
-      <li key={c.id} className={`comment-thread${c.parentId ? ' comment-item-reply' : ''}`}>
-        <div className="comment-item">
-          <div className="comment-item-meta">
+      <li class={`comment-thread${c.parentId ? ' comment-item-reply' : ''}`}>
+        <div class="comment-item">
+          <div class="comment-item-meta">
             {c.author}
             {c.email ? (
-              <span className="comment-email">
+              <span class="comment-email">
                 {' '}
                 <span>&lt;</span>
                 {c.email}
@@ -144,90 +145,90 @@ export default function Comment({ postId }: CommentProps) {
               </span>
             ) : null}
             {parentAuthor ? (
-              <span className="comment-reply-to">
+              <span class="comment-reply-to">
                 {' '}
                 回复 {parentAuthor}
               </span>
             ) : null}
-            <span className="comment-sep">·</span>
-            <span className="comment-date">{formatDate(c.createdAt)}</span>
-            <button type="button" className="comment-reply-btn" onClick={() => startReply(c.id, c.author)}>
+            <span class="comment-sep">·</span>
+            <span class="comment-date">{formatDate(c.createdAt)}</span>
+            <button type="button" class="comment-reply-btn" onClick={() => startReply(c.id, c.author)}>
               回复
             </button>
           </div>
-          <div className="comment-item-content">{c.content}</div>
+          <div class="comment-item-content">{c.content}</div>
         </div>
-        {node.children.length > 0 ? (
-          <ul className="comment-replies">
-            {node.children.map(renderNode)}
+        <Show when={node.children.length > 0}>
+          <ul class="comment-replies">
+            <For each={node.children}>{renderNode}</For>
           </ul>
-        ) : null}
+        </Show>
       </li>
     )
   }
 
   return (
-    <div className="comment-block">
-      <div className="comment-block-title">评论</div>
-      {loading ? (
-        <p className="comment-muted">加载中...</p>
+    <div class="comment-block">
+      <div class="comment-block-title">评论</div>
+      {loading() ? (
+        <p class="comment-muted">加载中...</p>
       ) : (
-        <ul className="comment-list">
-          {tree.length === 0 ? (
-            <li className="comment-muted">暂无评论</li>
+        <ul class="comment-list">
+          {tree().length === 0 ? (
+            <li class="comment-muted">暂无评论</li>
           ) : (
-            tree.map(renderNode)
+            <For each={tree()}>{renderNode}</For>
           )}
         </ul>
       )}
-      <form onSubmit={handleSubmit} className="comment-form">
-        {pendingNotice ? (
-          <p className="comment-pending">评论已提交，待审核后显示</p>
-        ) : null}
-        {error ? <p className="comment-error">{error}</p> : null}
-        {replyToAuthor ? (
-          <p className="comment-replying">
-            回复 {replyToAuthor}
-            <button type="button" className="comment-cancel-reply" onClick={cancelReply}>
+      <form onSubmit={handleSubmit} class="comment-form">
+        <Show when={pendingNotice()}>
+          <p class="comment-pending">评论已提交，待审核后显示</p>
+        </Show>
+        <Show when={error()}>{(message) => <p class="comment-error">{message()}</p>}</Show>
+        <Show when={replyToAuthor()}>
+          <p class="comment-replying">
+            回复 {replyToAuthor()}
+            <button type="button" class="comment-cancel-reply" onClick={cancelReply}>
               取消
             </button>
           </p>
-        ) : null}
-        <div className="comment-form-row">
-          <label className="comment-label">昵称</label>
+        </Show>
+        <div class="comment-form-row">
+          <label class="comment-label">昵称</label>
           <input
             type="text"
-            className="comment-input"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            class="comment-input"
+            value={author()}
+            onInput={(e) => setAuthor(e.currentTarget.value)}
             placeholder="必填"
             maxLength={100}
           />
         </div>
-        <div className="comment-form-row">
-          <label className="comment-label">邮箱</label>
+        <div class="comment-form-row">
+          <label class="comment-label">邮箱</label>
           <input
             type="email"
-            className="comment-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            class="comment-input"
+            value={email()}
+            onInput={(e) => setEmail(e.currentTarget.value)}
             placeholder="选填"
             maxLength={200}
           />
         </div>
-        <div className="comment-form-row">
-          <label className="comment-label">内容</label>
+        <div class="comment-form-row">
+          <label class="comment-label">内容</label>
           <textarea
-            className="comment-textarea"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            class="comment-textarea"
+            value={content()}
+            onInput={(e) => setContent(e.currentTarget.value)}
             placeholder="必填"
             rows={3}
             maxLength={2000}
           />
         </div>
-        <button type="submit" className="comment-submit" disabled={submitting}>
-          {submitting ? '提交中...' : '提交'}
+        <button type="submit" class="comment-submit" disabled={submitting()}>
+          {submitting() ? '提交中...' : '提交'}
         </button>
       </form>
     </div>

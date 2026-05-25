@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { createSignal, onMount, For, Show } from 'solid-js'
 
 interface CommentItem {
   id: string
@@ -12,11 +12,11 @@ interface CommentItem {
 }
 
 export default function CommentAdmin() {
-  const [list, setList] = useState<CommentItem[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [list, setList] = createSignal<CommentItem[]>([])
+  const [loading, setLoading] = createSignal(false)
+  const [error, setError] = createSignal('')
 
-  const load = useCallback(async () => {
+  const load = async () => {
     setError('')
     setLoading(true)
     try {
@@ -34,11 +34,11 @@ export default function CommentAdmin() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }
 
-  useEffect(() => {
-    load()
-  }, [load])
+  onMount(() => {
+    void load()
+  })
 
   const remove = async (id: string) => {
     try {
@@ -59,46 +59,46 @@ export default function CommentAdmin() {
   }
 
   return (
-    <div className="comment-admin">
-      <div className="comment-block-title"># 评论管理</div>
-      <div className="comment-admin-toolbar">
-        <button type="button" className="comment-submit" onClick={load} disabled={loading}>
-          {loading ? '加载中...' : '刷新'}
+    <div class="comment-admin">
+      <div class="comment-block-title"># 评论管理</div>
+      <div class="comment-admin-toolbar">
+        <button type="button" class="comment-submit" onClick={load} disabled={loading()}>
+          {loading() ? '加载中...' : '刷新'}
         </button>
       </div>
-      {error ? <p className="comment-error">{error}</p> : null}
-      {list.length === 0 && !loading ? (
-        <p className="comment-muted">暂无数据</p>
-      ) : list.length > 0 ? (
-        <ul className="comment-admin-list">
-          {list.map((c) => (
-            <li key={c.id} className="comment-admin-item">
-              <div className="comment-admin-item-meta">
-                <span className="comment-symbol">@</span> {c.author}
-                {c.email ? <span className="comment-email"> &lt;{c.email}&gt;</span> : null}
-                <span className="comment-sep">·</span>
-                <span className="comment-date">{formatDate(c.createdAt)}</span>
-                <span className="comment-sep">·</span>
-                <span className={`comment-admin-status comment-admin-status-${c.status}`}>
+      <Show when={error()}>{(message) => <p class="comment-error">{message()}</p>}</Show>
+      {list().length === 0 && !loading() ? (
+        <p class="comment-muted">暂无数据</p>
+      ) : list().length > 0 ? (
+        <ul class="comment-admin-list">
+          <For each={list()}>{(c) => (
+            <li class="comment-admin-item">
+              <div class="comment-admin-item-meta">
+                <span class="comment-symbol">@</span> {c.author}
+                {c.email ? <span class="comment-email"> &lt;{c.email}&gt;</span> : null}
+                <span class="comment-sep">·</span>
+                <span class="comment-date">{formatDate(c.createdAt)}</span>
+                <span class="comment-sep">·</span>
+                <span class={`comment-admin-status comment-admin-status-${c.status}`}>
                   {c.status === 'pending' ? '待审核' : '已通过'}
                 </span>
-                <span className="comment-sep">·</span>
-                <span className="comment-admin-post">{c.postId}</span>
+                <span class="comment-sep">·</span>
+                <span class="comment-admin-post">{c.postId}</span>
               </div>
-              {c.parentId ? <span className="comment-admin-parent">回复 {c.parentId}</span> : null}
-              <div className="comment-item-content">{c.content}</div>
-              <div className="comment-admin-actions">
+              {c.parentId ? <span class="comment-admin-parent">回复 {c.parentId}</span> : null}
+              <div class="comment-item-content">{c.content}</div>
+              <div class="comment-admin-actions">
                 {c.status === 'pending' ? (
-                  <button type="button" className="comment-admin-approve" onClick={() => approve(c.id)}>
+                  <button type="button" class="comment-admin-approve" onClick={() => approve(c.id)}>
                     通过
                   </button>
                 ) : null}
-                <button type="button" className="comment-admin-delete" onClick={() => remove(c.id)}>
+                <button type="button" class="comment-admin-delete" onClick={() => remove(c.id)}>
                   删除
                 </button>
               </div>
             </li>
-          ))}
+          )}</For>
         </ul>
       ) : null}
     </div>

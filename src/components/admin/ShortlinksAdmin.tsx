@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { createSignal, onMount, For, Show } from 'solid-js'
 
 interface ShortLinkItem {
   id: string
@@ -8,14 +8,14 @@ interface ShortLinkItem {
 }
 
 export default function ShortlinksAdmin() {
-  const [list, setList] = useState<ShortLinkItem[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [url, setUrl] = useState('')
-  const [slug, setSlug] = useState('')
-  const [addLoading, setAddLoading] = useState(false)
+  const [list, setList] = createSignal<ShortLinkItem[]>([])
+  const [loading, setLoading] = createSignal(false)
+  const [error, setError] = createSignal('')
+  const [url, setUrl] = createSignal('')
+  const [slug, setSlug] = createSignal('')
+  const [addLoading, setAddLoading] = createSignal(false)
 
-  const load = useCallback(async () => {
+  const load = async () => {
     setError('')
     setLoading(true)
     try {
@@ -33,14 +33,14 @@ export default function ShortlinksAdmin() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }
 
-  useEffect(() => {
-    load()
-  }, [load])
+  onMount(() => {
+    void load()
+  })
 
   const addLink = async (useCustomSlug: boolean) => {
-    const targetUrl = url.trim()
+    const targetUrl = url().trim()
     if (!targetUrl) {
       setError('请输入目标 URL')
       return
@@ -48,8 +48,8 @@ export default function ShortlinksAdmin() {
     setError('')
     setAddLoading(true)
     try {
-      const body = useCustomSlug && slug.trim()
-        ? { url: targetUrl, slug: slug.trim() }
+      const body = useCustomSlug && slug().trim()
+        ? { url: targetUrl, slug: slug().trim() }
         : { url: targetUrl }
       const res = await fetch('/api/admin/shortlinks', {
         method: 'POST',
@@ -89,89 +89,85 @@ export default function ShortlinksAdmin() {
   const formatDate = (ts: number) => new Date(ts).toLocaleString('zh-CN')
 
   return (
-    <div className="comment-admin">
-      <div className="comment-block-title"># 短链接管理</div>
+    <div class="comment-admin">
+      <div class="comment-block-title"># 短链接管理</div>
 
-      <div className="comment-admin-toolbar" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+      <div class="comment-admin-toolbar" style="flex-wrap:wrap;gap:0.5rem;">
         <input
           type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          value={url()}
+          onInput={(e) => setUrl(e.currentTarget.value)}
           placeholder="目标 URL"
-          className="comment-admin-input"
-          style={{ minWidth: '12rem' }}
+          class="comment-admin-input"
+          style="min-width:12rem;"
         />
         <input
           type="text"
-          value={slug}
-          onChange={(e) => setSlug(e.target.value)}
+          value={slug()}
+          onInput={(e) => setSlug(e.currentTarget.value)}
           placeholder="自定义短码（留空自动生成）"
-          className="comment-admin-input"
-          style={{ minWidth: '10rem' }}
+          class="comment-admin-input"
+          style="min-width:10rem;"
         />
         <button
           type="button"
-          className="comment-submit"
+          class="comment-submit"
           onClick={() => addLink(false)}
-          disabled={addLoading}
+          disabled={addLoading()}
         >
-          {addLoading ? '添加中...' : '生成短链接'}
+          {addLoading() ? '添加中...' : '生成短链接'}
         </button>
-        {slug.trim() ? (
+        <Show when={slug().trim()}>
           <button
             type="button"
-            className="comment-submit"
+            class="comment-submit"
             onClick={() => addLink(true)}
-            disabled={addLoading}
+            disabled={addLoading()}
             style={{ opacity: 0.9 }}
           >
             使用自定义短码
           </button>
-        ) : null}
-        <button type="button" className="comment-submit" onClick={load} disabled={loading}>
-          {loading ? '加载中...' : '刷新'}
+        </Show>
+        <button type="button" class="comment-submit" onClick={() => void load()} disabled={loading()}>
+          {loading() ? '加载中...' : '刷新'}
         </button>
       </div>
 
-      {error ? <p className="comment-error">{error}</p> : null}
+      <Show when={error()}>{(message) => <p class="comment-error">{message()}</p>}</Show>
 
-      {list.length === 0 && !loading ? (
-        <p className="comment-muted">暂无短链接</p>
-      ) : list.length > 0 ? (
-        <ul className="comment-admin-list">
-          {list.map((s) => {
-            const shortUrl =
-              typeof window !== 'undefined'
-                ? `${window.location.origin}/s/${s.slug}`
-                : `/s/${s.slug}`
+      {list().length === 0 && !loading() ? (
+        <p class="comment-muted">暂无短链接</p>
+      ) : list().length > 0 ? (
+        <ul class="comment-admin-list">
+          <For each={list()}>{(s) => {
             return (
-              <li key={s.id} className="comment-admin-item">
-                <div className="comment-admin-item-meta">
-                  <span className="comment-symbol">/s/{s.slug}</span>
-                  <span className="comment-sep">→</span>
+              <li class="comment-admin-item">
+                <div class="comment-admin-item-meta">
+                  <span class="comment-symbol">/s/{s.slug}</span>
+                  <span class="comment-sep">→</span>
                   <a
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="comment-admin-post"
-                    style={{ wordBreak: 'break-all' }}
+                    class="comment-admin-post"
+                    style="word-break:break-all;"
                   >
                     {s.url}
                   </a>
-                  <span className="comment-sep">·</span>
-                  <span className="comment-date">{formatDate(s.createdAt)}</span>
+                  <span class="comment-sep">·</span>
+                  <span class="comment-date">{formatDate(s.createdAt)}</span>
                 </div>
-                <div className="comment-admin-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                <div class="comment-admin-actions" style={{ display: 'flex', gap: '0.5rem' }}>
                   <button
                     type="button"
-                    className="comment-admin-approve"
+                    class="comment-admin-approve"
                     onClick={() => copyShortUrl(s)}
                   >
                     复制
                   </button>
                   <button
                     type="button"
-                    className="comment-admin-delete"
+                    class="comment-admin-delete"
                     onClick={() => remove(s.id)}
                   >
                     删除
@@ -179,7 +175,7 @@ export default function ShortlinksAdmin() {
                 </div>
               </li>
             )
-          })}
+          }}</For>
         </ul>
       ) : null}
     </div>

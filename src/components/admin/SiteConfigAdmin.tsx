@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { createPortal } from 'react-dom'
+import { createSignal, createEffect, onMount, onCleanup, Show, For } from 'solid-js'
+import { Portal } from 'solid-js/web'
 
 type ConfigItem = {
   key: string
@@ -28,14 +28,14 @@ function displayValue(value: unknown): string {
 }
 
 export default function SiteConfigAdmin() {
-  const [configs, setConfigs] = useState<ConfigItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [editItem, setEditItem] = useState<EditFormData | null>(null)
-  const [isNew, setIsNew] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [configs, setConfigs] = createSignal<ConfigItem[]>([])
+  const [loading, setLoading] = createSignal(true)
+  const [error, setError] = createSignal('')
+  const [editItem, setEditItem] = createSignal<EditFormData | null>(null)
+  const [isNew, setIsNew] = createSignal(false)
+  const [saving, setSaving] = createSignal(false)
 
-  const load = useCallback(async () => {
+  const load = async () => {
     setError('')
     setLoading(true)
     try {
@@ -48,30 +48,31 @@ export default function SiteConfigAdmin() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }
 
-  useEffect(() => {
-    load()
-  }, [load])
+  onMount(() => {
+    void load()
+  })
 
-  useEffect(() => {
-    if (!editItem) return
+  createEffect(() => {
+    if (!editItem()) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => {
+    onCleanup(() => {
       document.body.style.overflow = prev
-    }
-  }, [editItem])
+    })
+  })
 
   const handleSave = async () => {
-    if (!editItem) return
+    const current = editItem()
+    if (!current) return
     setSaving(true)
     setError('')
     try {
       const res = await fetch('/api/admin/site-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editItem),
+        body: JSON.stringify(current),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -80,7 +81,7 @@ export default function SiteConfigAdmin() {
       }
       setEditItem(null)
       setIsNew(false)
-      load()
+      void load()
     } catch {
       setError('保存失败')
     } finally {
@@ -99,7 +100,7 @@ export default function SiteConfigAdmin() {
         setError(json.error || '删除失败')
         return
       }
-      load()
+      void load()
     } catch {
       setError('删除失败')
     }
@@ -121,10 +122,11 @@ export default function SiteConfigAdmin() {
   }
 
   const formatJson = () => {
-    if (!editItem || editItem.type !== 'json') return
+    const current = editItem()
+    if (!current || current.type !== 'json') return
     try {
-      const parsed = JSON.parse(editItem.value)
-      setEditItem({ ...editItem, value: JSON.stringify(parsed, null, 2) })
+      const parsed = JSON.parse(current.value)
+      setEditItem({ ...current, value: JSON.stringify(parsed, null, 2) })
     } catch {
       setError('JSON 格式无效，无法格式化')
     }
@@ -136,132 +138,132 @@ export default function SiteConfigAdmin() {
     setError('')
   }
 
-  const modalEl =
-    typeof document !== 'undefined' &&
-    editItem &&
-    createPortal(
-      <div className="config-modal-overlay" onClick={closeModal} role="presentation">
-        <div className="config-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-          <div className="config-modal-header">
-            <span className="comment-symbol">{isNew ? '+ 新建配置' : '✎ 编辑配置'}</span>
-            <button type="button" className="config-modal-close" onClick={closeModal}>×</button>
-          </div>
-          <div className="config-modal-body">
-            <div className="config-field">
-              <label className="config-label">配置键</label>
-              <input
-                type="text"
-                value={editItem.key}
-                onChange={(e) => setEditItem({ ...editItem, key: e.target.value })}
-                disabled={!isNew}
-                placeholder="例如: adminNav"
-              />
-            </div>
-            <div className="config-field">
-              <label className="config-label">类型</label>
-              <select
-                value={editItem.type}
-                onChange={(e) => setEditItem({ ...editItem, type: e.target.value as 'string' | 'json' })}
-              >
-                <option value="string">字符串</option>
-                <option value="json">JSON</option>
-              </select>
-            </div>
-            <div className="config-field">
-              <label className="config-label">
-                值
-                {editItem.type === 'json' && (
-                  <button type="button" className="config-format-btn" onClick={formatJson}>
-                    格式化
-                  </button>
-                )}
-              </label>
-              <textarea
-                value={editItem.value}
-                onChange={(e) => setEditItem({ ...editItem, value: e.target.value })}
-                rows={editItem.type === 'json' ? 12 : 3}
-                placeholder={editItem.type === 'json' ? '输入有效的 JSON' : '输入配置值'}
-                className={editItem.type === 'json' ? 'config-json-input' : ''}
-              />
-            </div>
-            <div className="config-field">
-              <label className="config-label">描述（可选）</label>
-              <input
-                type="text"
-                value={editItem.description || ''}
-                onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
-                placeholder="配置说明"
-              />
-            </div>
-            {error && <p className="comment-error">{error}</p>}
-            <div className="config-actions">
-              <button type="button" className="comment-submit" onClick={handleSave} disabled={saving}>
-                {saving ? '保存中...' : '保存'}
-              </button>
-              <button type="button" className="config-cancel-btn" onClick={closeModal}>
-                取消
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>,
-      document.body
-    )
-
   return (
-    <div className="comment-admin">
-      <div className="comment-block-title"># 站点配置</div>
+    <div class="comment-admin">
+      <div class="comment-block-title"># 站点配置</div>
 
-      <div className="comment-admin-toolbar" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
-        <button type="button" className="comment-submit" onClick={openNew}>
+      <div class="comment-admin-toolbar" style="flex-wrap:wrap;gap:0.5rem;">
+        <button type="button" class="comment-submit" onClick={openNew}>
           新建配置
         </button>
-        <button type="button" className="comment-submit" onClick={load} disabled={loading} style={{ marginLeft: 'auto' }}>
-          {loading ? '加载中...' : '刷新'}
+        <button type="button" class="comment-submit" onClick={() => void load()} disabled={loading()} style="margin-left:auto;">
+          {loading() ? '加载中...' : '刷新'}
         </button>
       </div>
 
-      {error && !editItem ? <p className="comment-error">{error}</p> : null}
+      <Show when={error() && !editItem()}>
+        {(message) => <p class="comment-error">{message()}</p>}
+      </Show>
 
-      {loading ? (
-        <p className="comment-muted">加载中...</p>
-      ) : configs.length === 0 ? (
-        <p className="comment-muted">暂无配置</p>
+      {loading() ? (
+        <p class="comment-muted">加载中...</p>
+      ) : configs().length === 0 ? (
+        <p class="comment-muted">暂无配置</p>
       ) : (
-        <ul className="comment-admin-list">
-          {configs.map((item) => {
+        <ul class="comment-admin-list">
+          <For each={configs()}>{(item) => {
             const valueStr = displayValue(item.value)
             return (
-              <li key={item.key} className="comment-admin-item">
-                <div className="comment-admin-item-meta">
-                  <span className="comment-symbol config-key">{item.key}</span>
-                  <span className={`config-type config-type-${item.type}`}>
+              <li class="comment-admin-item">
+                <div class="comment-admin-item-meta">
+                  <span class="comment-symbol config-key">{item.key}</span>
+                  <span class={`config-type config-type-${item.type}`}>
                     {item.type === 'json' ? 'JSON' : 'STR'}
                   </span>
                   {item.description && (
                     <>
-                      <span className="comment-sep">·</span>
-                      <span className="comment-muted">{item.description}</span>
+                      <span class="comment-sep">·</span>
+                      <span class="comment-muted">{item.description}</span>
                     </>
                   )}
                 </div>
-                <div className="config-value-preview">
+                <div class="config-value-preview">
                   <code>{valueStr.length > 80 ? valueStr.slice(0, 80) + '...' : valueStr}</code>
                 </div>
-                <div className="comment-admin-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button type="button" className="comment-admin-approve" onClick={() => openEdit(item)}>
+                <div class="comment-admin-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button type="button" class="comment-admin-approve" onClick={() => openEdit(item)}>
                     编辑
                   </button>
-                  <button type="button" className="comment-admin-delete" onClick={() => handleDelete(item.key)}>
+                  <button type="button" class="comment-admin-delete" onClick={() => handleDelete(item.key)}>
                     删除
                   </button>
                 </div>
               </li>
             )
-          })}
+          }}</For>
         </ul>
       )}
-      {modalEl}
+      <Show when={editItem()}>
+        {(current) => (
+          <Portal>
+            <div class="config-modal-overlay" onClick={closeModal} role="presentation">
+              <div class="config-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+                <div class="config-modal-header">
+                  <span class="comment-symbol">{isNew() ? '+ 新建配置' : '✎ 编辑配置'}</span>
+                  <button type="button" class="config-modal-close" onClick={closeModal}>×</button>
+                </div>
+                <div class="config-modal-body">
+                  <div class="config-field">
+                    <label class="config-label">配置键</label>
+                    <input
+                      type="text"
+                      value={current().key}
+                      onInput={(e) => setEditItem({ ...current(), key: e.currentTarget.value })}
+                      disabled={!isNew()}
+                      placeholder="例如: adminNav"
+                    />
+                  </div>
+                  <div class="config-field">
+                    <label class="config-label">类型</label>
+                    <select
+                      value={current().type}
+                      onChange={(e) => setEditItem({ ...current(), type: e.currentTarget.value as 'string' | 'json' })}
+                    >
+                      <option value="string">字符串</option>
+                      <option value="json">JSON</option>
+                    </select>
+                  </div>
+                  <div class="config-field">
+                    <label class="config-label">
+                      值
+                      <Show when={current().type === 'json'}>
+                        <button type="button" class="config-format-btn" onClick={formatJson}>
+                          格式化
+                        </button>
+                      </Show>
+                    </label>
+                    <textarea
+                      value={current().value}
+                      onInput={(e) => setEditItem({ ...current(), value: e.currentTarget.value })}
+                      rows={current().type === 'json' ? 12 : 3}
+                      placeholder={current().type === 'json' ? '输入有效的 JSON' : '输入配置值'}
+                      class={current().type === 'json' ? 'config-json-input' : ''}
+                    />
+                  </div>
+                  <div class="config-field">
+                    <label class="config-label">描述（可选）</label>
+                    <input
+                      type="text"
+                      value={current().description || ''}
+                      onInput={(e) => setEditItem({ ...current(), description: e.currentTarget.value })}
+                      placeholder="配置说明"
+                    />
+                  </div>
+                  <Show when={error()}>{(message) => <p class="comment-error">{message()}</p>}</Show>
+                  <div class="config-actions">
+                    <button type="button" class="comment-submit" onClick={handleSave} disabled={saving()}>
+                      {saving() ? '保存中...' : '保存'}
+                    </button>
+                    <button type="button" class="config-cancel-btn" onClick={closeModal}>
+                      取消
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Portal>
+        )}
+      </Show>
     </div>
   )
 }

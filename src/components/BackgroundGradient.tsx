@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { onMount, onCleanup } from 'solid-js'
 
 const PARTICLE_COUNT = 40
 const MAX_R = 3
@@ -15,10 +15,10 @@ function getAccentColor(): string {
 }
 
 export default function BackgroundGradient() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  let canvasRef: HTMLCanvasElement | undefined
 
-  useEffect(() => {
-    const canvas = canvasRef.current
+  onMount(() => {
+    const canvas = canvasRef
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
@@ -82,17 +82,17 @@ export default function BackgroundGradient() {
     }
     raf = requestAnimationFrame(tick)
 
-    return () => {
+    onCleanup(() => {
       window.removeEventListener('resize', resize)
       cancelAnimationFrame(raf)
-    }
-  }, [])
+    })
+  })
 
   return (
     <canvas
       ref={canvasRef}
       aria-hidden
-      className="fixed inset-0 pointer-events-none -z-10"
+      class="fixed inset-0 pointer-events-none -z-10"
       style={{ width: '100%', height: '100%' }}
     />
   )
