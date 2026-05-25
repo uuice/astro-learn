@@ -62,7 +62,6 @@
 
 ## 部署
 
-- **Docker**：详见 [DOCKER.md](./DOCKER.md)
 - **PM2**：`pnpm build && pnpm run pm2:start`
 
 ## 开发
