@@ -1,4 +1,4 @@
-import { defineMiddleware, sequence } from "astro:middleware"
+import { defineMiddleware, sequence } from 'astro:middleware'
 
 const adminAuth = defineMiddleware(async (context, next) => {
   const { pathname } = context.url
@@ -6,7 +6,9 @@ const adminAuth = defineMiddleware(async (context, next) => {
   // 只处理 /admin 页面路由，排除 /api/admin API 路由
   if (pathname.startsWith('/admin') && !pathname.startsWith('/api/')) {
     const isLoggedIn = await context.session?.get('adminLoggedIn')
-    console.log(`[middleware] pathname: ${pathname}, isLoggedIn: ${isLoggedIn}, session exists: ${!!context.session}`)
+    console.log(
+      `[middleware] pathname: ${pathname}, isLoggedIn: ${isLoggedIn}, session exists: ${!!context.session}`,
+    )
 
     if (pathname === '/admin/login') {
       if (isLoggedIn) {

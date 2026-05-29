@@ -1,6 +1,9 @@
 import type { APIRoute } from 'astro'
 import { getCollection } from 'astro:content'
-import { checkAdminSession, unauthorizedResponse } from '../../../lib/admin-auth'
+import {
+  checkAdminSession,
+  unauthorizedResponse,
+} from '../../../lib/admin-auth'
 
 export const prerender = false
 

@@ -48,9 +48,10 @@ export default function ShortlinksAdmin() {
     setError('')
     setAddLoading(true)
     try {
-      const body = useCustomSlug && slug().trim()
-        ? { url: targetUrl, slug: slug().trim() }
-        : { url: targetUrl }
+      const body =
+        useCustomSlug && slug().trim()
+          ? { url: targetUrl, slug: slug().trim() }
+          : { url: targetUrl }
       const res = await fetch('/api/admin/shortlinks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -128,54 +129,66 @@ export default function ShortlinksAdmin() {
             使用自定义短码
           </button>
         </Show>
-        <button type="button" class="comment-submit" onClick={() => void load()} disabled={loading()}>
+        <button
+          type="button"
+          class="comment-submit"
+          onClick={() => void load()}
+          disabled={loading()}
+        >
           {loading() ? '加载中...' : '刷新'}
         </button>
       </div>
 
-      <Show when={error()}>{(message) => <p class="comment-error">{message()}</p>}</Show>
+      <Show when={error()}>
+        {(message) => <p class="comment-error">{message()}</p>}
+      </Show>
 
       {list().length === 0 && !loading() ? (
         <p class="comment-muted">暂无短链接</p>
       ) : list().length > 0 ? (
         <ul class="comment-admin-list">
-          <For each={list()}>{(s) => {
-            return (
-              <li class="comment-admin-item">
-                <div class="comment-admin-item-meta">
-                  <span class="comment-symbol">/s/{s.slug}</span>
-                  <span class="comment-sep">→</span>
-                  <a
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="comment-admin-post"
-                    style="word-break:break-all;"
+          <For each={list()}>
+            {(s) => {
+              return (
+                <li class="comment-admin-item">
+                  <div class="comment-admin-item-meta">
+                    <span class="comment-symbol">/s/{s.slug}</span>
+                    <span class="comment-sep">→</span>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="comment-admin-post"
+                      style="word-break:break-all;"
+                    >
+                      {s.url}
+                    </a>
+                    <span class="comment-sep">·</span>
+                    <span class="comment-date">{formatDate(s.createdAt)}</span>
+                  </div>
+                  <div
+                    class="comment-admin-actions"
+                    style={{ display: 'flex', gap: '0.5rem' }}
                   >
-                    {s.url}
-                  </a>
-                  <span class="comment-sep">·</span>
-                  <span class="comment-date">{formatDate(s.createdAt)}</span>
-                </div>
-                <div class="comment-admin-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    type="button"
-                    class="comment-admin-approve"
-                    onClick={() => copyShortUrl(s)}
-                  >
-                    复制
-                  </button>
-                  <button
-                    type="button"
-                    class="comment-admin-delete"
-                    onClick={() => remove(s.id)}
-                  >
-                    删除
-                  </button>
-                </div>
-              </li>
-            )
-          }}</For>
+                    <button
+                      type="button"
+                      class="comment-admin-approve"
+                      onClick={() => copyShortUrl(s)}
+                    >
+                      复制
+                    </button>
+                    <button
+                      type="button"
+                      class="comment-admin-delete"
+                      onClick={() => remove(s.id)}
+                    >
+                      删除
+                    </button>
+                  </div>
+                </li>
+              )
+            }}
+          </For>
         </ul>
       ) : null}
     </div>

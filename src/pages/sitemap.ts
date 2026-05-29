@@ -13,7 +13,9 @@ function escapeXml(s: string): string {
 
 export const GET: APIRoute = async () => {
   const [setting] = await getCollection('setting')
-  const baseUrl = (setting?.data.siteSetting?.baseUrl ?? 'https://example.com').replace(/\/$/, '')
+  const baseUrl = (
+    setting?.data.siteSetting?.baseUrl ?? 'https://example.com'
+  ).replace(/\/$/, '')
 
   const posts = await getCollection('post', ({ data }) => data.published)
   const pages = await getCollection('page', ({ data }) => data.published)
@@ -24,35 +26,71 @@ export const GET: APIRoute = async () => {
   const urls: string[] = []
 
   const loc = (path: string) => escapeXml(baseUrl + path)
-  urls.push(`  <url><loc>${loc('/')}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>`)
-  urls.push(`  <url><loc>${loc('/archives')}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>`)
-  urls.push(`  <url><loc>${loc('/links')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`)
-  urls.push(`  <url><loc>${loc('/about')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`)
-  urls.push(`  <url><loc>${loc('/navigations')}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`)
-  urls.push(`  <url><loc>${loc('/games')}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`)
-  urls.push(`  <url><loc>${loc('/games/math')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.45</priority></url>`)
+  urls.push(
+    `  <url><loc>${loc('/')}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>`,
+  )
+  urls.push(
+    `  <url><loc>${loc('/archives')}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>`,
+  )
+  urls.push(
+    `  <url><loc>${loc('/links')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>`,
+  )
+  urls.push(
+    `  <url><loc>${loc('/about')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
+  )
+  urls.push(
+    `  <url><loc>${loc('/navigations')}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`,
+  )
+  urls.push(
+    `  <url><loc>${loc('/games')}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`,
+  )
+  urls.push(
+    `  <url><loc>${loc('/games/math')}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.45</priority></url>`,
+  )
 
   for (const post of posts) {
-    const lastmod = new Date(post.data.updated_timestamp ?? post.data.created_timestamp).toISOString().split('T')[0]
-    urls.push(`  <url><loc>${loc(post.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`)
+    const lastmod = new Date(
+      post.data.updated_timestamp ?? post.data.created_timestamp,
+    )
+      .toISOString()
+      .split('T')[0]
+    urls.push(
+      `  <url><loc>${loc(post.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`,
+    )
   }
 
   for (const page of pages) {
-    const lastmod = new Date(page.data.updated_timestamp ?? page.data.created_timestamp).toISOString().split('T')[0]
-    urls.push(`  <url><loc>${loc(page.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`)
+    const lastmod = new Date(
+      page.data.updated_timestamp ?? page.data.created_timestamp,
+    )
+      .toISOString()
+      .split('T')[0]
+    urls.push(
+      `  <url><loc>${loc(page.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`,
+    )
   }
 
   for (const a of authorEntries) {
-    const lastmod = new Date(a.data.updated_timestamp ?? a.data.created_timestamp).toISOString().split('T')[0]
-    urls.push(`  <url><loc>${loc(a.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.55</priority></url>`)
+    const lastmod = new Date(
+      a.data.updated_timestamp ?? a.data.created_timestamp,
+    )
+      .toISOString()
+      .split('T')[0]
+    urls.push(
+      `  <url><loc>${loc(a.data.url)}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.55</priority></url>`,
+    )
   }
 
   for (const cat of categories) {
-    urls.push(`  <url><loc>${loc(cat.url)}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>`)
+    urls.push(
+      `  <url><loc>${loc(cat.url)}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>`,
+    )
   }
 
   for (const tag of tags) {
-    urls.push(`  <url><loc>${loc(tag.url)}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`)
+    urls.push(
+      `  <url><loc>${loc(tag.url)}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>`,
+    )
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

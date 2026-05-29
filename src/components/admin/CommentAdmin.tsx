@@ -50,7 +50,12 @@ export default function CommentAdmin() {
   const approve = async (id: string) => {
     try {
       const res = await fetch(`/api/admin/comments/${id}`, { method: 'PATCH' })
-      if (res.ok) setList((prev) => prev.map((c) => (c.id === id ? { ...c, status: 'approved' as const } : c)))
+      if (res.ok)
+        setList((prev) =>
+          prev.map((c) =>
+            c.id === id ? { ...c, status: 'approved' as const } : c,
+          ),
+        )
     } catch {}
   }
 
@@ -62,43 +67,66 @@ export default function CommentAdmin() {
     <div class="comment-admin">
       <div class="comment-block-title"># 评论管理</div>
       <div class="comment-admin-toolbar">
-        <button type="button" class="comment-submit" onClick={load} disabled={loading()}>
+        <button
+          type="button"
+          class="comment-submit"
+          onClick={load}
+          disabled={loading()}
+        >
           {loading() ? '加载中...' : '刷新'}
         </button>
       </div>
-      <Show when={error()}>{(message) => <p class="comment-error">{message()}</p>}</Show>
+      <Show when={error()}>
+        {(message) => <p class="comment-error">{message()}</p>}
+      </Show>
       {list().length === 0 && !loading() ? (
         <p class="comment-muted">暂无数据</p>
       ) : list().length > 0 ? (
         <ul class="comment-admin-list">
-          <For each={list()}>{(c) => (
-            <li class="comment-admin-item">
-              <div class="comment-admin-item-meta">
-                <span class="comment-symbol">@</span> {c.author}
-                {c.email ? <span class="comment-email"> &lt;{c.email}&gt;</span> : null}
-                <span class="comment-sep">·</span>
-                <span class="comment-date">{formatDate(c.createdAt)}</span>
-                <span class="comment-sep">·</span>
-                <span class={`comment-admin-status comment-admin-status-${c.status}`}>
-                  {c.status === 'pending' ? '待审核' : '已通过'}
-                </span>
-                <span class="comment-sep">·</span>
-                <span class="comment-admin-post">{c.postId}</span>
-              </div>
-              {c.parentId ? <span class="comment-admin-parent">回复 {c.parentId}</span> : null}
-              <div class="comment-item-content">{c.content}</div>
-              <div class="comment-admin-actions">
-                {c.status === 'pending' ? (
-                  <button type="button" class="comment-admin-approve" onClick={() => approve(c.id)}>
-                    通过
-                  </button>
+          <For each={list()}>
+            {(c) => (
+              <li class="comment-admin-item">
+                <div class="comment-admin-item-meta">
+                  <span class="comment-symbol">@</span> {c.author}
+                  {c.email ? (
+                    <span class="comment-email"> &lt;{c.email}&gt;</span>
+                  ) : null}
+                  <span class="comment-sep">·</span>
+                  <span class="comment-date">{formatDate(c.createdAt)}</span>
+                  <span class="comment-sep">·</span>
+                  <span
+                    class={`comment-admin-status comment-admin-status-${c.status}`}
+                  >
+                    {c.status === 'pending' ? '待审核' : '已通过'}
+                  </span>
+                  <span class="comment-sep">·</span>
+                  <span class="comment-admin-post">{c.postId}</span>
+                </div>
+                {c.parentId ? (
+                  <span class="comment-admin-parent">回复 {c.parentId}</span>
                 ) : null}
-                <button type="button" class="comment-admin-delete" onClick={() => remove(c.id)}>
-                  删除
-                </button>
-              </div>
-            </li>
-          )}</For>
+                <div class="comment-item-content">{c.content}</div>
+                <div class="comment-admin-actions">
+                  {c.status === 'pending' ? (
+                    <button
+                      type="button"
+                      class="comment-admin-approve"
+                      onClick={() => approve(c.id)}
+                    >
+                      通过
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    class="comment-admin-delete"
+                    onClick={() => remove(c.id)}
+                  >
+                    删除
+                  </button>
+                </div>
+              </li>
+            )}
+          </For>
         </ul>
       ) : null}
     </div>

@@ -1,7 +1,15 @@
 import type { CATEGORY, TAG, POST_CATEGORY, POST_TAG } from '../types'
-import { titleToUrl, generateNamespaceUUID, generateCategoryId, generateTagId } from './index.js'
+import {
+  titleToUrl,
+  generateNamespaceUUID,
+  generateCategoryId,
+  generateTagId,
+} from './index.js'
 
-export type PostEntry = { id: string; data: { categories?: string[]; tags?: string[] } }
+export type PostEntry = {
+  id: string
+  data: { categories?: string[]; tags?: string[] }
+}
 
 export type DerivedFromPosts = {
   categories: CATEGORY[]
@@ -22,7 +30,12 @@ export function getDerivedFromPosts(posts: PostEntry[]): DerivedFromPosts {
     for (const t of post.data.categories ?? []) {
       if (t && !categoryMap.has(t)) {
         const categoryId = generateCategoryId(t)
-        categoryMap.set(t, { id: categoryId, title: t, description: '', url: `/categories/${titleToUrl(t)}` })
+        categoryMap.set(t, {
+          id: categoryId,
+          title: t,
+          description: '',
+          url: `/categories/${titleToUrl(t)}`,
+        })
       }
       if (t) {
         const categoryId = generateCategoryId(t)
@@ -36,7 +49,12 @@ export function getDerivedFromPosts(posts: PostEntry[]): DerivedFromPosts {
     for (const t of post.data.tags ?? []) {
       if (t && !tagMap.has(t)) {
         const tagId = generateTagId(t)
-        tagMap.set(t, { id: tagId, title: t, description: '', url: `/tags/${titleToUrl(t)}` })
+        tagMap.set(t, {
+          id: tagId,
+          title: t,
+          description: '',
+          url: `/tags/${titleToUrl(t)}`,
+        })
       }
       if (t) {
         const tagId = generateTagId(t)
@@ -66,7 +84,9 @@ export function getTagsFromPosts(posts: PostEntry[]): TAG[] {
   return getDerivedFromPosts(posts).tags
 }
 
-export function getPostCategoriesFromPosts(posts: PostEntry[]): POST_CATEGORY[] {
+export function getPostCategoriesFromPosts(
+  posts: PostEntry[],
+): POST_CATEGORY[] {
   return getDerivedFromPosts(posts).postCategories
 }
 

@@ -1,6 +1,9 @@
 import type { APIRoute } from 'astro'
 import { getAllShortlinks, addShortlink } from '../../../lib/shortlinks-db'
-import { checkAdminSession, unauthorizedResponse } from '../../../lib/admin-auth'
+import {
+  checkAdminSession,
+  unauthorizedResponse,
+} from '../../../lib/admin-auth'
 
 export const prerender = false
 
@@ -18,20 +21,29 @@ export const POST: APIRoute = async ({ request, session }) => {
   if (!(await checkAdminSession(session))) {
     return unauthorizedResponse()
   }
-  if (request.headers.get('content-type')?.includes('application/json') === false) {
-    return new Response(JSON.stringify({ error: 'Content-Type must be application/json' }), {
-      status: 400,
-    })
+  if (
+    request.headers.get('content-type')?.includes('application/json') === false
+  ) {
+    return new Response(
+      JSON.stringify({ error: 'Content-Type must be application/json' }),
+      {
+        status: 400,
+      },
+    )
   }
   let body: { slug?: string; url?: string }
   try {
     body = await request.json()
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 })
+    return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+      status: 400,
+    })
   }
   const { slug, url: targetUrl } = body
   if (!targetUrl?.trim()) {
-    return new Response(JSON.stringify({ error: 'url is required' }), { status: 400 })
+    return new Response(JSON.stringify({ error: 'url is required' }), {
+      status: 400,
+    })
   }
   try {
     const link = slug?.trim()

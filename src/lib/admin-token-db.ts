@@ -14,7 +14,9 @@ function getDbPath(): string {
   return join(dir, 'admin-token-config.json')
 }
 
-let dbPromise: Promise<Awaited<ReturnType<typeof JSONFilePreset<AdminTokenData>>>> | null = null
+let dbPromise: Promise<
+  Awaited<ReturnType<typeof JSONFilePreset<AdminTokenData>>>
+> | null = null
 
 async function getDb() {
   if (!dbPromise) {

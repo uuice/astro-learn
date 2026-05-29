@@ -21,7 +21,9 @@ function getDbPath(): string {
   return join(dir, 'shortlinks.json')
 }
 
-let dbPromise: Promise<Awaited<ReturnType<typeof JSONFilePreset<ShortlinksData>>>> | null = null
+let dbPromise: Promise<
+  Awaited<ReturnType<typeof JSONFilePreset<ShortlinksData>>>
+> | null = null
 
 export async function getShortlinksDb() {
   if (!dbPromise) {
@@ -35,25 +37,32 @@ export async function getAllShortlinks(): Promise<ShortLink[]> {
   return [...db.data.shortlinks].sort((a, b) => b.createdAt - a.createdAt)
 }
 
-export async function getShortlinkBySlug(slug: string): Promise<ShortLink | undefined> {
+export async function getShortlinkBySlug(
+  slug: string,
+): Promise<ShortLink | undefined> {
   const db = await getShortlinksDb()
   const normalized = slug.toLowerCase().trim()
   return db.data.shortlinks.find((s) => s.slug.toLowerCase() === normalized)
 }
 
 export async function addShortlink(
-  input: { slug: string; url: string } | { url: string }
+  input: { slug: string; url: string } | { url: string },
 ): Promise<ShortLink> {
   const db = await getShortlinksDb()
   let slug: string
   if ('slug' in input && input.slug.trim()) {
     slug = input.slug.trim().toLowerCase().replace(/\s+/g, '-')
-    const existing = db.data.shortlinks.find((s) => s.slug.toLowerCase() === slug)
+    const existing = db.data.shortlinks.find(
+      (s) => s.slug.toLowerCase() === slug,
+    )
     if (existing) throw new Error('Slug already exists')
   } else {
     slug = generateSlug()
     let attempts = 0
-    while (db.data.shortlinks.some((s) => s.slug.toLowerCase() === slug) && attempts < 100) {
+    while (
+      db.data.shortlinks.some((s) => s.slug.toLowerCase() === slug) &&
+      attempts < 100
+    ) {
       slug = generateSlug()
       attempts++
     }
@@ -61,7 +70,10 @@ export async function addShortlink(
   const id = `sl_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
   const url = input.url.trim()
   if (!url) throw new Error('URL is required')
-  const validUrl = url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`
+  const validUrl =
+    url.startsWith('http://') || url.startsWith('https://')
+      ? url
+      : `https://${url}`
   const newLink: ShortLink = {
     id,
     slug,

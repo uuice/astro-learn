@@ -1,20 +1,43 @@
 import { defineCollection } from 'astro:content'
 import { glob, file } from 'astro/loaders'
 import { z } from 'astro/zod'
-import { titleToUrl, generatePostId, generatePageId, generateAuthorId } from './utils/index.js'
+import {
+  titleToUrl,
+  generatePostId,
+  generatePageId,
+  generateAuthorId,
+} from './utils/index.js'
 
 type FrontmatterBase = { title: string; alias?: string }
 
 const baseSchema = {
   id: z.string(),
   title: z.string(),
-  alias: z.union([z.string(), z.null()]).optional().default('').transform((v) => v ?? ''),
-  cover: z.union([z.string(), z.null()]).optional().default('').transform((v) => v ?? ''),
+  alias: z
+    .union([z.string(), z.null()])
+    .optional()
+    .default('')
+    .transform((v) => v ?? ''),
+  cover: z
+    .union([z.string(), z.null()])
+    .optional()
+    .default('')
+    .transform((v) => v ?? ''),
   created_time: z.union([z.string(), z.date()]),
   updated_time: z.union([z.string(), z.date()]),
-  categories: z.union([z.array(z.string()), z.null()]).default([]).transform((v) => v ?? []),
-  tags: z.union([z.array(z.string()), z.null()]).default([]).transform((v) => v ?? []),
-  excerpt: z.union([z.string(), z.null()]).optional().default('').transform((v) => v ?? ''),
+  categories: z
+    .union([z.array(z.string()), z.null()])
+    .default([])
+    .transform((v) => v ?? []),
+  tags: z
+    .union([z.array(z.string()), z.null()])
+    .default([])
+    .transform((v) => v ?? []),
+  excerpt: z
+    .union([z.string(), z.null()])
+    .optional()
+    .default('')
+    .transform((v) => v ?? ''),
   published: z.boolean().default(true),
 }
 
@@ -42,7 +65,10 @@ const post = defineCollection({
   loader: glob({
     pattern: '**/*.{md,mdx}',
     base: './src/content/blog',
-    generateId: ({ data }) => { const d = data as FrontmatterBase; return generatePostId(d.title, d.alias ?? '') },
+    generateId: ({ data }) => {
+      const d = data as FrontmatterBase
+      return generatePostId(d.title, d.alias ?? '')
+    },
   }),
   schema: withComputed('/archives'),
 })
@@ -51,7 +77,10 @@ const page = defineCollection({
   loader: glob({
     pattern: '**/*.{md,mdx}',
     base: './src/content/page',
-    generateId: ({ data }) => { const d = data as FrontmatterBase; return generatePageId(d.title, d.alias ?? '') },
+    generateId: ({ data }) => {
+      const d = data as FrontmatterBase
+      return generatePageId(d.title, d.alias ?? '')
+    },
   }),
   schema: withComputed('/pages'),
 })
@@ -62,18 +91,20 @@ const author = defineCollection({
     base: './src/content/author',
     generateId: ({ data }) => generateAuthorId((data as FrontmatterBase).title),
   }),
-  schema: z.object({
-    ...baseSchema,
-    isDefault: z.boolean().optional().default(false),
-    symbolsCount: z.number().optional(),
-    url: z.string().optional(),
-  }).transform((data) => ({
-    ...data,
-    created_timestamp: new Date(data.created_time || Date.now()).getTime(),
-    updated_timestamp: new Date(data.updated_time || Date.now()).getTime(),
-    url: data.url || `/authors/${titleToUrl(data.alias || data.title)}`,
-    symbolsCount: data.symbolsCount ?? 0,
-  })),
+  schema: z
+    .object({
+      ...baseSchema,
+      isDefault: z.boolean().optional().default(false),
+      symbolsCount: z.number().optional(),
+      url: z.string().optional(),
+    })
+    .transform((data) => ({
+      ...data,
+      created_timestamp: new Date(data.created_time || Date.now()).getTime(),
+      updated_timestamp: new Date(data.updated_time || Date.now()).getTime(),
+      url: data.url || `/authors/${titleToUrl(data.alias || data.title)}`,
+      symbolsCount: data.symbolsCount ?? 0,
+    })),
 })
 
 const linkItem = z.object({
@@ -87,8 +118,18 @@ const linkItem = z.object({
 const link = defineCollection({
   loader: file('src/content/json/link.json', {
     parser: (text) => {
-      const arr = JSON.parse(text) as { title: string; icon?: string; url: string; type?: string }[]
-      return Object.fromEntries(arr.map((item, i) => [item.title || String(i), { id: item.title || String(i), ...item }]))
+      const arr = JSON.parse(text) as {
+        title: string
+        icon?: string
+        url: string
+        type?: string
+      }[]
+      return Object.fromEntries(
+        arr.map((item, i) => [
+          item.title || String(i),
+          { id: item.title || String(i), ...item },
+        ]),
+      )
     },
   }),
   schema: linkItem,
@@ -105,7 +146,12 @@ const menuItem = z.object({
 const menu = defineCollection({
   loader: file('src/content/json/menu.json', {
     parser: (text) => {
-      const arr = JSON.parse(text) as { title: string; icon?: string; url: string; target?: string }[]
+      const arr = JSON.parse(text) as {
+        title: string
+        icon?: string
+        url: string
+        target?: string
+      }[]
       // 使用序号作键/id，保证 getCollection 排序与 JSON 数组顺序一致（用 title 作键会按字符串排序）
       return Object.fromEntries(
         arr.map((item, i) => {
@@ -208,4 +254,13 @@ const holiday = defineCollection({
   }),
 })
 
-export const collections = { post, page, author, link, menu, navigationWebsiteData, setting, holiday }
+export const collections = {
+  post,
+  page,
+  author,
+  link,
+  menu,
+  navigationWebsiteData,
+  setting,
+  holiday,
+}

@@ -12,7 +12,7 @@ export const helpCommand = () => {
     '\x1b[93m', // Bright Yellow
     '\x1b[94m', // Bright Blue
     '\x1b[95m', // Bright Magenta
-    '\x1b[96m'  // Bright Cyan
+    '\x1b[96m', // Bright Cyan
   ]
   const reset = '\x1b[0m'
 

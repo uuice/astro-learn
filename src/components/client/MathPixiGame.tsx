@@ -54,7 +54,11 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
     g = 0
     b = x
   }
-  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)]
+  return [
+    Math.round((r + m) * 255),
+    Math.round((g + m) * 255),
+    Math.round((b + m) * 255),
+  ]
 }
 
 function toPixiHex(r: number, g: number, b: number): number {
@@ -62,14 +66,21 @@ function toPixiHex(r: number, g: number, b: number): number {
 }
 
 /** 基于站点色相的偏移（与 global.css chroma 思路一致） */
-function themeHex(hueBase: number, hueOffset: number, s: number, l: number): number {
+function themeHex(
+  hueBase: number,
+  hueOffset: number,
+  s: number,
+  l: number,
+): number {
   const [r, g, b] = hslToRgb(hueBase + hueOffset, s, l)
   return toPixiHex(r, g, b)
 }
 
 function readCssHue(): number {
   if (typeof window === 'undefined') return 250
-  const raw = getComputedStyle(document.documentElement).getPropertyValue('--hue').trim()
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue('--hue')
+    .trim()
   const n = parseInt(raw, 10)
   return Number.isFinite(n) ? ((n % 360) + 360) % 360 : 250
 }
@@ -110,7 +121,10 @@ function randomInt(min: number, max: number) {
   return min + Math.floor(Math.random() * (max - min + 1))
 }
 
-function generateProblem(mode: DigitMode, allowedOps: Op[]): { text: string; answer: number } {
+function generateProblem(
+  mode: DigitMode,
+  allowedOps: Op[],
+): { text: string; answer: number } {
   const ops = allowedOps.length > 0 ? allowedOps : ALL_OPS
   const op = ops[randomInt(0, ops.length - 1)]
   if (mode === 'single') {
@@ -217,7 +231,10 @@ export default function MathPixiGame() {
         height: H,
         background: COL.bg,
         antialias: true,
-        resolution: typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1,
+        resolution:
+          typeof window !== 'undefined'
+            ? Math.min(window.devicePixelRatio || 1, 2)
+            : 1,
         autoDensity: true,
       })
       if (destroyed) {
@@ -268,7 +285,13 @@ export default function MathPixiGame() {
 
       const menuHint = new Text({
         text: '共 10 题 · 每题 10 分 · 满分 100',
-        style: { fontFamily: 'system-ui, sans-serif', fontSize: 12, fill: COL.muted, align: 'center', lineHeight: 18 },
+        style: {
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: 12,
+          fill: COL.muted,
+          align: 'center',
+          lineHeight: 18,
+        },
       })
       menuHint.anchor.set(0.5, 0)
       menuHint.x = W / 2
@@ -283,7 +306,11 @@ export default function MathPixiGame() {
 
       const menuLabelDigit = new Text({
         text: '难度',
-        style: { fontFamily: 'system-ui, sans-serif', fontSize: 12, fill: COL.info },
+        style: {
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: 12,
+          fill: COL.info,
+        },
       })
       menuLabelDigit.x = 36
       menuLabelDigit.y = 86
@@ -291,7 +318,11 @@ export default function MathPixiGame() {
 
       const menuLabelOp = new Text({
         text: '题型（可多选）',
-        style: { fontFamily: 'system-ui, sans-serif', fontSize: 12, fill: COL.prompt },
+        style: {
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: 12,
+          fill: COL.prompt,
+        },
       })
       menuLabelOp.x = 36
       menuLabelOp.y = 176
@@ -317,7 +348,13 @@ export default function MathPixiGame() {
           fontSize: 15,
           fill: COL.accent,
           fontWeight: '600',
-          dropShadow: { alpha: 0.35, angle: Math.PI / 2, blur: 3, color: 0x0a0a12, distance: 0 },
+          dropShadow: {
+            alpha: 0.35,
+            angle: Math.PI / 2,
+            blur: 3,
+            color: 0x0a0a12,
+            distance: 0,
+          },
         },
       })
       scoreLabel.x = W - 130
@@ -407,14 +444,26 @@ export default function MathPixiGame() {
 
       const buttons: { g: Graphics; label: Text; value: number }[] = []
 
-      function paintBtn(g: Graphics, w: number, h: number, fill: number, strokeA: number) {
+      function paintBtn(
+        g: Graphics,
+        w: number,
+        h: number,
+        fill: number,
+        strokeA: number,
+      ) {
         g.clear()
         g.roundRect(0, 0, w, h, 12)
         g.fill(fill)
         g.stroke({ width: 1, color: COL.accent2, alpha: strokeA })
       }
 
-      function makeAnswerButton(x: number, y: number, w: number, h: number, idx: number) {
+      function makeAnswerButton(
+        x: number,
+        y: number,
+        w: number,
+        h: number,
+        idx: number,
+      ) {
         const c = new Container()
         c.x = x
         c.y = y
@@ -489,7 +538,9 @@ export default function MathPixiGame() {
       ) {
         container.eventMode = 'static'
         container.cursor = 'pointer'
-        container.on('pointerover', () => paintBtn(g, w, h, COL.accentHover, 0.6))
+        container.on('pointerover', () =>
+          paintBtn(g, w, h, COL.accentHover, 0.6),
+        )
         container.on('pointerout', () => paintBtn(g, w, h, COL.card, 0.35))
         container.on('pointertap', (e: FederatedPointerEvent) => {
           e.stopPropagation()
@@ -529,7 +580,12 @@ export default function MathPixiGame() {
         if (line2) {
           const t2 = new Text({
             text: line2,
-            style: { fontFamily: 'system-ui, sans-serif', fontSize: 11, fill: COL.muted, align: 'center' },
+            style: {
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: 11,
+              fill: COL.muted,
+              align: 'center',
+            },
           })
           t2.anchor.set(0.5, 0)
           t2.x = w / 2
@@ -557,7 +613,12 @@ export default function MathPixiGame() {
       const digitGap = 10
       const digitRowLeft = (W - (digitW * 2 + digitGap)) / 2
 
-      function paintDigitChip(g: Graphics, w: number, h: number, selected: boolean) {
+      function paintDigitChip(
+        g: Graphics,
+        w: number,
+        h: number,
+        selected: boolean,
+      ) {
         g.clear()
         g.roundRect(0, 0, w, h, 10)
         if (selected) {
@@ -591,7 +652,11 @@ export default function MathPixiGame() {
       cDigitSingle.addChild(gDigitSingle)
       const tDigitSingle = new Text({
         text: '个位数',
-        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 15, fill: COL.prompt },
+        style: {
+          fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
+          fontSize: 15,
+          fill: COL.prompt,
+        },
       })
       tDigitSingle.anchor.set(0.5, 0.5)
       tDigitSingle.x = digitW / 2
@@ -616,7 +681,11 @@ export default function MathPixiGame() {
       cDigitDouble.addChild(gDigitDouble)
       const tDigitDouble = new Text({
         text: '两位数',
-        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 15, fill: COL.muted },
+        style: {
+          fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
+          fontSize: 15,
+          fill: COL.muted,
+        },
       })
       tDigitDouble.anchor.set(0.5, 0.5)
       tDigitDouble.x = digitW / 2
@@ -636,7 +705,12 @@ export default function MathPixiGame() {
       const opGap = 8
       const opRowW = ALL_OPS.length * opChipW + (ALL_OPS.length - 1) * opGap
       const opRowLeft = (W - opRowW) / 2
-      const opSymbol: Record<Op, string> = { '+': '+', '-': '−', '*': '×', '/': '÷' }
+      const opSymbol: Record<Op, string> = {
+        '+': '+',
+        '-': '−',
+        '*': '×',
+        '/': '÷',
+      }
       const opGraphics: Record<Op, Graphics> = {
         '+': new Graphics(),
         '-': new Graphics(),
@@ -688,7 +762,11 @@ export default function MathPixiGame() {
       cStart.addChild(gStart)
       const tStart = new Text({
         text: '开始游戏',
-        style: { fontFamily: 'ui-monospace, SF Mono, Menlo, monospace', fontSize: 17, fill: COL.accent2 },
+        style: {
+          fontFamily: 'ui-monospace, SF Mono, Menlo, monospace',
+          fontSize: 17,
+          fill: COL.accent2,
+        },
       })
       tStart.anchor.set(0.5, 0.5)
       tStart.x = menuBtnW / 2
@@ -750,10 +828,19 @@ export default function MathPixiGame() {
       summaryPanel.stroke({ width: 1, color: COL.accent3, alpha: 0.2 })
       summaryLayer.addChildAt(summaryPanel, 0)
 
-      addLabeledButton(summaryLayer, menuLeft, 320, menuBtnW, menuBtnH, '重新开始', '返回本局设置', () => {
-        summaryLayer.visible = false
-        menuLayer.visible = true
-      })
+      addLabeledButton(
+        summaryLayer,
+        menuLeft,
+        320,
+        menuBtnW,
+        menuBtnH,
+        '重新开始',
+        '返回本局设置',
+        () => {
+          summaryLayer.visible = false
+          menuLayer.visible = true
+        },
+      )
 
       function startRound(mode: DigitMode, ops: Op[]) {
         digitMode = mode
@@ -777,7 +864,12 @@ export default function MathPixiGame() {
         gameLayer.visible = false
         summaryLayer.visible = true
         const pct = Math.round((correctCount / TOTAL) * 100)
-        const opNames: Record<Op, string> = { '+': '加', '-': '减', '*': '乘', '/': '除' }
+        const opNames: Record<Op, string> = {
+          '+': '加',
+          '-': '减',
+          '*': '乘',
+          '/': '除',
+        }
         const opLine = allowedOps.map((o) => opNames[o]).join('、')
         const diffLabel = digitMode === 'single' ? '个位数' : '两位数'
         summaryStats.text = `${diffLabel} · ${opLine}\n得分 ${score} / ${TOTAL * POINTS_PER}\n答对 ${correctCount} 题 · 答错 ${wrongCount} 题\n正确率 ${pct}%`
@@ -864,11 +956,13 @@ export default function MathPixiGame() {
     onCleanup(() => {
       destroyed = true
       if (roundTimer !== undefined) clearTimeout(roundTimer)
-      if (fsResizeHandler) document.removeEventListener('fullscreenchange', fsResizeHandler)
+      if (fsResizeHandler)
+        document.removeEventListener('fullscreenchange', fsResizeHandler)
       stageObserver?.disconnect()
       const hostEl = wrapRef
       app.destroy(true, { children: true })
-      if (hostEl && app.canvas?.parentNode === hostEl) hostEl.removeChild(app.canvas as HTMLCanvasElement)
+      if (hostEl && app.canvas?.parentNode === hostEl)
+        hostEl.removeChild(app.canvas as HTMLCanvasElement)
     })
   })
 
@@ -890,7 +984,10 @@ export default function MathPixiGame() {
       >
         {fullscreen() ? '退出全屏' : '全屏'}
       </button>
-      <div ref={wrapRef} class="math-pixi-canvas-host math-pixi-game overflow-hidden rounded-xl" />
+      <div
+        ref={wrapRef}
+        class="math-pixi-canvas-host math-pixi-game overflow-hidden rounded-xl"
+      />
     </div>
   )
 }

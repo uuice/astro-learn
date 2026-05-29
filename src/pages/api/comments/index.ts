@@ -6,7 +6,9 @@ export const prerender = false
 export const GET: APIRoute = async ({ url }) => {
   const postId = url.searchParams.get('postId')
   if (!postId) {
-    return new Response(JSON.stringify({ error: 'Missing postId' }), { status: 400 })
+    return new Response(JSON.stringify({ error: 'Missing postId' }), {
+      status: 400,
+    })
   }
   const comments = await getCommentsByPostId(postId)
   return new Response(JSON.stringify({ data: comments }), {
@@ -15,18 +17,34 @@ export const GET: APIRoute = async ({ url }) => {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  if (request.headers.get('content-type')?.includes('application/json') === false) {
-    return new Response(JSON.stringify({ error: 'Content-Type must be application/json' }), { status: 400 })
+  if (
+    request.headers.get('content-type')?.includes('application/json') === false
+  ) {
+    return new Response(
+      JSON.stringify({ error: 'Content-Type must be application/json' }),
+      { status: 400 },
+    )
   }
-  let body: { postId?: string; parentId?: string; author?: string; email?: string; content?: string }
+  let body: {
+    postId?: string
+    parentId?: string
+    author?: string
+    email?: string
+    content?: string
+  }
   try {
     body = await request.json()
   } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 })
+    return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
+      status: 400,
+    })
   }
   const { postId, parentId, author, content } = body
   if (!postId || !author?.trim() || !content?.trim()) {
-    return new Response(JSON.stringify({ error: 'postId, author and content are required' }), { status: 400 })
+    return new Response(
+      JSON.stringify({ error: 'postId, author and content are required' }),
+      { status: 400 },
+    )
   }
   const comment = await addComment({
     postId: String(postId),

@@ -1,6 +1,15 @@
 import type { APIRoute } from 'astro'
-import { getAllConfigs, getConfig, setConfig, deleteConfig, type ConfigItem } from '../../../lib/admin-site-config-db'
-import { checkAdminSession, unauthorizedResponse } from '../../../lib/admin-auth'
+import {
+  getAllConfigs,
+  getConfig,
+  setConfig,
+  deleteConfig,
+  type ConfigItem,
+} from '../../../lib/admin-site-config-db'
+import {
+  checkAdminSession,
+  unauthorizedResponse,
+} from '../../../lib/admin-auth'
 
 export const prerender = false
 
@@ -32,7 +41,7 @@ export const POST: APIRoute = async ({ request, session }) => {
     return unauthorizedResponse()
   }
   try {
-    const body = await request.json() as ConfigItem
+    const body = (await request.json()) as ConfigItem
     if (!body.key || typeof body.key !== 'string') {
       return new Response(JSON.stringify({ error: '配置键不能为空' }), {
         status: 400,

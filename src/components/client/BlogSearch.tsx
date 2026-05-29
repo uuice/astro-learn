@@ -1,4 +1,11 @@
-import { createSignal, createMemo, createEffect, onCleanup, Show, For } from 'solid-js'
+import {
+  createSignal,
+  createMemo,
+  createEffect,
+  onCleanup,
+  Show,
+  For,
+} from 'solid-js'
 import type { SearchDoc } from '../../scripts/search.ts'
 
 // eslint-disable-next-line no-unused-vars -- search runner arity
@@ -13,7 +20,15 @@ function makeSimpleSearch(docs: SearchDoc[]) {
     const words = q.toLowerCase().split(/\s+/).filter(Boolean)
     return docs
       .filter((d) => {
-        const text = [d.title || '', d.excerpt || '', d.body || '', (d.categories || []).join(' '), (d.tags || []).join(' ')].join(' ').toLowerCase()
+        const text = [
+          d.title || '',
+          d.excerpt || '',
+          d.body || '',
+          (d.categories || []).join(' '),
+          (d.tags || []).join(' '),
+        ]
+          .join(' ')
+          .toLowerCase()
         return words.every((w) => text.includes(w))
       })
       .slice(0, limit || 15)
@@ -45,9 +60,13 @@ export default function BlogSearch({ baseUrl }: Props) {
         const loaded = (await res.json()) as SearchDoc[]
         setDocs(loaded)
         try {
-          const { createSearchIndex, search } = await import('../../scripts/search.ts')
+          const { createSearchIndex, search } =
+            await import('../../scripts/search.ts')
           const idx = createSearchIndex(loaded)
-          setRunSearch(() => (term: string, limit: number) => search(idx, loaded, term, limit))
+          setRunSearch(
+            () => (term: string, limit: number) =>
+              search(idx, loaded, term, limit),
+          )
         } catch {
           setRunSearch(() => makeSimpleSearch(loaded))
         }
@@ -93,7 +112,9 @@ export default function BlogSearch({ baseUrl }: Props) {
   })
 
   const showEmptyHint = createMemo(() => !term())
-  const showNoMatch = createMemo(() => Boolean(term() && matched() && matched()!.length === 0))
+  const showNoMatch = createMemo(() =>
+    Boolean(term() && matched() && matched()!.length === 0),
+  )
   const showList = createMemo(() => Boolean(matched() && matched()!.length > 0))
 
   return (
@@ -106,7 +127,18 @@ export default function BlogSearch({ baseUrl }: Props) {
         title="搜索"
         onClick={openPanel}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
           <circle cx="11" cy="11" r="7" />
           <path d="m21 21-4.3-4.3" />
         </svg>
@@ -119,7 +151,11 @@ export default function BlogSearch({ baseUrl }: Props) {
           if (e.target === e.currentTarget) close()
         }}
       >
-        <div class="search-panel-terminal search-panel-cute" role="dialog" aria-label="搜索文章">
+        <div
+          class="search-panel-terminal search-panel-cute"
+          role="dialog"
+          aria-label="搜索文章"
+        >
           <span class="search-panel-cute-glyph" aria-hidden="true">
             ✦ find · ✧
           </span>
@@ -136,7 +172,18 @@ export default function BlogSearch({ baseUrl }: Props) {
               title="关闭"
               onClick={close}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
                 <path d="M18 6 6 18" />
                 <path d="m6 6 12 12" />
               </svg>
@@ -158,33 +205,49 @@ export default function BlogSearch({ baseUrl }: Props) {
             />
           </div>
           <div class="search-results-terminal">
-            <Show when={showEmptyHint()}><p class="code-label py-4">请输入关键词</p></Show>
-            <Show when={showNoMatch()}><p class="code-label py-4">无匹配结果</p></Show>
+            <Show when={showEmptyHint()}>
+              <p class="code-label py-4">请输入关键词</p>
+            </Show>
+            <Show when={showNoMatch()}>
+              <p class="code-label py-4">无匹配结果</p>
+            </Show>
             <Show when={showList() && matched()}>
               <ul class="post-list terminal-list">
-                <For each={matched()}>{(item) => {
-                  const categoryStr =
-                    item.categories && item.categories.length ? ` · 分类：${item.categories.join(', ')}` : ''
-                  const desc = (item.excerpt || (item.body ? item.body.slice(0, 100) + (item.body.length > 100 ? '…' : '') : '')).trim()
-                  return (
-                    <li>
-                      <article
-                        class="post-card-cute section-card group"
-                        style="border-left:none;border-radius:0;box-shadow:none;margin:0;border-bottom:${isLast ? 'none' : '1px solid var(--card-border)'};padding:0.5rem 0.75rem;"
-                      >
-                        <a
-                          href={item.url}
-                          class="terminal-meta-line block transition-colors hover:text-(--accent)"
-                          onClick={() => close()}
+                <For each={matched()}>
+                  {(item) => {
+                    const categoryStr =
+                      item.categories && item.categories.length
+                        ? ` · 分类：${item.categories.join(', ')}`
+                        : ''
+                    const desc = (
+                      item.excerpt ||
+                      (item.body
+                        ? item.body.slice(0, 100) +
+                          (item.body.length > 100 ? '…' : '')
+                        : '')
+                    ).trim()
+                    return (
+                      <li>
+                        <article
+                          class="post-card-cute section-card group"
+                          style="border-left:none;border-radius:0;box-shadow:none;margin:0;border-bottom:${isLast ? 'none' : '1px solid var(--card-border)'};padding:0.5rem 0.75rem;"
                         >
-                          <span class="font-medium">{item.title || ''}</span>
-                          <span class="meta-from">{categoryStr}</span>
-                          {desc ? <span class="meta-desc"> {desc}</span> : null}
-                        </a>
-                      </article>
-                    </li>
-                  )
-                }}</For>
+                          <a
+                            href={item.url}
+                            class="terminal-meta-line block transition-colors hover:text-(--accent)"
+                            onClick={() => close()}
+                          >
+                            <span class="font-medium">{item.title || ''}</span>
+                            <span class="meta-from">{categoryStr}</span>
+                            {desc ? (
+                              <span class="meta-desc"> {desc}</span>
+                            ) : null}
+                          </a>
+                        </article>
+                      </li>
+                    )
+                  }}
+                </For>
               </ul>
             </Show>
           </div>

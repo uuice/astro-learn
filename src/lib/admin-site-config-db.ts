@@ -40,7 +40,9 @@ function getDbPath(): string {
   return join(dir, 'admin-site-config.json')
 }
 
-let dbPromise: Promise<Awaited<ReturnType<typeof JSONFilePreset<SiteConfigData>>>> | null = null
+let dbPromise: Promise<
+  Awaited<ReturnType<typeof JSONFilePreset<SiteConfigData>>>
+> | null = null
 
 async function getDb() {
   if (!dbPromise) {
@@ -59,7 +61,9 @@ export async function getConfig(key: string): Promise<ConfigItem | undefined> {
   return db.data.configs.find((c) => c.key === key)
 }
 
-export async function getConfigValue<T = unknown>(key: string): Promise<T | undefined> {
+export async function getConfigValue<T = unknown>(
+  key: string,
+): Promise<T | undefined> {
   const config = await getConfig(key)
   if (!config) return undefined
   return config.value as T

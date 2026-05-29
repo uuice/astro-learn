@@ -1,6 +1,11 @@
 import { join } from 'path'
 import { mkdir, stat, writeFile } from 'fs/promises'
-import { formatDate, generateAuthorId, generatePageId, generatePostId } from '@utils/index'
+import {
+  formatDate,
+  generateAuthorId,
+  generatePageId,
+  generatePostId,
+} from '@utils/index'
 import { AuthorTemplate, PageTemplate, PostTemplate } from '@templates/index'
 
 export interface NewCommandOptions {
@@ -8,7 +13,11 @@ export interface NewCommandOptions {
   extension?: string
 }
 
-export async function newCommand(type: string, title: string, options: NewCommandOptions = {}) {
+export async function newCommand(
+  type: string,
+  title: string,
+  options: NewCommandOptions = {},
+) {
   if (!type || !title) {
     throw new Error('Type and title are required')
   }
@@ -18,7 +27,9 @@ export async function newCommand(type: string, title: string, options: NewComman
 
   // Validate extension
   if (extension !== 'md' && extension !== 'mdx') {
-    throw new Error(`Unknown extension: ${extension}. Supported extensions: md, mdx`)
+    throw new Error(
+      `Unknown extension: ${extension}. Supported extensions: md, mdx`,
+    )
   }
 
   switch (type.toLowerCase()) {
@@ -32,11 +43,18 @@ export async function newCommand(type: string, title: string, options: NewComman
       await createAuthor(title, subPath, currentTime, extension)
       break
     default:
-      throw new Error(`Unknown type: ${type}. Supported types: post, page, author`)
+      throw new Error(
+        `Unknown type: ${type}. Supported types: post, page, author`,
+      )
   }
 }
 
-async function createPost(title: string, subPath: string, currentTime: string, extension: string) {
+async function createPost(
+  title: string,
+  subPath: string,
+  currentTime: string,
+  extension: string,
+) {
   const postId = generatePostId(title)
   const sourcePath = process.cwd()
   const postDir = join(sourcePath, 'src', 'content', 'blog', subPath)
@@ -49,14 +67,19 @@ async function createPost(title: string, subPath: string, currentTime: string, e
     id: postId,
     title,
     created_time: currentTime,
-    updated_time: currentTime
+    updated_time: currentTime,
   })
 
   await writeFile(postPath, content, 'utf-8')
   console.log(`✅ Post "${title}" created successfully at ${postPath}`)
 }
 
-async function createPage(title: string, subPath: string, currentTime: string, extension: string) {
+async function createPage(
+  title: string,
+  subPath: string,
+  currentTime: string,
+  extension: string,
+) {
   const pageId = generatePageId(title)
   const sourcePath = process.cwd()
   const pageDir = join(sourcePath, 'src', 'content', 'page', subPath)
@@ -69,14 +92,19 @@ async function createPage(title: string, subPath: string, currentTime: string, e
     id: pageId,
     title,
     created_time: currentTime,
-    updated_time: currentTime
+    updated_time: currentTime,
   })
 
   await writeFile(pagePath, content, 'utf-8')
   console.log(`✅ Page "${title}" created successfully at ${pagePath}`)
 }
 
-async function createAuthor(title: string, subPath: string, currentTime: string, extension: string) {
+async function createAuthor(
+  title: string,
+  subPath: string,
+  currentTime: string,
+  extension: string,
+) {
   const authorId = generateAuthorId(title)
   const sourcePath = process.cwd()
   const authorDir = join(sourcePath, 'src', 'content', 'author', subPath)
@@ -89,7 +117,7 @@ async function createAuthor(title: string, subPath: string, currentTime: string,
     id: authorId,
     title,
     created_time: currentTime,
-    updated_time: currentTime
+    updated_time: currentTime,
   })
 
   await writeFile(authorPath, content, 'utf-8')
@@ -104,7 +132,11 @@ async function ensureDirectoryExists(dirPath: string) {
   }
 }
 
-async function checkFileNotExists(filePath: string, type: string, title: string) {
+async function checkFileNotExists(
+  filePath: string,
+  type: string,
+  title: string,
+) {
   try {
     await stat(filePath)
     throw new Error(`${type} "${title}" already exists at ${filePath}`)

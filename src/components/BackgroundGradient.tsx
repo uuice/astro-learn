@@ -7,7 +7,10 @@ const LINK_DISTANCE = 140
 
 function getAccentColor(): string {
   if (typeof document === 'undefined') return 'oklch(0.55 0.2 250)'
-  const hue = getComputedStyle(document.documentElement).getPropertyValue('--hue').trim() || '250'
+  const hue =
+    getComputedStyle(document.documentElement)
+      .getPropertyValue('--hue')
+      .trim() || '250'
   const dark = document.documentElement.classList.contains('dark')
   const L = dark ? 0.7 : 0.55
   const C = dark ? 0.18 : 0.2

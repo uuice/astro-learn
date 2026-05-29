@@ -17,7 +17,9 @@ function searchableText(doc: SearchDoc): string {
     doc.body,
     (doc.categories || []).join(' '),
     (doc.tags || []).join(' '),
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 function cjkEncode(s: string): string[] {
@@ -42,7 +44,12 @@ export function createSearchIndex(docs: SearchDoc[]): Index {
   return index
 }
 
-export function search(index: Index, docs: SearchDoc[], query: string, limit: number): SearchDoc[] {
+export function search(
+  index: Index,
+  docs: SearchDoc[],
+  query: string,
+  limit: number,
+): SearchDoc[] {
   const q = query.trim()
   if (!q) return []
   const raw = index.search(q, { limit })

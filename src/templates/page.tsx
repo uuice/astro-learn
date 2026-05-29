@@ -1,5 +1,5 @@
 import { formatDate } from '@utils/index'
-   
+
 export interface PageTemplateProps {
   id: string
   title: string
@@ -7,7 +7,12 @@ export interface PageTemplateProps {
   updated_time?: string
 }
 
-export function PageTemplate({ id, title, created_time, updated_time }: PageTemplateProps) {
+export function PageTemplate({
+  id,
+  title,
+  created_time,
+  updated_time,
+}: PageTemplateProps) {
   const currentTime = formatDate()
 
   return `---

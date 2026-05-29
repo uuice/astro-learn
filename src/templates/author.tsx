@@ -7,7 +7,12 @@ export interface AuthorTemplateProps {
   updated_time?: string
 }
 
-export function AuthorTemplate({ id, title, created_time, updated_time }: AuthorTemplateProps) {
+export function AuthorTemplate({
+  id,
+  title,
+  created_time,
+  updated_time,
+}: AuthorTemplateProps) {
   const currentTime = formatDate()
 
   return `---

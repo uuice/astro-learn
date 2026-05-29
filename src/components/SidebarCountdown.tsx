@@ -1,4 +1,11 @@
-import { createSignal, createMemo, onMount, type JSX, Show, For } from 'solid-js'
+import {
+  createSignal,
+  createMemo,
+  onMount,
+  type JSX,
+  Show,
+  For,
+} from 'solid-js'
 
 const WORK_START_HOUR = 9
 const WORK_START_MINUTE = 0
@@ -77,18 +84,10 @@ function ColoredCountdown({ ms }: { ms: number }) {
   const out: JSX.Element[] = []
   const pushNum = (n: number) => {
     const idx = ci++ % 6
-    out.push(
-      <span class={`chroma-tag chroma-tag--${idx}`}>
-        {n}
-      </span>,
-    )
+    out.push(<span class={`chroma-tag chroma-tag--${idx}`}>{n}</span>)
   }
   const pushLabel = (s: string) => {
-    out.push(
-      <span style={labelStyle}>
-        {s}
-      </span>,
-    )
+    out.push(<span style={labelStyle}>{s}</span>)
   }
 
   if (days > 0) {
@@ -121,7 +120,8 @@ function ColoredCountdown({ ms }: { ms: number }) {
 }
 
 function UntilNextWorkCountdown({ ms }: { ms: number }) {
-  if (ms <= 0) return <span style={{ color: 'var(--text-muted)' }}>马上上班</span>
+  if (ms <= 0)
+    return <span style={{ color: 'var(--text-muted)' }}>马上上班</span>
   return <ColoredCountdown ms={ms} />
 }
 
@@ -175,7 +175,14 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     let remainingHolidays: HolidayItem[] = []
 
     if (!currentNow) {
-      return { currentNow, workLine, untilWorkLine, holidayLine, pastHolidays, remainingHolidays }
+      return {
+        currentNow,
+        workLine,
+        untilWorkLine,
+        holidayLine,
+        pastHolidays,
+        remainingHolidays,
+      }
     }
 
     const todayStr = toDateOnly(currentNow)
@@ -227,15 +234,15 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     pastHolidays = sorted.filter((h) => h.end < todayStr)
     remainingHolidays = sorted.filter((h) => h.end >= todayStr)
 
-    const inHoliday = sorted.find((h) => todayStr >= h.start && todayStr <= h.end)
+    const inHoliday = sorted.find(
+      (h) => todayStr >= h.start && todayStr <= h.end,
+    )
     if (inHoliday) {
       const endAt = endOfDateOnly(inHoliday.end)
       const leftMs = endAt.getTime() - currentNow.getTime()
       holidayLine =
         leftMs <= 0 ? (
-          <>
-            正在放 {inHoliday.name}，今日收尾
-          </>
+          <>正在放 {inHoliday.name}，今日收尾</>
         ) : (
           <>
             正在放 {inHoliday.name}，还剩 <ColoredCountdown ms={leftMs} />
@@ -252,18 +259,22 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
           </>
         )
       } else {
-        holidayLine = (
-          <>
-            暂无假期
-          </>
-        )
+        holidayLine = <>暂无假期</>
       }
     }
 
-    return { currentNow, workLine, untilWorkLine, holidayLine, pastHolidays, remainingHolidays }
+    return {
+      currentNow,
+      workLine,
+      untilWorkLine,
+      holidayLine,
+      pastHolidays,
+      remainingHolidays,
+    }
   })
 
-  const formatRange = (h: HolidayItem) => `${h.start.slice(5)}-${h.end.slice(5)} ${h.days}天`
+  const formatRange = (h: HolidayItem) =>
+    `${h.start.slice(5)}-${h.end.slice(5)} ${h.days}天`
 
   return (
     <div
@@ -272,35 +283,66 @@ export default function SidebarCountdown({ holidays }: SidebarCountdownProps) {
     >
       <h3 class="section-title">倒计时</h3>
       <div class="mt-2 space-y-2" style={{ color: 'var(--text-muted)' }}>
-        <Show when={viewModel().currentNow} fallback={<p class="m-0">加载中...</p>}>
+        <Show
+          when={viewModel().currentNow}
+          fallback={<p class="m-0">加载中...</p>}
+        >
           <>
             <p class="m-0">{viewModel().workLine}</p>
-            <Show when={viewModel().untilWorkLine}><p class="m-0">{viewModel().untilWorkLine}</p></Show>
+            <Show when={viewModel().untilWorkLine}>
+              <p class="m-0">{viewModel().untilWorkLine}</p>
+            </Show>
             <p class="m-0">{viewModel().holidayLine}</p>
           </>
         </Show>
       </div>
       <Show when={viewModel().pastHolidays.length > 0}>
-        <div class="mt-3 pt-2 border-t" style="border-color:var(--card-border);">
-          <p class="m-0 mb-1" style="font-size:0.7rem;">已过假期</p>
-          <ul class="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
-            <For each={viewModel().pastHolidays}>{(h, i) => (
-              <li style="text-decoration:line-through;text-decoration-color:var(--text-muted);opacity:0.88;">
-                <span class={`chroma-tag chroma-tag--${i() % 6}`}>{h.name}</span> {formatRange(h)}
-              </li>
-            )}</For>
+        <div
+          class="mt-3 pt-2 border-t"
+          style="border-color:var(--card-border);"
+        >
+          <p class="m-0 mb-1" style="font-size:0.7rem;">
+            已过假期
+          </p>
+          <ul
+            class="m-0 pl-4 space-y-0.5 list-disc"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <For each={viewModel().pastHolidays}>
+              {(h, i) => (
+                <li style="text-decoration:line-through;text-decoration-color:var(--text-muted);opacity:0.88;">
+                  <span class={`chroma-tag chroma-tag--${i() % 6}`}>
+                    {h.name}
+                  </span>{' '}
+                  {formatRange(h)}
+                </li>
+              )}
+            </For>
           </ul>
         </div>
       </Show>
       <Show when={viewModel().remainingHolidays.length > 0}>
-        <div class="mt-3 pt-2 border-t" style="border-color:var(--card-border);">
-          <p class="m-0 mb-1" style="font-size:0.7rem;">剩余假期</p>
-          <ul class="m-0 pl-4 space-y-0.5 list-disc" style={{ color: 'var(--text-muted)' }}>
-            <For each={viewModel().remainingHolidays}>{(h, i) => (
-              <li>
-                <span class={`chroma-tag chroma-tag--${i() % 6}`}>{h.name}</span> {formatRange(h)}
-              </li>
-            )}</For>
+        <div
+          class="mt-3 pt-2 border-t"
+          style="border-color:var(--card-border);"
+        >
+          <p class="m-0 mb-1" style="font-size:0.7rem;">
+            剩余假期
+          </p>
+          <ul
+            class="m-0 pl-4 space-y-0.5 list-disc"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <For each={viewModel().remainingHolidays}>
+              {(h, i) => (
+                <li>
+                  <span class={`chroma-tag chroma-tag--${i() % 6}`}>
+                    {h.name}
+                  </span>{' '}
+                  {formatRange(h)}
+                </li>
+              )}
+            </For>
           </ul>
         </div>
       </Show>

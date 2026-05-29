@@ -8,7 +8,10 @@ export const prerender = true
 export async function GET() {
   const posts = await getCollection('post', ({ data }) => data.published)
   const index = posts.map((p) => {
-    const rawBody = 'body' in p && typeof (p as { body?: string }).body === 'string' ? (p as { body: string }).body : ''
+    const rawBody =
+      'body' in p && typeof (p as { body?: string }).body === 'string'
+        ? (p as { body: string }).body
+        : ''
     const plainText = stripMarkdown(rawBody).slice(0, MAX_BODY_LENGTH)
     return {
       id: p.id,

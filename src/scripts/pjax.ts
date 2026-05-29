@@ -8,7 +8,8 @@ const TRANSITION_CLASS = 'pjax-transitioning'
 
 function isPjaxLink(link: HTMLAnchorElement): boolean {
   const href = link.getAttribute('href')
-  if (!href || href.startsWith('#') || href.startsWith('javascript:')) return false
+  if (!href || href.startsWith('#') || href.startsWith('javascript:'))
+    return false
   if (link.target === '_blank' || link.hasAttribute('download')) return false
   if (link.getAttribute('rel') === 'external') return false
   if (link.hasAttribute('data-no-pjax')) return false
@@ -47,7 +48,9 @@ function replaceContent(html: string, title: string) {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => main.classList.remove(TRANSITION_CLASS))
   })
-  window.dispatchEvent(new CustomEvent('pjax:complete', { detail: { url: window.location.href } }))
+  window.dispatchEvent(
+    new CustomEvent('pjax:complete', { detail: { url: window.location.href } }),
+  )
 }
 
 function scrollToTop() {

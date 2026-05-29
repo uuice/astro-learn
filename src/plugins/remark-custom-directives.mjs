@@ -4,18 +4,27 @@
  */
 
 const ADMONITION_TYPES = ['note', 'tip', 'important', 'caution', 'warning']
-const TITLE_MAP = { note: 'Note', tip: 'Tip', important: 'Important', caution: 'Caution', warning: 'Warning' }
+const TITLE_MAP = {
+  note: 'Note',
+  tip: 'Tip',
+  important: 'Important',
+  caution: 'Caution',
+  warning: 'Warning',
+}
 
 function getText(node) {
   if (!node || !node.children) return ''
   return node.children
-    .map((c) => (c.type === 'text' ? c.value : c.type === 'paragraph' ? getText(c) : ''))
+    .map((c) =>
+      c.type === 'text' ? c.value : c.type === 'paragraph' ? getText(c) : '',
+    )
     .join('')
 }
 
 function parseAttrs(str = '') {
   const attrs = {}
-  const re = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|[\u201C\u201D"]([^\u201C\u201D"]*)[\u201C\u201D"]|([^}\s,]+))/g
+  const re =
+    /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|[\u201C\u201D"]([^\u201C\u201D"]*)[\u201C\u201D"]|([^}\s,]+))/g
   let m
   while ((m = re.exec(str)) !== null) {
     const val = (m[2] ?? m[3] ?? m[4] ?? m[5] ?? '').trim()
@@ -41,25 +50,43 @@ function parseBlockInOne(text) {
   const am = t.match(admonitionRe)
   if (am) return { kind: 'admonition', type: am[1], content: am[2].trim() }
 
-  const detailsRe = /^:::details(?:\{([^}]*)\})?(?:\s+([^\n]*))?\s+([\s\S]*?)\s*:::\s*$/
+  const detailsRe =
+    /^:::details(?:\{([^}]*)\})?(?:\s+([^\n]*))?\s+([\s\S]*?)\s*:::\s*$/
   const dm = t.match(detailsRe)
   if (dm) {
     const attrs = parseAttrs(dm[1])
-    return { kind: 'details', summary: attrs.summary || dm[2]?.trim() || '点击展开', content: dm[3].trim() }
+    return {
+      kind: 'details',
+      summary: attrs.summary || dm[2]?.trim() || '点击展开',
+      content: dm[3].trim(),
+    }
   }
 
   const stepsRe = /^:::steps\s+([\s\S]*?)\s*:::\s*$/
   const sm = t.match(stepsRe)
-  if (sm) return { kind: 'steps', lines: sm[1].split(/\n/).map((s) => s.trim()).filter(Boolean) }
+  if (sm)
+    return {
+      kind: 'steps',
+      lines: sm[1]
+        .split(/\n/)
+        .map((s) => s.trim())
+        .filter(Boolean),
+    }
 
   const quoteRe = /^:::quote(?:\{([^}]*)\})?\s+([\s\S]*?)\s*:::\s*$/
   const qm = t.match(quoteRe)
   if (qm) {
     const attrs = parseAttrs(qm[1])
-    return { kind: 'quote', author: attrs.author, source: attrs.source, content: qm[2].trim() }
+    return {
+      kind: 'quote',
+      author: attrs.author,
+      source: attrs.source,
+      content: qm[2].trim(),
+    }
   }
 
-  const ghRe = /^:::\s+github\s*\{\s*repo\s*=\s*["\u201C\u201D]?([^"\u201C\u201D]+)["\u201C\u201D]?\s*\}\s*:::\s*$/
+  const ghRe =
+    /^:::\s+github\s*\{\s*repo\s*=\s*["\u201C\u201D]?([^"\u201C\u201D]+)["\u201C\u201D]?\s*\}\s*:::\s*$/
   const gm = t.match(ghRe)
   if (gm) return { kind: 'github', repo: gm[1].trim() }
 
@@ -96,15 +123,30 @@ function htmlNode(tagName, props, children) {
 function createAdmonition(type, contentNodes) {
   const title = TITLE_MAP[type] || type
   const variant = type === 'note' ? '' : ` bdm-${type}`
-  const titleNode = htmlNode('span', { className: ['bdm-title'] }, [{ type: 'text', value: title }])
-  return htmlNode('div', { className: ['admonition', `admonition-${type}${variant}`.trim()] }, [titleNode, ...contentNodes])
+  const titleNode = htmlNode('span', { className: ['bdm-title'] }, [
+    { type: 'text', value: title },
+  ])
+  return htmlNode(
+    'div',
+    { className: ['admonition', `admonition-${type}${variant}`.trim()] },
+    [titleNode, ...contentNodes],
+  )
 }
 
 /** Create details/summary */
 function createDetails(summary, contentNodes) {
-  const summaryNode = htmlNode('summary', {}, [{ type: 'text', value: summary }])
-  const contentWrap = htmlNode('div', { className: ['directive-details-content'] }, contentNodes)
-  return htmlNode('details', { className: ['directive-details'] }, [summaryNode, contentWrap])
+  const summaryNode = htmlNode('summary', {}, [
+    { type: 'text', value: summary },
+  ])
+  const contentWrap = htmlNode(
+    'div',
+    { className: ['directive-details-content'] },
+    contentNodes,
+  )
+  return htmlNode('details', { className: ['directive-details'] }, [
+    summaryNode,
+    contentWrap,
+  ])
 }
 
 /** Create steps (ol.directive-steps) */
@@ -122,7 +164,11 @@ function createQuote(contentNodes, author, source) {
   const footerText = footerParts.length ? `— ${footerParts.join(', ')}` : ''
   const children = [...(contentNodes || [])]
   if (footerText) {
-    children.push(htmlNode('footer', { className: ['directive-quote-footer'] }, [{ type: 'text', value: footerText }]))
+    children.push(
+      htmlNode('footer', { className: ['directive-quote-footer'] }, [
+        { type: 'text', value: footerText },
+      ]),
+    )
   }
   return htmlNode('blockquote', { className: ['directive-quote'] }, children)
 }
@@ -130,9 +176,12 @@ function createQuote(contentNodes, author, source) {
 async function fetchGitHubRepo(repo) {
   const [owner, name] = repo.split('/')
   if (!owner || !name) return null
-  const res = await globalThis.fetch(`https://api.github.com/repos/${owner}/${name}`, {
-    headers: { Accept: 'application/vnd.github.v3+json' },
-  })
+  const res = await globalThis.fetch(
+    `https://api.github.com/repos/${owner}/${name}`,
+    {
+      headers: { Accept: 'application/vnd.github.v3+json' },
+    },
+  )
   const data = await res.json()
   if (!res.ok || data.message) return null
   return {
@@ -170,10 +219,34 @@ function createGitHubCard(repo, data) {
               properties: { className: ['gc-owner'] },
               children: [
                 ...(data?.avatar
-                  ? [{ type: 'element', tagName: 'img', properties: { className: ['gc-avatar'], src: data.avatar, alt: '', width: 20, height: 20, loading: 'lazy' }, children: [] }]
+                  ? [
+                      {
+                        type: 'element',
+                        tagName: 'img',
+                        properties: {
+                          className: ['gc-avatar'],
+                          src: data.avatar,
+                          alt: '',
+                          width: 20,
+                          height: 20,
+                          loading: 'lazy',
+                        },
+                        children: [],
+                      },
+                    ]
                   : []),
-                { type: 'element', tagName: 'span', properties: { className: ['gc-divider'] }, children: [{ type: 'text', value: '/' }] },
-                { type: 'element', tagName: 'span', properties: { className: ['gc-repo'] }, children: [{ type: 'text', value: repoName }] },
+                {
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['gc-divider'] },
+                  children: [{ type: 'text', value: '/' }],
+                },
+                {
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['gc-repo'] },
+                  children: [{ type: 'text', value: repoName }],
+                },
               ],
             },
           ],
@@ -181,13 +254,34 @@ function createGitHubCard(repo, data) {
       ],
     },
     ...(data?.description || !data
-      ? [{ type: 'element', tagName: 'div', properties: { className: ['gc-description'] }, children: [{ type: 'text', value: data?.description || 'Unable to load repo info. Click to open.' }] }]
+      ? [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: { className: ['gc-description'] },
+            children: [
+              {
+                type: 'text',
+                value:
+                  data?.description ||
+                  'Unable to load repo info. Click to open.',
+              },
+            ],
+          },
+        ]
       : []),
     {
       type: 'element',
       tagName: 'div',
       properties: { className: ['gc-infobar'] },
-      children: [{ type: 'text', value: data ? `${data.stars} stars · ${data.forks} forks${data.lang ? ` · ${data.lang}` : ''}` : `github.com/${repo}` }],
+      children: [
+        {
+          type: 'text',
+          value: data
+            ? `${data.stars} stars · ${data.forks} forks${data.lang ? ` · ${data.lang}` : ''}`
+            : `github.com/${repo}`,
+        },
+      ],
     },
   ]
 
@@ -195,7 +289,12 @@ function createGitHubCard(repo, data) {
     type: 'paragraph',
     data: {
       hName: 'a',
-      hProperties: { href: url, className, target: '_blank', rel: 'noopener noreferrer' },
+      hProperties: {
+        href: url,
+        className,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      },
       hChildren,
     },
     children: [],
@@ -233,11 +332,12 @@ function transformTabs(children, startIdx) {
     if (isParagraph) {
       const plainMatch = text.match(/^:{3,}tab\s+(.+)$/)
       const attrMatch = parseOpener(text)
-      const tabName = attrMatch?.name === 'tab'
-        ? (attrMatch.attrs.name || attrMatch.rest || 'Tab')
-        : plainMatch
-          ? plainMatch[1].trim()
-          : null
+      const tabName =
+        attrMatch?.name === 'tab'
+          ? attrMatch.attrs.name || attrMatch.rest || 'Tab'
+          : plainMatch
+            ? plainMatch[1].trim()
+            : null
       if (tabName) {
         current = { title: tabName, body: [] }
         tabItems.push(current)
@@ -257,9 +357,29 @@ function transformTabs(children, startIdx) {
   const flat = []
 
   tabItems.forEach((tab, idx) => {
-    flat.push(htmlNode('input', { type: 'radio', name: groupName, id: `${groupName}-${idx}`, className: ['directive-tabs-input'], checked: idx === 0 }, []))
-    flat.push(htmlNode('label', { className: ['directive-tabs-label'], htmlFor: `${groupName}-${idx}` }, [{ type: 'text', value: tab.title }]))
-    flat.push(htmlNode('div', { className: ['directive-tabs-panel'] }, tab.body))
+    flat.push(
+      htmlNode(
+        'input',
+        {
+          type: 'radio',
+          name: groupName,
+          id: `${groupName}-${idx}`,
+          className: ['directive-tabs-input'],
+          checked: idx === 0,
+        },
+        [],
+      ),
+    )
+    flat.push(
+      htmlNode(
+        'label',
+        { className: ['directive-tabs-label'], htmlFor: `${groupName}-${idx}` },
+        [{ type: 'text', value: tab.title }],
+      ),
+    )
+    flat.push(
+      htmlNode('div', { className: ['directive-tabs-panel'] }, tab.body),
+    )
   })
 
   return {
@@ -301,9 +421,33 @@ function transformTabsRehypeStyle(children, startIdx) {
   const groupName = 'tabs-' + Math.random().toString(36).slice(2, 10)
   const flat = []
   tabItems.forEach((tab, idx) => {
-    flat.push(htmlNode('input', { type: 'radio', name: groupName, id: `${groupName}-${idx}`, className: ['directive-tabs-input'], checked: idx === 0 }, []))
-    flat.push(htmlNode('label', { className: ['directive-tabs-label'], htmlFor: `${groupName}-${idx}` }, [{ type: 'text', value: tab.name }]))
-    flat.push(htmlNode('div', { className: ['directive-tabs-panel'] }, tab.contentNodes))
+    flat.push(
+      htmlNode(
+        'input',
+        {
+          type: 'radio',
+          name: groupName,
+          id: `${groupName}-${idx}`,
+          className: ['directive-tabs-input'],
+          checked: idx === 0,
+        },
+        [],
+      ),
+    )
+    flat.push(
+      htmlNode(
+        'label',
+        { className: ['directive-tabs-label'], htmlFor: `${groupName}-${idx}` },
+        [{ type: 'text', value: tab.name }],
+      ),
+    )
+    flat.push(
+      htmlNode(
+        'div',
+        { className: ['directive-tabs-panel'] },
+        tab.contentNodes,
+      ),
+    )
   })
 
   return {
@@ -326,7 +470,9 @@ export default function remarkCustomDirectives() {
 
         if (node.type === 'blockquote' && node.children?.length) {
           const firstText = getText(node.children[0]).trim()
-          const blockquoteMatch = firstText.match(/^\[!(NOTE|TIP|IMPORTANT|CAUTION|WARNING)\]$/i)
+          const blockquoteMatch = firstText.match(
+            /^\[!(NOTE|TIP|IMPORTANT|CAUTION|WARNING)\]$/i,
+          )
           if (blockquoteMatch) {
             const type = blockquoteMatch[1].toLowerCase()
             const contentNodes = node.children.slice(1)
@@ -339,7 +485,9 @@ export default function remarkCustomDirectives() {
           const text = getText(node).trim()
 
           // Admonition opener :::note etc.
-          const admonitionMatch = text.match(new RegExp(`^:::(${ADMONITION_TYPES.join('|')})\\s*$`))
+          const admonitionMatch = text.match(
+            new RegExp(`^:::(${ADMONITION_TYPES.join('|')})\\s*$`),
+          )
           if (admonitionMatch) {
             const type = admonitionMatch[1]
             const { nodes, endIndex } = collectUntilClosing(src, i + 1)
@@ -366,7 +514,9 @@ export default function remarkCustomDirectives() {
             }
             if (opener.name === 'quote') {
               const { nodes, endIndex } = collectUntilClosing(src, i + 1)
-              out.push(createQuote(nodes, opener.attrs.author, opener.attrs.source))
+              out.push(
+                createQuote(nodes, opener.attrs.author, opener.attrs.source),
+              )
               i = endIndex - 1
               continue
             }
@@ -402,7 +552,9 @@ export default function remarkCustomDirectives() {
                 j++
                 continue
               }
-              const ghMatch = nextText.match(/github\s*\{\s*repo\s*=\s*["\u201C\u201D]?([^"\u201C\u201D]+)["\u201C\u201D]?\s*\}/)
+              const ghMatch = nextText.match(
+                /github\s*\{\s*repo\s*=\s*["\u201C\u201D]?([^"\u201C\u201D]+)["\u201C\u201D]?\s*\}/,
+              )
               if (ghMatch) {
                 repo = ghMatch[1].trim()
                 j++
@@ -413,7 +565,10 @@ export default function remarkCustomDirectives() {
             if (repo) {
               while (j < src.length) {
                 const close = src[j]
-                if (close.type === 'paragraph' && /^:{3,}\s*$/.test(getText(close).trim())) {
+                if (
+                  close.type === 'paragraph' &&
+                  /^:{3,}\s*$/.test(getText(close).trim())
+                ) {
                   j++
                   break
                 }
@@ -427,7 +582,9 @@ export default function remarkCustomDirectives() {
           }
 
           // Single-paragraph GitHub: ::github{repo="x"}
-          const ghSingle = text.match(/^::github\s*\{\s*repo\s*=\s*["\u201C\u201D]?([^"\u201C\u201D]+)["\u201C\u201D]?\s*\}$/)
+          const ghSingle = text.match(
+            /^::github\s*\{\s*repo\s*=\s*["\u201C\u201D]?([^"\u201C\u201D]+)["\u201C\u201D]?\s*\}$/,
+          )
           if (ghSingle) {
             const repo = ghSingle[1].trim()
             const data = await fetchGitHubRepo(repo).catch(() => null)
@@ -440,32 +597,54 @@ export default function remarkCustomDirectives() {
           if (blockInOne) {
             if (blockInOne.kind === 'admonition') {
               const contentNodes = blockInOne.content
-                ? [{ type: 'paragraph', children: [{ type: 'text', value: blockInOne.content }] }]
+                ? [
+                    {
+                      type: 'paragraph',
+                      children: [{ type: 'text', value: blockInOne.content }],
+                    },
+                  ]
                 : []
               out.push(createAdmonition(blockInOne.type, contentNodes))
               continue
             }
             if (blockInOne.kind === 'details') {
               const contentNodes = blockInOne.content
-                ? [{ type: 'paragraph', children: [{ type: 'text', value: blockInOne.content }] }]
+                ? [
+                    {
+                      type: 'paragraph',
+                      children: [{ type: 'text', value: blockInOne.content }],
+                    },
+                  ]
                 : []
               out.push(createDetails(blockInOne.summary, contentNodes))
               continue
             }
             if (blockInOne.kind === 'steps') {
-              const lineNodes = (blockInOne.lines || []).map((line) => ({ type: 'paragraph', children: [{ type: 'text', value: line }] }))
+              const lineNodes = (blockInOne.lines || []).map((line) => ({
+                type: 'paragraph',
+                children: [{ type: 'text', value: line }],
+              }))
               out.push(createSteps(lineNodes))
               continue
             }
             if (blockInOne.kind === 'quote') {
               const contentNodes = blockInOne.content
-                ? [{ type: 'paragraph', children: [{ type: 'text', value: blockInOne.content }] }]
+                ? [
+                    {
+                      type: 'paragraph',
+                      children: [{ type: 'text', value: blockInOne.content }],
+                    },
+                  ]
                 : []
-              out.push(createQuote(contentNodes, blockInOne.author, blockInOne.source))
+              out.push(
+                createQuote(contentNodes, blockInOne.author, blockInOne.source),
+              )
               continue
             }
             if (blockInOne.kind === 'github') {
-              const data = await fetchGitHubRepo(blockInOne.repo).catch(() => null)
+              const data = await fetchGitHubRepo(blockInOne.repo).catch(
+                () => null,
+              )
               out.push(createGitHubCard(blockInOne.repo, data))
               continue
             }

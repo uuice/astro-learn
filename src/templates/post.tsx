@@ -7,7 +7,12 @@ export interface PostTemplateProps {
   updated_time?: string
 }
 
-export function PostTemplate({ id, title, created_time, updated_time }: PostTemplateProps) {
+export function PostTemplate({
+  id,
+  title,
+  created_time,
+  updated_time,
+}: PostTemplateProps) {
   const currentTime = formatDate()
 
   return `---

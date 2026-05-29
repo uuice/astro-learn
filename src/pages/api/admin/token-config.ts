@@ -5,8 +5,7 @@ export const prerender = false
 
 export const GET: APIRoute = async () => {
   const hasToken = await hasAdminToken()
-  return new Response(
-    JSON.stringify({ hasToken }),
-    { headers: { 'Content-Type': 'application/json' } }
-  )
+  return new Response(JSON.stringify({ hasToken }), {
+    headers: { 'Content-Type': 'application/json' },
+  })
 }

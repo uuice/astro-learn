@@ -27,7 +27,9 @@ function getDbPath(): string {
   return join(dir, 'comments.json')
 }
 
-let dbPromise: Promise<Awaited<ReturnType<typeof JSONFilePreset<CommentsData>>>> | null = null
+let dbPromise: Promise<
+  Awaited<ReturnType<typeof JSONFilePreset<CommentsData>>>
+> | null = null
 
 export async function getCommentsDb() {
   if (!dbPromise) {
@@ -37,7 +39,10 @@ export async function getCommentsDb() {
 }
 
 function isApproved(c: Comment): boolean {
-  return c.status === 'approved' || (c as Comment & { status?: string }).status === undefined
+  return (
+    c.status === 'approved' ||
+    (c as Comment & { status?: string }).status === undefined
+  )
 }
 
 export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
@@ -53,7 +58,7 @@ export async function getAllComments(): Promise<Comment[]> {
 }
 
 export async function addComment(
-  comment: Omit<Comment, 'id' | 'createdAt'> & { status?: CommentStatus }
+  comment: Omit<Comment, 'id' | 'createdAt'> & { status?: CommentStatus },
 ): Promise<Comment> {
   const db = await getCommentsDb()
   const id = `c_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`

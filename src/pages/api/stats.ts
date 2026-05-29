@@ -13,6 +13,6 @@ export const GET: APIRoute = async () => {
       links: links.length,
       authors: authors.length,
     }),
-    { headers: { 'Content-Type': 'application/json' } }
+    { headers: { 'Content-Type': 'application/json' } },
   )
 }

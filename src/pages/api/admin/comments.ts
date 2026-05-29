@@ -1,6 +1,9 @@
 import type { APIRoute } from 'astro'
 import { getAllComments } from '../../../lib/comments-db'
-import { checkAdminSession, unauthorizedResponse } from '../../../lib/admin-auth'
+import {
+  checkAdminSession,
+  unauthorizedResponse,
+} from '../../../lib/admin-auth'
 
 export const prerender = false
 

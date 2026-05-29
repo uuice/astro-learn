@@ -12,7 +12,9 @@ function escapeXml(s: string): string {
 
 export const GET: APIRoute = async () => {
   const [setting] = await getCollection('setting')
-  const baseUrl = (setting?.data.siteSetting?.baseUrl ?? 'https://example.com').replace(/\/$/, '')
+  const baseUrl = (
+    setting?.data.siteSetting?.baseUrl ?? 'https://example.com'
+  ).replace(/\/$/, '')
   const siteName = setting?.data.siteSetting?.siteName ?? '博客'
   const siteDescription = setting?.data.siteSetting?.siteDescription ?? ''
 
@@ -26,7 +28,9 @@ export const GET: APIRoute = async () => {
       const fullUrl = baseUrl + post.data.url
       const pubDate = new Date(post.data.created_timestamp).toUTCString()
       const desc = post.data.excerpt || post.data.title
-      const categories = (post.data.categories ?? []).map((c) => `<category><![CDATA[${c}]]></category>`).join('')
+      const categories = (post.data.categories ?? [])
+        .map((c) => `<category><![CDATA[${c}]]></category>`)
+        .join('')
       return `<item>
   <title><![CDATA[${post.data.title}]]></title>
   <link>${fullUrl}</link>

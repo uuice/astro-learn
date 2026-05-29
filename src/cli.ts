@@ -2,18 +2,27 @@
 
 import { newCommand } from './commands/new.ts'
 import { helpCommand } from './commands/help.ts'
-import { versionCommand, versionUpdateCommand, type VersionBump } from './commands/version.ts'
+import {
+  versionCommand,
+  versionUpdateCommand,
+  type VersionBump,
+} from './commands/version.ts'
 
 interface CLIOptions {
   [key: string]: string | boolean | number | undefined
 }
 
-async function parseArgs(args: string[]): Promise<{ command: string; subcommand?: string; args: string[]; options: CLIOptions }> {
+async function parseArgs(args: string[]): Promise<{
+  command: string
+  subcommand?: string
+  args: string[]
+  options: CLIOptions
+}> {
   const result = {
     command: '',
     subcommand: undefined as string | undefined,
     args: [] as string[],
-    options: {} as CLIOptions
+    options: {} as CLIOptions,
   }
 
   let i = 0
@@ -33,7 +42,10 @@ async function parseArgs(args: string[]): Promise<{ command: string; subcommand?
     } else {
       if (!result.command) {
         result.command = arg
-      } else if (!result.subcommand && ['post', 'page', 'author'].includes(arg)) {
+      } else if (
+        !result.subcommand &&
+        ['post', 'page', 'author'].includes(arg)
+      ) {
         result.subcommand = arg
       } else {
         result.args.push(arg)
@@ -78,7 +90,7 @@ async function main() {
         const title = restArgs[0]
         const newOptions = {
           path: (options.path || options.p) as string,
-          extension: (options.extension || options.e) as string
+          extension: (options.extension || options.e) as string,
         }
 
         await newCommand(subcommand, title, newOptions)
@@ -91,7 +103,11 @@ async function main() {
 
       case 'version': {
         const updateType = restArgs[0] as VersionBump | undefined
-        if (updateType === 'patch' || updateType === 'minor' || updateType === 'major') {
+        if (
+          updateType === 'patch' ||
+          updateType === 'minor' ||
+          updateType === 'major'
+        ) {
           await versionUpdateCommand(updateType)
         } else {
           versionCommand()

@@ -16,11 +16,18 @@ const TABS: { key: Tab; label: string }[] = [
 ]
 
 export default function ContentDataAdmin() {
-  const [data, setData] = createSignal<ContentData>({ posts: [], pages: [], authors: [] })
+  const [data, setData] = createSignal<ContentData>({
+    posts: [],
+    pages: [],
+    authors: [],
+  })
   const [loading, setLoading] = createSignal(true)
   const [error, setError] = createSignal('')
   const [tab, setTab] = createSignal<Tab>('posts')
-  const [detail, setDetail] = createSignal<{ id: string; data: Record<string, unknown> } | null>(null)
+  const [detail, setDetail] = createSignal<{
+    id: string
+    data: Record<string, unknown>
+  } | null>(null)
 
   const load = async () => {
     setError('')
@@ -42,22 +49,31 @@ export default function ContentDataAdmin() {
   })
 
   const getColumns = (currentTab: Tab) =>
-    currentTab === 'posts' ? ['title', 'url', 'published'] : currentTab === 'pages' ? ['title', 'alias', 'url'] : ['title', 'url']
+    currentTab === 'posts'
+      ? ['title', 'url', 'published']
+      : currentTab === 'pages'
+        ? ['title', 'alias', 'url']
+        : ['title', 'url']
   const list = () => data()[tab()]
   const columns = () => getColumns(tab())
 
   return (
     <div class="content-data-admin">
-      <div class="content-admin-tabs" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-        <For each={TABS}>{({ key, label }) => (
-          <button
-            type="button"
-            class={`content-admin-tab${tab() === key ? ' content-admin-tab-active' : ''}`}
-            onClick={() => setTab(key)}
-          >
-            {label} ({data()[key].length})
-          </button>
-        )}</For>
+      <div
+        class="content-admin-tabs"
+        style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;"
+      >
+        <For each={TABS}>
+          {({ key, label }) => (
+            <button
+              type="button"
+              class={`content-admin-tab${tab() === key ? ' content-admin-tab-active' : ''}`}
+              onClick={() => setTab(key)}
+            >
+              {label} ({data()[key].length})
+            </button>
+          )}
+        </For>
         <button
           type="button"
           class="comment-submit"
@@ -85,28 +101,53 @@ export default function ContentDataAdmin() {
               </tr>
             </thead>
             <tbody>
-              <For each={list()}>{(row) => (
-                <tr onClick={() => setDetail(row)} class="content-admin-row">
-                  <td class="content-admin-id">{row.id}</td>
-                  <For each={columns()}>{(col) => <td>{(row.data as Record<string, unknown>)[col]?.toString() ?? '-'}</td>}</For>
-                  <td class="content-admin-detail-btn">详情</td>
-                </tr>
-              )}</For>
+              <For each={list()}>
+                {(row) => (
+                  <tr onClick={() => setDetail(row)} class="content-admin-row">
+                    <td class="content-admin-id">{row.id}</td>
+                    <For each={columns()}>
+                      {(col) => (
+                        <td>
+                          {(row.data as Record<string, unknown>)[
+                            col
+                          ]?.toString() ?? '-'}
+                        </td>
+                      )}
+                    </For>
+                    <td class="content-admin-detail-btn">详情</td>
+                  </tr>
+                )}
+              </For>
             </tbody>
           </table>
         </div>
         <Show when={detail()}>
           {(item) => (
             <Portal>
-              <div class="content-admin-modal-overlay" onClick={() => setDetail(null)} role="presentation">
-                <div class="content-admin-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+              <div
+                class="content-admin-modal-overlay"
+                onClick={() => setDetail(null)}
+                role="presentation"
+              >
+                <div
+                  class="content-admin-modal"
+                  onClick={(e) => e.stopPropagation()}
+                  role="dialog"
+                  aria-modal="true"
+                >
                   <div class="content-admin-modal-header">
                     <span>详情</span>
-                    <button type="button" class="content-admin-modal-close" onClick={() => setDetail(null)}>
+                    <button
+                      type="button"
+                      class="content-admin-modal-close"
+                      onClick={() => setDetail(null)}
+                    >
                       关闭
                     </button>
                   </div>
-                  <pre class="content-admin-modal-body">{JSON.stringify(item(), null, 2)}</pre>
+                  <pre class="content-admin-modal-body">
+                    {JSON.stringify(item(), null, 2)}
+                  </pre>
                 </div>
               </div>
             </Portal>

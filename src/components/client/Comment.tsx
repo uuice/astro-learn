@@ -1,4 +1,11 @@
-import { createSignal, createMemo, createEffect, For, Show, type JSX } from 'solid-js'
+import {
+  createSignal,
+  createMemo,
+  createEffect,
+  For,
+  Show,
+  type JSX,
+} from 'solid-js'
 
 export interface CommentItem {
   id: string
@@ -54,7 +61,9 @@ export default function Comment({ postId }: CommentProps) {
 
   const fetchComments = async () => {
     try {
-      const res = await fetch(`/api/comments?postId=${encodeURIComponent(postId)}`)
+      const res = await fetch(
+        `/api/comments?postId=${encodeURIComponent(postId)}`,
+      )
       const json = await res.json()
       if (res.ok) setList(json.data || [])
     } catch {
@@ -122,11 +131,19 @@ export default function Comment({ postId }: CommentProps) {
 
   const formatDate = (ts: number) => {
     const d = new Date(ts)
-    return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+    return d.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   const tree = createMemo(() => buildTree(list()))
-  const authorMap = createMemo(() => new Map(list().map((c) => [c.id, c.author])))
+  const authorMap = createMemo(
+    () => new Map(list().map((c) => [c.id, c.author])),
+  )
 
   const renderNode = (node: TreeNode): JSX.Element => {
     const c = node.comment
@@ -145,14 +162,15 @@ export default function Comment({ postId }: CommentProps) {
               </span>
             ) : null}
             {parentAuthor ? (
-              <span class="comment-reply-to">
-                {' '}
-                回复 {parentAuthor}
-              </span>
+              <span class="comment-reply-to"> 回复 {parentAuthor}</span>
             ) : null}
             <span class="comment-sep">·</span>
             <span class="comment-date">{formatDate(c.createdAt)}</span>
-            <button type="button" class="comment-reply-btn" onClick={() => startReply(c.id, c.author)}>
+            <button
+              type="button"
+              class="comment-reply-btn"
+              onClick={() => startReply(c.id, c.author)}
+            >
               回复
             </button>
           </div>
@@ -185,11 +203,17 @@ export default function Comment({ postId }: CommentProps) {
         <Show when={pendingNotice()}>
           <p class="comment-pending">评论已提交，待审核后显示</p>
         </Show>
-        <Show when={error()}>{(message) => <p class="comment-error">{message()}</p>}</Show>
+        <Show when={error()}>
+          {(message) => <p class="comment-error">{message()}</p>}
+        </Show>
         <Show when={replyToAuthor()}>
           <p class="comment-replying">
             回复 {replyToAuthor()}
-            <button type="button" class="comment-cancel-reply" onClick={cancelReply}>
+            <button
+              type="button"
+              class="comment-cancel-reply"
+              onClick={cancelReply}
+            >
               取消
             </button>
           </p>

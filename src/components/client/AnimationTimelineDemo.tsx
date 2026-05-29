@@ -4,10 +4,15 @@
  */
 export default function AnimationTimelineDemo() {
   return (
-    <div class="my-6 rounded-xl overflow-hidden border" style="border-color:var(--card-border);">
+    <div
+      class="my-6 rounded-xl overflow-hidden border"
+      style="border-color:var(--card-border);"
+    >
       <div class="p-4 text-sm" style={{ color: 'var(--text-muted)' }}>
-        <span class="font-medium" style={{ color: 'var(--text)' }}>Solid 组件测试</span>
-        {' '}— 下方为使用 <code>animation-timeline: scroll()</code> 的滚动驱动进度条
+        <span class="font-medium" style={{ color: 'var(--text)' }}>
+          Solid 组件测试
+        </span>{' '}
+        — 下方为使用 <code>animation-timeline: scroll()</code> 的滚动驱动进度条
       </div>
       <div
         class="h-2 w-full origin-left"
